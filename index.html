@@ -1,0 +1,3479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ONO3P / L61P 点击花费出单速度 · 公开版</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --surface-2: #f5f5f3;
+      --surface-3: #ebebe8;
+      --line: #eaeae7;
+      --control: #ccccc8;
+      --ink: #141414;
+      --ink-2: #55554f;
+      --ink-3: #6b6b66;
+      --accent: #ff6a00;
+      --ok: #086b5d;
+      --ok-tint: #e1f3ef;
+      --bad: #b42b1a;
+      --bad-tint: #fceae6;
+      --warn: #7a4d00;
+      --warn-tint: #fff4d6;
+      --r-chip: 6px;
+      --r-control: 8px;
+      --r-panel: 12px;
+      --shadow-1: 0 0 0 1px rgb(20 20 20 / .04), 0 1px 1px rgb(20 20 20 / .04), 0 3px 6px -2px rgb(20 20 20 / .07);
+      --shadow-2: 0 0 0 1px rgb(20 20 20 / .04), 0 1px 2px rgb(20 20 20 / .05), 0 6px 12px -4px rgb(20 20 20 / .08), 0 20px 36px -20px rgb(20 20 20 / .2);
+      --shadow-pop: 0 0 0 1px rgb(20 20 20 / .05), 0 4px 12px rgb(20 20 20 / .08), 0 28px 64px -20px rgb(20 20 20 / .38);
+      --shadow-primary: inset 0 1px 0 rgb(255 255 255 / .18), inset 0 -1px 0 rgb(0 0 0 / .35), 0 1px 2px rgb(20 20 20 / .25), 0 8px 16px -8px rgb(20 20 20 / .5);
+      --ease: cubic-bezier(.22, 1, .36, 1);
+      --font: "Segoe UI", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --page-pad: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.6 var(--font);
+      font-variant-numeric: tabular-nums;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    input,
+    select {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex="0"]:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    .page {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+      padding: 28px var(--page-pad) 44px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .title-block {
+      min-width: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 3px;
+      font-size: 28px;
+      line-height: 1.25;
+      font-weight: 300;
+    }
+
+    h2 {
+      margin-bottom: 18px;
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 400;
+    }
+
+    h3 {
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .subtitle,
+    .section-note,
+    .source-note {
+      margin-bottom: 0;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .public-notice {
+      margin: 7px 0 0;
+      color: var(--ink-2);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: none;
+    }
+
+    .button-primary,
+    .button-secondary,
+    .button-text {
+      min-height: 36px;
+      border: 0;
+      border-radius: var(--r-control);
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: linear-gradient(#33332f, #141414);
+      color: #ffffff;
+      box-shadow: var(--shadow-primary);
+    }
+
+    .button-secondary {
+      background: #ffffff;
+      color: var(--ink);
+      box-shadow: var(--shadow-1);
+    }
+
+    .button-text {
+      min-height: 32px;
+      padding-inline: 9px;
+      background: transparent;
+      color: var(--ink-2);
+    }
+
+    .button-primary,
+    .button-secondary {
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .button-primary:hover,
+      .button-secondary:hover {
+        transform: translateY(-1px);
+      }
+
+      .button-primary:hover {
+        box-shadow: var(--shadow-primary), 0 10px 20px -10px rgb(20 20 20 / .6);
+      }
+
+      .button-secondary:hover {
+        box-shadow: var(--shadow-2);
+      }
+    }
+
+    .button-primary:active,
+    .button-secondary:active {
+      transform: translateY(1px) scale(.98);
+    }
+
+    .button-text:hover {
+      background: rgb(30 28 24 / .05);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      padding-top: 14px;
+      scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab {
+      position: relative;
+      flex: none;
+      min-height: 38px;
+      border: 0;
+      border-radius: var(--r-control) var(--r-control) 0 0;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--ink-2);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tab[aria-selected="true"] {
+      background: rgb(40 40 48 / .07);
+      color: var(--ink);
+      box-shadow: inset 0 -1px 0 var(--accent);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .tab:hover {
+        background: rgb(30 28 24 / .05);
+      }
+    }
+
+    .tab-panel {
+      padding-top: 18px;
+    }
+
+    .tab-panel[hidden] {
+      display: none;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(150px, 180px) minmax(130px, 160px) minmax(220px, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+      padding: 0 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .field label,
+    .target-field label {
+      color: var(--ink-2);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    input[type="date"],
+    input[type="time"],
+    input[type="number"],
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--control);
+      border-radius: var(--r-control);
+      padding: 0 9px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 78px;
+      padding-block: 8px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--ink);
+    }
+
+    .context-line {
+      align-self: center;
+      min-height: 34px;
+      padding-top: 17px;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .context-line strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .insight {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 52px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .insight-copy {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      flex: none;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .status-dot.is-ok {
+      background: var(--ok);
+    }
+
+    .insight p {
+      margin-bottom: 0;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .save-state {
+      flex: none;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .product {
+      min-width: 0;
+      padding: 22px 0 20px;
+    }
+
+    .product + .product {
+      padding-left: 28px;
+      border-left: 1px solid var(--line);
+    }
+
+    .product-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .product-name {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .product-name strong {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .product-name span {
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .product-time {
+      color: var(--ink-3);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      row-gap: 16px;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 0 12px;
+    }
+
+    .metric:first-child {
+      padding-left: 0;
+    }
+
+    .metric:last-child {
+      padding-right: 0;
+    }
+
+    .metric + .metric {
+      border-left: 1px solid var(--line);
+    }
+
+    .metric:nth-child(3n + 1) {
+      border-left: 0;
+      padding-left: 0;
+    }
+
+    .metric:nth-child(3n) {
+      padding-right: 0;
+    }
+
+    .metric:nth-child(n + 4) {
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
+    }
+
+    .metric-total-orders {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(120px, .9fr) minmax(0, 2.1fr);
+      align-items: center;
+      gap: 12px;
+      padding: 15px 0 1px !important;
+      border-top: 1px solid var(--line);
+      border-left: 0 !important;
+    }
+
+    .metric-total-orders .metric-label {
+      grid-column: 1;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .metric-total-orders .metric-value {
+      grid-column: 2;
+      text-align: right;
+    }
+
+    .metric-total-orders .metric-detail,
+    .metric-order-speed,
+    .metric-order-projection {
+      grid-column: 1 / -1;
+    }
+
+    .metric-order-speed,
+    .metric-order-projection {
+      display: grid;
+      grid-template-columns: minmax(120px, .9fr) minmax(0, 2.1fr);
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0 1px !important;
+      border-left: 0 !important;
+    }
+
+    .metric-order-speed .metric-value,
+    .metric-order-projection .metric-value {
+      grid-column: 2;
+      text-align: right;
+    }
+
+    .metric-order-speed .metric-detail,
+    .metric-order-projection .metric-detail {
+      grid-column: 1 / -1;
+    }
+
+    .metric-label,
+    .metric-detail {
+      display: block;
+      color: var(--ink-3);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metric-detail {
+      min-height: 17px;
+      line-height: 1.4;
+      white-space: normal;
+    }
+
+    .metric-value {
+      display: block;
+      margin: 2px 0 1px;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.25;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .metric-value.is-primary {
+      font-size: 30px;
+    }
+
+    .metric-value.is-good {
+      color: var(--ok);
+    }
+
+    .metric-value.is-bad {
+      color: var(--bad);
+    }
+
+    .metric-detail.is-good {
+      color: var(--ok);
+    }
+
+    .metric-detail.is-bad {
+      color: var(--bad);
+    }
+
+    .metric-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 2px 0 1px;
+    }
+
+    .metric-input-wrap > span {
+      color: var(--ink-2);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .metric-input-wrap input {
+      width: 100%;
+      min-width: 0;
+      min-height: 30px;
+      border-color: transparent;
+      border-bottom-color: var(--control);
+      border-radius: 4px;
+      padding: 0 4px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-input-wrap input:hover {
+      background: rgb(30 28 24 / .035);
+    }
+
+    .metric-input-wrap input:focus {
+      border-color: var(--ink);
+      background: #ffffff;
+    }
+
+    .section {
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 0;
+    }
+
+    .table-wrapper {
+      position: relative;
+      max-width: 100%;
+      overflow: auto;
+      container-type: inline-size;
+      border-top: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+    }
+
+    caption {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      height: 48px;
+      border-bottom: 1px solid var(--line);
+      padding: 7px 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    thead th {
+      height: 38px;
+      color: var(--ink-3);
+      font-size: 12px;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    tbody th {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      min-width: 102px;
+      background: #ffffff;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover th,
+    tbody tr:hover td {
+      background-color: rgb(30 28 24 / .035);
+    }
+
+    tbody tr:hover th {
+      background-color: #f7f7f5;
+    }
+
+    .timeline-table {
+      min-width: 1460px;
+    }
+
+    .timeline-table th:nth-child(1) {
+      width: 104px;
+    }
+
+    .timeline-table th:nth-child(2) {
+      width: 78px;
+    }
+
+    .de-time {
+      color: var(--ink-2);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cell-stack {
+      display: grid;
+      gap: 2px;
+      justify-items: end;
+    }
+
+    .cumulative-input {
+      width: 86px;
+      min-height: 27px;
+      border-color: transparent;
+      border-bottom-color: var(--control);
+      border-radius: 4px;
+      padding: 0 5px;
+      text-align: right;
+      background: transparent;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cumulative-input:hover {
+      background: rgb(30 28 24 / .035);
+    }
+
+    .cumulative-input:focus {
+      border-color: var(--ink);
+      background: #ffffff;
+    }
+
+    .cumulative-input::placeholder {
+      color: var(--ink-3);
+      opacity: 1;
+    }
+
+    .cell-rate {
+      min-height: 17px;
+      color: var(--ink-3);
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .cell-rate.is-estimated {
+      color: var(--ink-3);
+    }
+
+    .cell-rate.is-invalid {
+      color: var(--bad);
+    }
+
+    .order-entry-grid {
+      display: grid;
+      grid-template-columns: minmax(86px, 1fr) minmax(86px, 1fr) minmax(58px, .65fr);
+      gap: 6px;
+      align-items: end;
+      min-width: 248px;
+    }
+
+    .order-entry {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .order-entry > span,
+    .order-derived > span {
+      color: var(--ink-3);
+      font-size: 10px;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    .order-entry .cumulative-input {
+      width: 100%;
+    }
+
+    .order-derived {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+      padding-bottom: 2px;
+      text-align: right;
+    }
+
+    .order-derived strong {
+      min-height: 27px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 27px;
+      white-space: nowrap;
+    }
+
+    .order-derived.is-invalid strong {
+      color: var(--bad);
+    }
+
+    .order-rate-stack {
+      display: grid;
+      gap: 1px;
+      min-width: 112px;
+      color: var(--ink-3);
+      font-size: 10px;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .order-rate-stack .cell-rate {
+      min-height: 0;
+      font-size: 10px;
+    }
+
+    .order-share {
+      color: var(--ink-2);
+    }
+
+    .row-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 22px;
+      border-radius: var(--r-chip);
+      padding: 1px 7px;
+      background: var(--surface-2);
+      color: var(--ink-2);
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .row-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ink-3);
+    }
+
+    .row-status.is-recorded {
+      background: var(--ok-tint);
+      color: var(--ok);
+    }
+
+    .row-status.is-recorded::before {
+      background: var(--ok);
+    }
+
+    .row-status.is-current {
+      background: var(--warn-tint);
+      color: var(--warn);
+    }
+
+    .row-status.is-current::before {
+      background: var(--accent);
+    }
+
+    .row-status.is-invalid {
+      background: var(--bad-tint);
+      color: var(--bad);
+    }
+
+    .row-status.is-invalid::before {
+      background: var(--bad);
+    }
+
+    .history-table {
+      min-width: 880px;
+    }
+
+    .history-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .history-incomplete {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      border-radius: var(--r-chip);
+      padding: 1px 7px;
+      background: var(--warn-tint);
+      color: var(--warn);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .history-table tfoot th,
+    .history-table tfoot td {
+      border-top: 1px solid var(--ink-3);
+      border-bottom: 0;
+      font-weight: 500;
+    }
+
+    .history-summary {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .history-targets {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      padding: 0 0 20px;
+    }
+
+    .target-group {
+      display: grid;
+      grid-template-columns: 100px repeat(2, minmax(110px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .target-group-title {
+      align-self: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .target-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .target-field .input-unit {
+      position: relative;
+    }
+
+    .target-field .input-unit input {
+      padding-right: 26px;
+    }
+
+    .target-field .unit {
+      position: absolute;
+      top: 50%;
+      right: 9px;
+      color: var(--ink-3);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .history-callout {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 12px;
+      color: var(--ink-2);
+      font-size: 12px;
+    }
+
+    .version-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .version-toolbar p {
+      margin: 0;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .version-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .version-table {
+      min-width: 860px;
+    }
+
+    .version-table td {
+      height: 58px;
+    }
+
+    .version-label {
+      font-weight: 600;
+    }
+
+    .version-note {
+      display: block;
+      max-width: 240px;
+      overflow: hidden;
+      color: var(--ink-3);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      padding: 28px 0;
+      color: var(--ink-3);
+      font-size: 13px;
+    }
+
+    .footer-note {
+      padding-top: 18px;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    dialog {
+      width: min(460px, calc(100% - 32px));
+      border: 0;
+      border-radius: var(--r-panel);
+      padding: 22px;
+      background: #ffffff;
+      color: var(--ink);
+      box-shadow: var(--shadow-pop);
+    }
+
+    dialog:modal {
+      overscroll-behavior: contain;
+    }
+
+    dialog::backdrop {
+      overflow: hidden;
+      overscroll-behavior: contain;
+      background: rgb(20 20 20 / .45);
+    }
+
+    dialog[open] {
+      animation: dialog-in .24s var(--ease);
+    }
+
+    @keyframes dialog-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .dialog-head h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 300;
+    }
+
+    .dialog-close {
+      min-width: 32px;
+      min-height: 32px;
+      border: 0;
+      border-radius: var(--r-control);
+      background: transparent;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .dialog-close:hover {
+      background: rgb(30 28 24 / .05);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    @media (max-width: 1080px) {
+      .controls {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .context-line {
+        grid-column: 1 / -1;
+        padding-top: 0;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        row-gap: 16px;
+      }
+
+      .history-targets {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --page-pad: 16px;
+      }
+
+      .page {
+        padding-top: 20px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .top-actions > button {
+        flex: 1;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .field:nth-child(3),
+      .context-line {
+        grid-column: 1 / -1;
+      }
+
+      .insight {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .products {
+        grid-template-columns: 1fr;
+      }
+
+      .product {
+        padding: 20px 0;
+      }
+
+      .product + .product {
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric {
+        padding: 0 10px;
+      }
+
+      .metric:nth-child(odd) {
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .metric:nth-child(even) {
+        border-left: 1px solid var(--line);
+        padding-left: 10px;
+      }
+
+      .metric:nth-child(n + 3) {
+        padding-top: 13px;
+        border-top: 1px solid var(--line);
+      }
+
+      .metric-total-orders {
+        grid-column: 1 / -1;
+      }
+
+      .metric-order-speed,
+      .metric-order-projection {
+        grid-column: 1 / -1;
+      }
+
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .table-wrapper {
+        overflow: visible;
+      }
+
+      .timeline-table,
+      .history-table,
+      .version-table {
+        min-width: 0;
+      }
+
+      .timeline-table,
+      .timeline-table tbody,
+      .timeline-table tr,
+      .timeline-table th,
+      .timeline-table td,
+      .history-table,
+      .history-table tbody,
+      .history-table tr,
+      .history-table th,
+      .history-table td,
+      .history-table thead,
+      .history-table tfoot,
+      .version-table,
+      .version-table tbody,
+      .version-table tr,
+      .version-table th,
+      .version-table td,
+      .version-table thead {
+        display: block;
+      }
+
+      .timeline-table thead,
+      .history-table thead,
+      .version-table thead {
+        display: none;
+      }
+
+      .timeline-table tr {
+        display: block;
+        padding: 14px 0 15px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .timeline-table tr .de-time[data-label]::before {
+        content: "DE 时间";
+      }
+
+      .timeline-table tr [data-rate-product] {
+        display: block;
+      }
+
+      .timeline-table th,
+      .timeline-table td {
+        height: auto;
+        border-bottom: 0;
+        padding: 4px 0;
+      }
+
+      .timeline-table tbody th {
+        position: static;
+        background: transparent;
+      }
+
+      .timeline-table tbody td:nth-child(n + 3) {
+        display: inline-grid;
+        width: calc(50% - 9px);
+        margin-right: 8px;
+        vertical-align: top;
+      }
+
+      .timeline-table tbody td:nth-child(2n) {
+        margin-right: 0;
+      }
+
+      .timeline-table tbody td:nth-child(8) {
+        width: 100%;
+      }
+
+      .timeline-table tbody td:nth-child(7),
+      .timeline-table tbody td:nth-child(8),
+      .timeline-table tbody td:nth-child(13),
+      .timeline-table tbody td:nth-child(14) {
+        vertical-align: top;
+      }
+
+      .timeline-table tbody td:nth-child(7)::before,
+      .timeline-table tbody td:nth-child(8)::before,
+      .timeline-table tbody td:nth-child(13)::before,
+      .timeline-table tbody td:nth-child(14)::before {
+        display: none;
+      }
+
+      .timeline-table tbody td:nth-child(2) {
+        display: block;
+        width: auto;
+        margin: 0;
+      }
+
+      .timeline-table tbody td:nth-child(9) {
+        clear: both;
+        margin-top: 10px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .timeline-table tbody th::after {
+        content: "";
+        display: block;
+        height: 5px;
+      }
+
+      .timeline-table td::before,
+      .history-table td::before,
+      .version-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 2px;
+        color: var(--ink-3);
+        font-size: 11px;
+        text-align: left;
+      }
+
+      .timeline-table .cell-stack {
+        justify-items: start;
+      }
+
+      .timeline-table .cumulative-input {
+        width: 100%;
+        max-width: 118px;
+        text-align: left;
+      }
+
+      .timeline-table .order-entry-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        min-width: 0;
+      }
+
+      .timeline-table .order-derived {
+        text-align: left;
+      }
+
+      .timeline-table .order-rate-stack {
+        min-width: 0;
+        justify-items: end;
+      }
+
+      .timeline-table .order-rate-stack .order-share {
+        color: var(--ink-3);
+      }
+
+      .timeline-table tbody tr:hover th,
+      .timeline-table tbody tr:hover td {
+        background: transparent;
+      }
+
+      .history-table tbody tr,
+      .version-table tbody tr {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .history-table th,
+      .history-table td,
+      .version-table th,
+      .version-table td {
+        height: auto;
+        border-bottom: 0;
+        padding: 4px 0;
+      }
+
+      .history-table tfoot {
+        display: block;
+        padding-top: 8px;
+      }
+
+      .history-table tfoot th,
+      .history-table tfoot td {
+        border-top: 0;
+      }
+
+      .target-group {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .target-group-title {
+        grid-column: 1 / -1;
+      }
+
+      .history-callout,
+      .version-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .version-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .version-actions button {
+        flex: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>ONO3P / L61P 点击花费出单速度 · 公开版</h1>
+        <p class="subtitle" id="subtitle">德国站 · 中国时间 14:30 / DE 07:30 起记录当日累计</p>
+        <p class="public-notice">公开版不含公司业务数据，录入数据仅保存在访问者自己的浏览器。</p>
+      </div>
+      <div class="top-actions">
+        <button id="saveVersionButton" class="button-secondary" type="button">保存版本</button>
+        <button id="jumpEntryButton" class="button-primary" type="button">去录入</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="页面内容">
+      <button class="tab" id="tab-today" role="tab" type="button" aria-selected="true" aria-controls="panel-today" tabindex="0">今日盯盘</button>
+      <button class="tab" id="tab-history" role="tab" type="button" aria-selected="false" aria-controls="panel-history" tabindex="-1">历史参照</button>
+      <button class="tab" id="tab-versions" role="tab" type="button" aria-selected="false" aria-controls="panel-versions" tabindex="-1">版本记录</button>
+    </nav>
+
+    <section class="tab-panel" id="panel-today" role="tabpanel" aria-labelledby="tab-today">
+      <div class="controls">
+        <div class="field">
+          <label for="businessDate">日期</label>
+          <input id="businessDate" type="date" value="2026-11-27">
+        </div>
+        <div class="field">
+          <label for="startTime">开始盯盘（中国时间）</label>
+          <input id="startTime" type="time" value="14:30" step="60">
+        </div>
+        <div class="context-line" id="windowSummary">2026-11-27 · 中国 14:30 到 24:00（DE 07:30 到 17:00）· 共 9.5 小时</div>
+        <button id="exportButton" class="button-secondary" type="button">导出当天</button>
+      </div>
+
+      <div class="insight">
+        <div class="insight-copy">
+          <span class="status-dot" id="insightDot" aria-hidden="true"></span>
+          <p id="insightText" aria-live="polite">从 14:30 起点录入累计点击和花费；再录 15:00 累计值即可算速度。</p>
+        </div>
+        <span class="save-state" id="saveState" aria-live="polite">已保存在本机</span>
+      </div>
+
+      <section class="products" aria-label="两个产品的速度汇总">
+        <article class="product" aria-labelledby="onoProductName">
+          <div class="product-head">
+            <div>
+              <div class="product-name" id="onoProductName">
+                <strong>ONO3P</strong>
+                <span>ONO3Pro · ONOAYO</span>
+              </div>
+              <button class="button-text target-link" type="button" data-open-history="ono3p">改历史参照</button>
+            </div>
+            <span class="product-time" id="onoLatestTime">14:30 起点</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label">累计点击</span>
+              <strong class="metric-value" id="onoCurrentClicks">0</strong>
+              <span class="metric-detail" id="onoClicksDetail">从 14:30 起</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">点击速度</span>
+              <strong class="metric-value" id="onoClickSpeed">—</strong>
+              <span class="metric-detail">次/小时</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预计收盘点击</span>
+              <strong class="metric-value" id="onoProjectedClicks">—</strong>
+              <span class="metric-detail" id="onoClickGap">对照历史时段</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">累计花费</span>
+              <strong class="metric-value" id="onoCurrentSpend">€0.00</strong>
+              <span class="metric-detail" id="onoSpendDetail">从 14:30 起</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">花费速度</span>
+              <strong class="metric-value" id="onoSpendSpeed">—</strong>
+              <span class="metric-detail" id="onoSpendSpeedDetail">EUR/小时 · 等待速度比例</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预计收盘花费</span>
+              <strong class="metric-value is-primary" id="onoProjectedSpend">—</strong>
+              <span class="metric-detail" id="onoSpendGap">对照历史时段</span>
+            </div>
+            <div class="metric metric-total-orders">
+              <span class="metric-label">累计总单</span>
+              <strong class="metric-value" id="onoCurrentOrders">0</strong>
+              <span class="metric-detail" id="onoOrdersDetail">广告单与自然单自动拆分</span>
+            </div>
+            <div class="metric metric-order-speed">
+              <span class="metric-label">总单速度</span>
+              <strong class="metric-value" id="onoOrderSpeed">—</strong>
+              <span class="metric-detail" id="onoOrderSpeedDetail">广告单与自然单分别计算</span>
+            </div>
+            <div class="metric metric-order-projection">
+              <span class="metric-label">预计收盘总单</span>
+              <strong class="metric-value" id="onoProjectedOrders">—</strong>
+              <span class="metric-detail" id="onoOrdersProjectionDetail">含广告单与自然单预估</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预估 CPC</span>
+              <strong class="metric-value" id="onoCpc">—</strong>
+              <span class="metric-detail" id="onoCpcDetail">按预计收盘值</span>
+            </div>
+            <div class="metric">
+              <label class="metric-label" for="onoBudget">每日广告额度</label>
+              <div class="metric-input-wrap">
+                <span>€</span>
+                <input id="onoBudget" data-budget-product="ono3p" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="onoBudgetDetail">
+              </div>
+              <span class="metric-detail" id="onoBudgetDetail">可自行填写每日额度</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">额度实际花费</span>
+              <strong class="metric-value" id="onoBudgetActual">€0.00</strong>
+              <span class="metric-detail" id="onoBudgetUsage">已用 0%</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" aria-labelledby="l61ProductName">
+          <div class="product-head">
+            <div>
+              <div class="product-name" id="l61ProductName">
+                <strong>L61P</strong>
+                <span>L61Pro · Lisowod</span>
+              </div>
+              <button class="button-text target-link" type="button" data-open-history="l61p">改历史参照</button>
+            </div>
+            <span class="product-time" id="l61LatestTime">14:30 起点</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label">累计点击</span>
+              <strong class="metric-value" id="l61CurrentClicks">0</strong>
+              <span class="metric-detail" id="l61ClicksDetail">从 14:30 起</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">点击速度</span>
+              <strong class="metric-value" id="l61ClickSpeed">—</strong>
+              <span class="metric-detail">次/小时</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预计收盘点击</span>
+              <strong class="metric-value" id="l61ProjectedClicks">—</strong>
+              <span class="metric-detail" id="l61ClickGap">对照历史时段</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">累计花费</span>
+              <strong class="metric-value" id="l61CurrentSpend">€0.00</strong>
+              <span class="metric-detail" id="l61SpendDetail">从 14:30 起</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">花费速度</span>
+              <strong class="metric-value" id="l61SpendSpeed">—</strong>
+              <span class="metric-detail" id="l61SpendSpeedDetail">EUR/小时 · 等待速度比例</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预计收盘花费</span>
+              <strong class="metric-value is-primary" id="l61ProjectedSpend">—</strong>
+              <span class="metric-detail" id="l61SpendGap">对照历史时段</span>
+            </div>
+            <div class="metric metric-total-orders">
+              <span class="metric-label">累计总单</span>
+              <strong class="metric-value" id="l61CurrentOrders">0</strong>
+              <span class="metric-detail" id="l61OrdersDetail">广告单与自然单自动拆分</span>
+            </div>
+            <div class="metric metric-order-speed">
+              <span class="metric-label">总单速度</span>
+              <strong class="metric-value" id="l61OrderSpeed">—</strong>
+              <span class="metric-detail" id="l61OrderSpeedDetail">广告单与自然单分别计算</span>
+            </div>
+            <div class="metric metric-order-projection">
+              <span class="metric-label">预计收盘总单</span>
+              <strong class="metric-value" id="l61ProjectedOrders">—</strong>
+              <span class="metric-detail" id="l61OrdersProjectionDetail">含广告单与自然单预估</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">预估 CPC</span>
+              <strong class="metric-value" id="l61Cpc">—</strong>
+              <span class="metric-detail" id="l61CpcDetail">按预计收盘值</span>
+            </div>
+            <div class="metric">
+              <label class="metric-label" for="l61Budget">每日广告额度</label>
+              <div class="metric-input-wrap">
+                <span>€</span>
+                <input id="l61Budget" data-budget-product="l61p" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="l61BudgetDetail">
+              </div>
+              <span class="metric-detail" id="l61BudgetDetail">可自行填写每日额度</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">额度实际花费</span>
+              <strong class="metric-value" id="l61BudgetActual">€0.00</strong>
+              <span class="metric-detail" id="l61BudgetUsage">已用 0%</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section" id="timelineSection" aria-labelledby="timelineTitle">
+        <div class="section-heading">
+          <h2 id="timelineTitle">时段记录</h2>
+          <p class="section-note">每个时段可录入累计点击、花费、总单和广告单；自然单自动取“总单 − 广告单”。15:00 起按累计增量计算速度。</p>
+        </div>
+        <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="timelineTitle">
+          <table class="timeline-table">
+            <caption>ONO3P 和 L61P 从开始盯盘到 24:00 的累计点击、花费、总单、广告单、自然单与各自速度</caption>
+            <thead>
+              <tr>
+                <th scope="col">中国时间</th>
+                <th scope="col">DE 时间</th>
+                <th scope="col" class="num">ONO3P 点击累计</th>
+                <th scope="col" class="num">ONO3P 点击速度</th>
+                <th scope="col" class="num">ONO3P 花费累计</th>
+                <th scope="col" class="num">ONO3P 花费速度</th>
+                <th scope="col" class="num">ONO3P 出单拆分</th>
+                <th scope="col" class="num">ONO3P 出单速度 / 广告占比</th>
+                <th scope="col" class="num">L61P 点击累计</th>
+                <th scope="col" class="num">L61P 点击速度</th>
+                <th scope="col" class="num">L61P 花费累计</th>
+                <th scope="col" class="num">L61P 花费速度</th>
+                <th scope="col" class="num">L61P 出单拆分</th>
+                <th scope="col" class="num">L61P 出单速度 / 广告占比</th>
+                <th scope="col">状态</th>
+              </tr>
+            </thead>
+            <tbody id="timelineBody"></tbody>
+          </table>
+        </div>
+        <p class="source-note" id="timelineTimeNote">中国时间为录入口径；DE 时间按欧洲柏林时区自动换算。自然单不单独录入；广告单高于总单时标红，速度需要至少两次累计值。</p>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+      <section class="section" aria-labelledby="historyTargetTitle">
+        <div class="section-heading">
+          <h2 id="historyTargetTitle">历史参照目标</h2>
+          <p class="section-note">公开版不带历史日均；请按自己的业务填写本次时段要追的点击和花费。</p>
+        </div>
+        <div class="history-targets">
+          <div class="target-group" aria-label="ONO3P 时段参照">
+            <strong class="target-group-title">ONO3P</strong>
+            <div class="target-field">
+              <label for="onoGoalClicks">参照点击</label>
+              <div class="input-unit">
+                <input id="onoGoalClicks" data-goal-product="ono3p" data-goal-metric="clicks" type="number" min="0" step="0.1" inputmode="decimal">
+                <span class="unit">次</span>
+              </div>
+            </div>
+            <div class="target-field">
+              <label for="onoGoalSpend">参照花费</label>
+              <div class="input-unit">
+                <input id="onoGoalSpend" data-goal-product="ono3p" data-goal-metric="spend" type="number" min="0" step="0.01" inputmode="decimal">
+                <span class="unit">€</span>
+              </div>
+            </div>
+          </div>
+          <div class="target-group" aria-label="L61P 时段参照">
+            <strong class="target-group-title">L61P</strong>
+            <div class="target-field">
+              <label for="l61GoalClicks">参照点击</label>
+              <div class="input-unit">
+                <input id="l61GoalClicks" data-goal-product="l61p" data-goal-metric="clicks" type="number" min="0" step="0.1" inputmode="decimal">
+                <span class="unit">次</span>
+              </div>
+            </div>
+            <div class="target-field">
+              <label for="l61GoalSpend">参照花费</label>
+              <div class="input-unit">
+                <input id="l61GoalSpend" data-goal-product="l61p" data-goal-metric="spend" type="number" min="0" step="0.01" inputmode="decimal">
+                <span class="unit">€</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="history-callout">
+          <span>参照目标可随时修改，只保存在当前浏览器。</span>
+          <button id="restoreGoalButton" class="button-text" type="button">清空参照目标</button>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="historyTableTitle">
+        <div class="section-heading">
+          <h2 id="historyTableTitle">历史日汇总</h2>
+          <p class="section-note">公开版不包含公司历史数据；你保存的每日版本可在“版本记录”里查看和恢复。</p>
+        </div>
+        <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="historyTableTitle">
+          <table class="history-table">
+            <caption>公开版不提供历史日数据</caption>
+            <thead>
+              <tr>
+                <th scope="col">日期</th>
+                <th scope="col" class="num">ONO3P 点击</th>
+                <th scope="col" class="num">ONO3P 花费</th>
+                <th scope="col" class="num">ONO3P CPC</th>
+                <th scope="col" class="num">L61P 点击</th>
+                <th scope="col" class="num">L61P 花费</th>
+                <th scope="col" class="num">L61P CPC</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+            <tfoot id="historyFoot"></tfoot>
+          </table>
+        </div>
+        <p class="source-note">CPC = 当日广告花费 ÷ 当日点击数；点击为 0 时显示“—”，不当作 0 成本。</p>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-versions" role="tabpanel" aria-labelledby="tab-versions" hidden>
+      <section class="section" aria-labelledby="versionsTitle">
+        <div class="section-heading">
+          <h2 id="versionsTitle">版本记录</h2>
+          <p class="section-note">保存的是当时全部录入值、历史参照和开始时间；恢复前会自动留一份当前版本。</p>
+        </div>
+        <div class="version-toolbar">
+          <p id="versionSummary">还没有保存版本</p>
+          <div class="version-actions">
+            <button id="importButton" class="button-secondary" type="button">导入备份</button>
+            <button id="backupButton" class="button-secondary" type="button">导出备份</button>
+            <button id="saveVersionInline" class="button-primary" type="button">保存当前版本</button>
+          </div>
+        </div>
+        <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="versionsTitle">
+          <table class="version-table">
+            <caption>当前页面的历史版本记录</caption>
+            <thead>
+              <tr>
+                <th scope="col">版本</th>
+                <th scope="col">保存时间</th>
+                <th scope="col">说明</th>
+                <th scope="col" class="num">ONO3P 点击 / 花费 / 总单（广告 / 自然）</th>
+                <th scope="col" class="num">L61P 点击 / 花费 / 总单（广告 / 自然）</th>
+                <th scope="col">操作</th>
+              </tr>
+            </thead>
+            <tbody id="versionBody"></tbody>
+          </table>
+        </div>
+        <p id="versionEmpty" class="empty-state" hidden>还没有版本。点击“保存当前版本”留一份。</p>
+      </section>
+    </section>
+
+    <p class="footer-note">数据保存在这台电脑的浏览器里；换电脑或清理浏览器前，请在“版本记录”导出备份。</p>
+  </main>
+
+  <dialog id="saveVersionDialog" closedby="any" aria-labelledby="saveVersionTitle" aria-describedby="saveVersionHint">
+    <form method="dialog" id="saveVersionForm">
+      <div class="dialog-head">
+        <h1 id="saveVersionTitle">保存当前版本</h1>
+        <button class="dialog-close" type="submit" value="cancel" aria-label="关闭">关闭</button>
+      </div>
+      <div class="field">
+        <label for="versionNote">这一版记了什么</label>
+        <textarea id="versionNote" maxlength="160" placeholder="例如：15:00 快照，L61P 花费偏快" autofocus></textarea>
+      </div>
+      <p id="saveVersionHint" class="source-note">保存后不会覆盖更早版本。</p>
+      <div class="dialog-actions">
+        <button class="button-text" type="submit" value="cancel">取消</button>
+        <button class="button-primary" type="submit" value="save">保存版本</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input class="visually-hidden" id="importFile" type="file" accept=".json,application/json">
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "ono3p-l61p-pace-public-v1";
+      const DEFAULT_DATE = "2026-11-27";
+      const DEFAULT_START = "14:30";
+      const END_MINUTES = 24 * 60;
+      const PRODUCTS = {
+        ono3p: { label: "ONO3P", model: "ONO3Pro" },
+        l61p: { label: "L61P", model: "L61Pro" }
+      };
+      const DIRECT_METRICS = ["clicks", "spend", "totalOrders", "adOrders"];
+      const ORDER_METRICS = ["totalOrders", "adOrders", "naturalOrders"];
+      const HISTORY = [];
+      const HISTORY_REFERENCE = HISTORY.filter((row) => row.complete);
+      const DEFAULT_BUDGETS = {
+        ono3p: 0,
+        l61p: 0
+      };
+      const DEFAULT_START_VALUES = {
+        "2026-11-27": {}
+      };
+
+      const els = {
+        businessDate: document.getElementById("businessDate"),
+        startTime: document.getElementById("startTime"),
+        windowSummary: document.getElementById("windowSummary"),
+        subtitle: document.getElementById("subtitle"),
+        timelineTimeNote: document.getElementById("timelineTimeNote"),
+        saveState: document.getElementById("saveState"),
+        insightDot: document.getElementById("insightDot"),
+        insightText: document.getElementById("insightText"),
+        timelineBody: document.getElementById("timelineBody"),
+        timelineSection: document.getElementById("timelineSection"),
+        historyBody: document.getElementById("historyBody"),
+        historyFoot: document.getElementById("historyFoot"),
+        versionBody: document.getElementById("versionBody"),
+        versionSummary: document.getElementById("versionSummary"),
+        versionEmpty: document.getElementById("versionEmpty"),
+        saveVersionDialog: document.getElementById("saveVersionDialog"),
+        saveVersionForm: document.getElementById("saveVersionForm"),
+        versionNote: document.getElementById("versionNote"),
+        importFile: document.getElementById("importFile"),
+        tabs: Array.from(document.querySelectorAll('[role="tab"]')),
+        panels: Array.from(document.querySelectorAll('[role="tabpanel"]'))
+      };
+
+      const goalInputs = {
+        ono3p: {
+          clicks: document.getElementById("onoGoalClicks"),
+          spend: document.getElementById("onoGoalSpend")
+        },
+        l61p: {
+          clicks: document.getElementById("l61GoalClicks"),
+          spend: document.getElementById("l61GoalSpend")
+        }
+      };
+
+      const metricElements = {};
+      for (const productKey of Object.keys(PRODUCTS)) {
+        const prefix = productKey === "ono3p" ? "ono" : "l61";
+        metricElements[productKey] = {
+          latestTime: document.getElementById(`${prefix}LatestTime`),
+          currentClicks: document.getElementById(`${prefix}CurrentClicks`),
+          clicksDetail: document.getElementById(`${prefix}ClicksDetail`),
+          clickSpeed: document.getElementById(`${prefix}ClickSpeed`),
+          projectedClicks: document.getElementById(`${prefix}ProjectedClicks`),
+          clickGap: document.getElementById(`${prefix}ClickGap`),
+          currentSpend: document.getElementById(`${prefix}CurrentSpend`),
+          spendDetail: document.getElementById(`${prefix}SpendDetail`),
+          spendSpeed: document.getElementById(`${prefix}SpendSpeed`),
+          spendSpeedDetail: document.getElementById(`${prefix}SpendSpeedDetail`),
+          projectedSpend: document.getElementById(`${prefix}ProjectedSpend`),
+          spendGap: document.getElementById(`${prefix}SpendGap`),
+          currentOrders: document.getElementById(`${prefix}CurrentOrders`),
+          ordersDetail: document.getElementById(`${prefix}OrdersDetail`),
+          orderSpeed: document.getElementById(`${prefix}OrderSpeed`),
+          orderSpeedDetail: document.getElementById(`${prefix}OrderSpeedDetail`),
+          projectedOrders: document.getElementById(`${prefix}ProjectedOrders`),
+          ordersProjectionDetail: document.getElementById(`${prefix}OrdersProjectionDetail`),
+          cpc: document.getElementById(`${prefix}Cpc`),
+          cpcDetail: document.getElementById(`${prefix}CpcDetail`),
+          budget: document.getElementById(`${prefix}Budget`),
+          budgetDetail: document.getElementById(`${prefix}BudgetDetail`),
+          budgetActual: document.getElementById(`${prefix}BudgetActual`),
+          budgetUsage: document.getElementById(`${prefix}BudgetUsage`)
+        };
+      }
+
+      const clickFormat = new Intl.NumberFormat("zh-CN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1
+      });
+      const speedFormat = new Intl.NumberFormat("zh-CN", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+      const moneyFormat = new Intl.NumberFormat("zh-CN", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      const moneySpeedFormat = new Intl.NumberFormat("zh-CN", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      const percentFormat = new Intl.NumberFormat("zh-CN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1
+      });
+      const germanyDateTimeFormat = new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Europe/Berlin",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      });
+
+      let saveTimer = null;
+      let store = loadStore();
+      let activeDate = store.activeDate || DEFAULT_DATE;
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function minutesFromTime(value) {
+        const match = /^(\d{2}):(\d{2})$/.exec(value || "");
+        if (!match) return NaN;
+        const hours = Number(match[1]);
+        const minutes = Number(match[2]);
+        if (hours > 23 || minutes > 59) return NaN;
+        return hours * 60 + minutes;
+      }
+
+      function timeFromMinutes(minutes) {
+        if (minutes === END_MINUTES) return "24:00";
+        return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+      }
+
+      function nextDateString(date) {
+        const value = new Date(`${date}T00:00:00Z`);
+        value.setUTCDate(value.getUTCDate() + 1);
+        return value.toISOString().slice(0, 10);
+      }
+
+      function germanyTimeLabel(date, minutes) {
+        const isEnd = minutes === END_MINUTES;
+        const chinaDate = isEnd ? nextDateString(date) : date;
+        const chinaMinutes = isEnd ? 0 : minutes;
+        const instant = new Date(
+          `${chinaDate}T${pad(Math.floor(chinaMinutes / 60))}:${pad(chinaMinutes % 60)}:00+08:00`
+        );
+        const parts = Object.fromEntries(
+          germanyDateTimeFormat.formatToParts(instant)
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+        const germanyDate = `${parts.year}-${parts.month}-${parts.day}`;
+        const dayOffset = germanyDate === date
+          ? ""
+          : germanyDate > date
+            ? "（次日）"
+            : "（前日）";
+        return `${parts.hour}:${parts.minute}${dayOffset}`;
+      }
+
+      function chinaGermanyHourGap(date, minutes) {
+        const time = timeFromMinutes(minutes);
+        const instant = new Date(`${date}T${time === "24:00" ? "00:00" : time}:00+08:00`);
+        const parts = Object.fromEntries(
+          germanyDateTimeFormat.formatToParts(instant)
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+        const germanyAsUtc = Date.UTC(
+          Number(parts.year),
+          Number(parts.month) - 1,
+          Number(parts.day),
+          Number(parts.hour),
+          Number(parts.minute)
+        );
+        const germanyOffsetHours = Math.round((germanyAsUtc - instant.getTime()) / 3600000);
+        return 8 - germanyOffsetHours;
+      }
+
+      function slotLabel(minutes) {
+        return minutes === END_MINUTES ? "24:00 收盘" : timeFromMinutes(minutes);
+      }
+
+      function hoursBetween(start, end) {
+        return (end - start) / 60;
+      }
+
+      function phaseShare(startMinutes) {
+        return Math.max(0, END_MINUTES - startMinutes) / END_MINUTES;
+      }
+
+      function dayWindowHours(day) {
+        return Math.max(0, END_MINUTES - minutesFromTime(day.start)) / 60;
+      }
+
+      function generatedSlots(day) {
+        const start = minutesFromTime(day.start);
+        if (!Number.isFinite(start) || start >= END_MINUTES) return [];
+        const slots = [start];
+        let next = Math.ceil((start + 1) / 60) * 60;
+        if (next <= start) next = start + 60;
+        while (next < END_MINUTES) {
+          slots.push(next);
+          next += 60;
+        }
+        slots.push(END_MINUTES);
+        return [...new Set(slots)].sort((a, b) => a - b);
+      }
+
+      function historicalAverage(productKey, metric) {
+        if (!HISTORY_REFERENCE.length) return 0;
+        return HISTORY_REFERENCE.reduce((total, row) => total + row[productKey][metric], 0) / HISTORY_REFERENCE.length;
+      }
+
+      function defaultGoals(start) {
+        const share = phaseShare(minutesFromTime(start));
+        return {
+          ono3p: {
+            clicks: historicalAverage("ono3p", "clicks") * share,
+            spend: historicalAverage("ono3p", "spend") * share
+          },
+          l61p: {
+            clicks: historicalAverage("l61p", "clicks") * share,
+            spend: historicalAverage("l61p", "spend") * share
+          }
+        };
+      }
+
+      function defaultBudgets() {
+        return {
+          ono3p: DEFAULT_BUDGETS.ono3p,
+          l61p: DEFAULT_BUDGETS.l61p
+        };
+      }
+
+      function createDay(date, start = DEFAULT_START) {
+        return {
+          date,
+          start,
+          goals: defaultGoals(start),
+          budgets: defaultBudgets(),
+          baselineSeeded: false,
+          entries: {}
+        };
+      }
+
+      function seedDefaultBaseline(day) {
+        const defaults = DEFAULT_START_VALUES[day.date];
+        if (!defaults || day.baselineSeeded) return day;
+        if (!day.entries[day.start]) day.entries[day.start] = {};
+        for (const [productKey, metrics] of Object.entries(defaults)) {
+          if (!day.entries[day.start][productKey]) day.entries[day.start][productKey] = {};
+          for (const [metric, value] of Object.entries(metrics)) {
+            const current = day.entries[day.start][productKey][metric];
+            if (current === null || current === undefined || current === "") {
+              day.entries[day.start][productKey][metric] = value;
+            }
+          }
+        }
+        day.baselineSeeded = true;
+        return day;
+      }
+
+      function freshStore() {
+        const day = seedDefaultBaseline(createDay(DEFAULT_DATE, DEFAULT_START));
+        return {
+          schema: 1,
+          activeDate: DEFAULT_DATE,
+          days: { [DEFAULT_DATE]: day },
+          versions: []
+        };
+      }
+
+      function normalizeDay(raw, date) {
+        const day = createDay(date, raw && /^\d{2}:\d{2}$/.test(raw.start || "") ? raw.start : DEFAULT_START);
+        if (!raw || typeof raw !== "object") return day;
+        for (const productKey of Object.keys(PRODUCTS)) {
+          for (const metric of ["clicks", "spend"]) {
+            const value = Number(raw.goals && raw.goals[productKey] && raw.goals[productKey][metric]);
+            if (Number.isFinite(value) && value >= 0) {
+              day.goals[productKey][metric] = value;
+            }
+          }
+        }
+        for (const productKey of Object.keys(PRODUCTS)) {
+          const value = Number(raw.budgets && raw.budgets[productKey]);
+          if (Number.isFinite(value) && value >= 0) {
+            day.budgets[productKey] = value;
+          }
+        }
+        if (raw.entries && typeof raw.entries === "object") {
+          for (const [time, entry] of Object.entries(raw.entries)) {
+            if (!/^\d{2}:\d{2}$/.test(time) || !entry || typeof entry !== "object") continue;
+            day.entries[time] = {};
+            for (const productKey of Object.keys(PRODUCTS)) {
+              day.entries[time][productKey] = {};
+              for (const metric of DIRECT_METRICS) {
+                const source = entry[productKey] && (
+                  entry[productKey][metric] ??
+                  (metric === "totalOrders" ? entry[productKey].orders : null)
+                );
+                const value = source === null || source === "" || source === undefined ? null : Number(source);
+                day.entries[time][productKey][metric] =
+                  Number.isFinite(value) && value >= 0 ? value : null;
+              }
+            }
+          }
+        }
+        const hasStartValue = Object.keys(PRODUCTS).some((productKey) => {
+          return DIRECT_METRICS.some((metric) => {
+            const value = entryValue(day, productKey, day.start, metric);
+            return value !== null && Number.isFinite(value);
+          });
+        });
+        day.baselineSeeded = raw.baselineSeeded === true || hasStartValue;
+        return day;
+      }
+
+      function loadStore() {
+        try {
+          const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (!raw || raw.schema !== 1 || !raw.days || typeof raw.days !== "object") {
+            return freshStore();
+          }
+          const days = {};
+          for (const [date, day] of Object.entries(raw.days)) {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+              const normalized = normalizeDay(day, date);
+              days[date] = date === DEFAULT_DATE && !normalized.baselineSeeded
+                ? seedDefaultBaseline(normalized)
+                : normalized;
+            }
+          }
+          if (!Object.keys(days).length) {
+            days[DEFAULT_DATE] = seedDefaultBaseline(createDay(DEFAULT_DATE, DEFAULT_START));
+          }
+          return {
+            schema: 1,
+            activeDate: days[raw.activeDate] ? raw.activeDate : Object.keys(days)[0],
+            days,
+            versions: Array.isArray(raw.versions) ? raw.versions : []
+          };
+        } catch (_) {
+          return freshStore();
+        }
+      }
+
+      function saveStore(showMessage = true) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+          if (showMessage) els.saveState.textContent = "已保存在本机";
+        } catch (_) {
+          if (showMessage) els.saveState.textContent = "本机保存不可用，请导出备份";
+        }
+      }
+
+      function scheduleSave() {
+        els.saveState.textContent = "正在保存…";
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(() => saveStore(true), 280);
+      }
+
+      function currentDay() {
+        if (!store.days[activeDate]) {
+          store.days[activeDate] = createDay(activeDate, DEFAULT_START);
+          if (activeDate === DEFAULT_DATE) seedDefaultBaseline(store.days[activeDate]);
+        }
+        store.activeDate = activeDate;
+        return store.days[activeDate];
+      }
+
+      function entryValue(day, productKey, time, metric) {
+        const entry = day.entries[time];
+        const value = entry && entry[productKey] && entry[productKey][metric];
+        return value === null || value === undefined || value === "" ? null : Number(value);
+      }
+
+      function setEntryValue(day, productKey, time, metric, value) {
+        if (!day.entries[time]) day.entries[time] = {};
+        if (!day.entries[time][productKey]) day.entries[time][productKey] = {};
+        day.entries[time][productKey][metric] =
+          value === "" || value === null || value === undefined ? null : Number(value);
+      }
+
+      function metricSeries(day, productKey, metric) {
+        const slots = generatedSlots(day);
+        const start = minutesFromTime(day.start);
+        const goal = Number(day.goals[productKey][metric]) || 0;
+        const baseline = entryValue(day, productKey, day.start, metric);
+        let lastActual = null;
+        return slots.map((minutes, index) => {
+          const time = timeFromMinutes(minutes);
+          const entered = entryValue(day, productKey, time, metric);
+          const fraction = END_MINUTES > start ? (minutes - start) / (END_MINUTES - start) : 0;
+
+          if (entered !== null && Number.isFinite(entered)) {
+            let speed = null;
+            let invalid = false;
+            if (lastActual) {
+              if (entered < lastActual.value) {
+                invalid = true;
+              } else {
+                speed = (entered - lastActual.value) / hoursBetween(lastActual.minutes, minutes);
+              }
+            }
+            const row = {
+              minutes,
+              time,
+              value: entered,
+              speed,
+              kind: index === 0 ? "start" : "actual",
+              invalid,
+              goalValue: goal * fraction
+            };
+            lastActual = { minutes, value: entered, speed };
+            return row;
+          }
+
+          if (lastActual && lastActual.speed !== null && !Number.isNaN(lastActual.speed)) {
+            return {
+              minutes,
+              time,
+              value: lastActual.value + lastActual.speed * hoursBetween(lastActual.minutes, minutes),
+              speed: lastActual.speed,
+              kind: "projected",
+              invalid: false,
+              goalValue: goal * fraction
+            };
+          }
+
+          return {
+            minutes,
+            time,
+            value: (baseline ?? 0) + goal * fraction,
+            speed: null,
+            kind: "reference",
+            invalid: false,
+            goalValue: goal * fraction
+          };
+        });
+      }
+
+      function naturalSeries(day, productKey, totalSeries, adSeries) {
+        let lastActual = null;
+        return totalSeries.map((totalRow, index) => {
+          const adRow = adSeries[index];
+          const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
+          const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+          const invalid = totalRow.invalid || adRow.invalid || adRow.value > totalRow.value;
+          const value = Math.max(0, totalRow.value - adRow.value);
+          let speed = null;
+
+          if (totalEntered && adEntered) {
+            if (lastActual && !invalid) {
+              speed = (value - lastActual.value) / hoursBetween(lastActual.minutes, totalRow.minutes);
+              if (speed < 0) speed = null;
+            }
+            if (!invalid && speed !== null) {
+              lastActual = { minutes: totalRow.minutes, value, speed };
+            } else if (!invalid && !lastActual) {
+              lastActual = { minutes: totalRow.minutes, value, speed: null };
+            }
+            return {
+              minutes: totalRow.minutes,
+              time: totalRow.time,
+              value,
+              speed,
+              kind: index === 0 ? "start" : "actual",
+              invalid,
+              goalValue: 0
+            };
+          }
+
+          const projected = totalRow.kind === "projected" || adRow.kind === "projected";
+          return {
+            minutes: totalRow.minutes,
+            time: totalRow.time,
+            value,
+            speed: lastActual ? lastActual.speed : null,
+            kind: projected ? "projected" : "reference",
+            invalid,
+            goalValue: 0
+          };
+        });
+      }
+
+      function orderSharePercent(totalValue, adValue) {
+        if (totalValue === null || adValue === null || adValue > totalValue) return null;
+        if (totalValue === 0) return adValue === 0 ? 0 : null;
+        return adValue / totalValue * 100;
+      }
+
+      function latestRecorded(day, productKey, metric) {
+        const slots = generatedSlots(day);
+        const firstMinutes = minutesFromTime(day.start);
+        let latest = {
+          time: slots[0] ? timeFromMinutes(slots[0]) : day.start,
+          minutes: firstMinutes,
+          value: 0,
+          hasValue: false
+        };
+        for (const minutes of slots) {
+          const time = timeFromMinutes(minutes);
+          const value = entryValue(day, productKey, time, metric);
+          if (value !== null && Number.isFinite(value)) {
+            latest = { time, minutes, value, hasValue: true };
+          }
+        }
+        return latest;
+      }
+
+      function latestActualSeriesRow(series) {
+        for (let index = series.length - 1; index >= 0; index -= 1) {
+          if (series[index].kind === "actual" || series[index].kind === "start") {
+            return series[index];
+          }
+        }
+        return null;
+      }
+
+      function renderTimeline() {
+        const day = currentDay();
+        const slots = generatedSlots(day);
+        const series = {
+          ono3p: {
+            clicks: metricSeries(day, "ono3p", "clicks"),
+            spend: metricSeries(day, "ono3p", "spend"),
+            totalOrders: metricSeries(day, "ono3p", "totalOrders"),
+            adOrders: metricSeries(day, "ono3p", "adOrders")
+          },
+          l61p: {
+            clicks: metricSeries(day, "l61p", "clicks"),
+            spend: metricSeries(day, "l61p", "spend"),
+            totalOrders: metricSeries(day, "l61p", "totalOrders"),
+            adOrders: metricSeries(day, "l61p", "adOrders")
+          }
+        };
+        series.ono3p.naturalOrders = naturalSeries(day, "ono3p", series.ono3p.totalOrders, series.ono3p.adOrders);
+        series.l61p.naturalOrders = naturalSeries(day, "l61p", series.l61p.totalOrders, series.l61p.adOrders);
+
+        els.timelineBody.replaceChildren(...slots.map((minutes, index) => {
+          const time = timeFromMinutes(minutes);
+          const rows = {
+            onoClicks: series.ono3p.clicks[index],
+            onoSpend: series.ono3p.spend[index],
+            onoTotalOrders: series.ono3p.totalOrders[index],
+            onoAdOrders: series.ono3p.adOrders[index],
+            onoNaturalOrders: series.ono3p.naturalOrders[index],
+            l61Clicks: series.l61p.clicks[index],
+            l61Spend: series.l61p.spend[index],
+            l61TotalOrders: series.l61p.totalOrders[index],
+            l61AdOrders: series.l61p.adOrders[index],
+            l61NaturalOrders: series.l61p.naturalOrders[index]
+          };
+          const isStart = index === 0;
+          const status = rowStatusFor(day, time, rows, index);
+
+          const tr = document.createElement("tr");
+          tr.dataset.time = time;
+          if (isStart) tr.classList.add("current-row");
+          tr.innerHTML = `
+            <th scope="row">${slotLabel(minutes)}</th>
+            <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, minutes)}</td>
+            ${metricCell("ono3p", "clicks", rows.onoClicks, isStart)}
+            ${speedCell(rows.onoClicks, false, "ono3p", "clicks")}
+            ${metricCell("ono3p", "spend", rows.onoSpend, isStart)}
+            ${speedCell(rows.onoSpend, true, "ono3p", "spend")}
+            ${orderEntryCell("ono3p", rows.onoTotalOrders, rows.onoAdOrders, rows.onoNaturalOrders, isStart)}
+            ${orderRateCell("ono3p", rows.onoTotalOrders, rows.onoAdOrders, rows.onoNaturalOrders)}
+            ${metricCell("l61p", "clicks", rows.l61Clicks, isStart)}
+            ${speedCell(rows.l61Clicks, false, "l61p", "clicks")}
+            ${metricCell("l61p", "spend", rows.l61Spend, isStart)}
+            ${speedCell(rows.l61Spend, true, "l61p", "spend")}
+            ${orderEntryCell("l61p", rows.l61TotalOrders, rows.l61AdOrders, rows.l61NaturalOrders, isStart)}
+            ${orderRateCell("l61p", rows.l61TotalOrders, rows.l61AdOrders, rows.l61NaturalOrders)}
+            <td data-label="状态"><span class="row-status ${status.className}" data-row-status>${status.text}</span></td>
+          `;
+          return tr;
+        }));
+      }
+
+      function rowStatusFor(day, time, rows, index) {
+        if (index === 0) {
+          const startValues = Object.keys(PRODUCTS).flatMap((productKey) => {
+            return DIRECT_METRICS.map((metric) => entryValue(day, productKey, day.start, metric));
+          });
+          const recordedCount = startValues.filter((value) => value !== null && Number.isFinite(value)).length;
+          if (recordedCount === startValues.length) {
+            return { text: "观测基线", className: "is-recorded" };
+          }
+          return {
+            text: recordedCount ? "补起点" : "录起点",
+            className: "is-current"
+          };
+        }
+        const anyEntered = Object.keys(PRODUCTS).some((productKey) => {
+          return DIRECT_METRICS.some((metric) => entryValue(day, productKey, time, metric) !== null);
+        });
+        const allEntered = Object.keys(PRODUCTS).every((productKey) => {
+          return DIRECT_METRICS.every((metric) => entryValue(day, productKey, time, metric) !== null);
+        });
+        if (Object.values(rows).some((row) => row.invalid)) {
+          return { text: "需核对", className: "is-invalid" };
+        }
+        if (allEntered) return { text: "已记录", className: "is-recorded" };
+        if (anyEntered) return { text: "部分记录", className: "is-current" };
+        return { text: "待记录", className: "" };
+      }
+
+      function metricCell(productKey, metric, row, isStart) {
+        const productLabel = PRODUCTS[productKey].label;
+        const metricName = metric === "clicks"
+          ? "点击累计"
+          : metric === "spend"
+            ? "花费累计"
+            : "出单累计";
+        const entered = row.kind === "actual" || row.kind === "start";
+        const formattedProjection = metric !== "spend"
+          ? clickFormat.format(Math.max(0, row.value))
+          : moneyFormat.format(Math.max(0, row.value));
+        const inputValue = entered
+          ? (metric !== "spend" ? clickFormat.format(row.value) : Number(row.value).toFixed(2))
+          : "";
+        return `
+          <td class="num" data-label="${productLabel} ${metricName}">
+            <div class="cell-stack">
+              <label class="visually-hidden" for="entry-${productKey}-${row.time.replace(":", "")}-${metric}">
+                ${productLabel} 中国时间 ${row.time} / DE 时间 ${germanyTimeLabel(currentDay().date, row.minutes)} ${metricName}
+              </label>
+              <input
+                class="cumulative-input"
+                id="entry-${productKey}-${row.time.replace(":", "")}-${metric}"
+                data-entry-product="${productKey}"
+                data-entry-time="${row.time}"
+                data-entry-metric="${metric}"
+                type="number"
+                min="0"
+                step="${metric !== "spend" ? "1" : "0.01"}"
+                inputmode="decimal"
+                value="${inputValue}"
+                placeholder="${isStart && !entered ? "录起点" : `预计 ${formattedProjection}`}"
+              >
+            </div>
+          </td>
+        `;
+      }
+
+      function orderEntryCell(productKey, totalRow, adRow, naturalRow, isStart) {
+        const productLabel = PRODUCTS[productKey].label;
+        const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
+        const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+        const invalid = adRow.value > totalRow.value;
+        const totalValue = totalEntered ? clickFormat.format(totalRow.value) : "";
+        const adValue = adEntered ? clickFormat.format(adRow.value) : "";
+        const naturalText = invalid
+          ? "广告＞总单"
+          : totalEntered && adEntered
+            ? clickFormat.format(naturalRow.value)
+            : totalEntered || adEntered
+              ? `预计 ${clickFormat.format(naturalRow.value)}`
+              : "—";
+        const timeId = totalRow.time.replace(":", "");
+        return `
+          <td class="num" data-label="${productLabel} 出单拆分（总单 / 广告单 / 自然单）">
+            <div class="order-entry-grid">
+              <label class="order-entry">
+                <span>总单</span>
+                <input
+                  class="cumulative-input"
+                  id="entry-${productKey}-${timeId}-totalOrders"
+                  data-entry-product="${productKey}"
+                  data-entry-time="${totalRow.time}"
+                  data-entry-metric="totalOrders"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  value="${totalValue}"
+                  placeholder="${isStart ? "录起点" : `预计 ${clickFormat.format(totalRow.value)}`}"
+                >
+              </label>
+              <label class="order-entry">
+                <span>广告单</span>
+                <input
+                  class="cumulative-input"
+                  id="entry-${productKey}-${timeId}-adOrders"
+                  data-entry-product="${productKey}"
+                  data-entry-time="${adRow.time}"
+                  data-entry-metric="adOrders"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  value="${adValue}"
+                  placeholder="${isStart ? "录起点" : `预计 ${clickFormat.format(adRow.value)}`}"
+                >
+              </label>
+              <span class="order-derived${invalid ? " is-invalid" : ""}" data-natural-wrap="${productKey}">
+                <span>自然单</span>
+                <strong data-natural-orders="${productKey}">${naturalText}</strong>
+              </span>
+            </div>
+          </td>
+        `;
+      }
+
+      function orderRateCell(productKey, totalRow, adRow, naturalRow) {
+        const productLabel = PRODUCTS[productKey].label;
+        const share = orderSharePercent(totalRow.value, adRow.value);
+        const totalRate = ratePresentation(totalRow, "totalOrders");
+        const adRate = ratePresentation(adRow, "adOrders");
+        const naturalRate = ratePresentation(naturalRow, "naturalOrders");
+        return `
+          <td class="num" data-label="${productLabel} 出单速度 / 广告占比">
+            <div class="order-rate-stack">
+              <span class="${totalRate.className}" data-rate-product="${productKey}" data-rate-metric="totalOrders">总 ${totalRate.text}</span>
+              <span class="${adRate.className}" data-rate-product="${productKey}" data-rate-metric="adOrders">广告 ${adRate.text}</span>
+              <span class="${naturalRate.className}" data-rate-product="${productKey}" data-rate-metric="naturalOrders">自然 ${naturalRate.text}</span>
+              <span class="order-share" data-order-share="${productKey}">广告占比 ${share === null ? "—" : `${percentFormat.format(share)}%`}</span>
+            </div>
+          </td>
+        `;
+      }
+
+      function ratePresentation(row, metric = "") {
+        let text = "待下一次";
+        let className = "cell-rate";
+        if (row.invalid) {
+          text = "累计值倒退了";
+          className += " is-invalid";
+        } else if (row.speed !== null && Number.isFinite(row.speed)) {
+          text = metric === "spend"
+            ? `${moneySpeedFormat.format(row.speed)}/小时`
+            : ORDER_METRICS.includes(metric)
+              ? `${speedFormat.format(row.speed)} 单/小时`
+              : `${speedFormat.format(row.speed)} 次/小时`;
+        } else if (row.kind === "reference" && row.value >= 0) {
+          text = "等待录入";
+        }
+        return { text, className };
+      }
+
+      function speedCell(row, isMoney = false, productKey = "", metric = "") {
+        const presentation = ratePresentation(row, metric);
+        const metricLabel = metric === "spend" ? "花费" : "点击";
+        const label = `${PRODUCTS[productKey]?.label || ""}${metricLabel}速度`;
+        return `<td class="num" data-label="${label}"><span class="${presentation.className}" data-rate-product="${productKey}" data-rate-metric="${metric}">${presentation.text}</span></td>`;
+      }
+
+      function updateTimelineComputed() {
+        const day = currentDay();
+        const slots = generatedSlots(day);
+        const series = {
+          ono3p: {
+            clicks: metricSeries(day, "ono3p", "clicks"),
+            spend: metricSeries(day, "ono3p", "spend"),
+            totalOrders: metricSeries(day, "ono3p", "totalOrders"),
+            adOrders: metricSeries(day, "ono3p", "adOrders")
+          },
+          l61p: {
+            clicks: metricSeries(day, "l61p", "clicks"),
+            spend: metricSeries(day, "l61p", "spend"),
+            totalOrders: metricSeries(day, "l61p", "totalOrders"),
+            adOrders: metricSeries(day, "l61p", "adOrders")
+          }
+        };
+        series.ono3p.naturalOrders = naturalSeries(day, "ono3p", series.ono3p.totalOrders, series.ono3p.adOrders);
+        series.l61p.naturalOrders = naturalSeries(day, "l61p", series.l61p.totalOrders, series.l61p.adOrders);
+
+        slots.forEach((minutes, index) => {
+          const time = timeFromMinutes(minutes);
+          const tr = els.timelineBody.querySelector(`tr[data-time="${time}"]`);
+          if (!tr) return;
+          const rows = {
+            onoClicks: series.ono3p.clicks[index],
+            onoSpend: series.ono3p.spend[index],
+            onoTotalOrders: series.ono3p.totalOrders[index],
+            onoAdOrders: series.ono3p.adOrders[index],
+            onoNaturalOrders: series.ono3p.naturalOrders[index],
+            l61Clicks: series.l61p.clicks[index],
+            l61Spend: series.l61p.spend[index],
+            l61TotalOrders: series.l61p.totalOrders[index],
+            l61AdOrders: series.l61p.adOrders[index],
+            l61NaturalOrders: series.l61p.naturalOrders[index]
+          };
+
+          for (const productKey of Object.keys(PRODUCTS)) {
+            for (const metric of ["clicks", "spend"]) {
+              const seriesRow = series[productKey][metric][index];
+              const rate = tr.querySelector(
+                `[data-rate-product="${productKey}"][data-rate-metric="${metric}"]`
+              );
+              if (rate) {
+                const presentation = ratePresentation(seriesRow, metric);
+                rate.className = presentation.className;
+                rate.textContent = presentation.text;
+              }
+
+              const input = tr.querySelector(
+                `[data-entry-product="${productKey}"][data-entry-metric="${metric}"]`
+              );
+              if (input && input.value === "" && seriesRow.kind !== "actual" && seriesRow.kind !== "start") {
+                const projection = metric !== "spend"
+                  ? clickFormat.format(Math.max(0, seriesRow.value))
+                  : moneyFormat.format(Math.max(0, seriesRow.value));
+                input.placeholder = `预计 ${projection}`;
+              }
+            }
+
+            const totalRow = series[productKey].totalOrders[index];
+            const adRow = series[productKey].adOrders[index];
+            const naturalRow = series[productKey].naturalOrders[index];
+            const ratePrefixes = {
+              totalOrders: "总",
+              adOrders: "广告",
+              naturalOrders: "自然"
+            };
+            for (const metric of ORDER_METRICS) {
+              const rate = tr.querySelector(
+                `[data-rate-product="${productKey}"][data-rate-metric="${metric}"]`
+              );
+              if (rate) {
+                const presentation = ratePresentation(series[productKey][metric][index], metric);
+                rate.className = presentation.className;
+                rate.textContent = `${ratePrefixes[metric]} ${presentation.text}`;
+              }
+            }
+
+            for (const metric of ["totalOrders", "adOrders"]) {
+              const seriesRow = series[productKey][metric][index];
+              const input = tr.querySelector(
+                `[data-entry-product="${productKey}"][data-entry-metric="${metric}"]`
+              );
+              if (input && input.value === "" && seriesRow.kind !== "actual" && seriesRow.kind !== "start") {
+                input.placeholder = `预计 ${clickFormat.format(Math.max(0, seriesRow.value))}`;
+              }
+            }
+
+            const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
+            const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+            const invalidBreakdown = adRow.value > totalRow.value;
+            const naturalText = invalidBreakdown
+              ? "广告＞总单"
+              : totalEntered && adEntered
+                ? clickFormat.format(naturalRow.value)
+                : totalEntered || adEntered
+                  ? `预计 ${clickFormat.format(naturalRow.value)}`
+                  : "—";
+            const naturalOutput = tr.querySelector(`[data-natural-orders="${productKey}"]`);
+            if (naturalOutput) naturalOutput.textContent = naturalText;
+            const naturalWrap = tr.querySelector(`[data-natural-wrap="${productKey}"]`);
+            if (naturalWrap) naturalWrap.classList.toggle("is-invalid", invalidBreakdown);
+            const shareOutput = tr.querySelector(`[data-order-share="${productKey}"]`);
+            if (shareOutput) {
+              const share = orderSharePercent(totalRow.value, adRow.value);
+              shareOutput.textContent = `广告占比 ${share === null ? "—" : `${percentFormat.format(share)}%`}`;
+            }
+          }
+
+          const status = rowStatusFor(day, time, rows, index);
+          const statusElement = tr.querySelector("[data-row-status]");
+          if (statusElement) {
+            statusElement.className = `row-status ${status.className}`;
+            statusElement.textContent = status.text;
+          }
+        });
+      }
+
+      function summaryForProduct(day, productKey) {
+        const clickSeries = metricSeries(day, productKey, "clicks");
+        const spendSeries = metricSeries(day, productKey, "spend");
+        const totalOrderSeries = metricSeries(day, productKey, "totalOrders");
+        const adOrderSeries = metricSeries(day, productKey, "adOrders");
+        const naturalOrderSeries = naturalSeries(day, productKey, totalOrderSeries, adOrderSeries);
+        const latestClicks = latestRecorded(day, productKey, "clicks");
+        const latestSpend = latestRecorded(day, productKey, "spend");
+        const latestTotalOrders = latestRecorded(day, productKey, "totalOrders");
+        const latestAdOrders = latestRecorded(day, productKey, "adOrders");
+        const latestNaturalOrders = latestActualSeriesRow(naturalOrderSeries);
+        const remainingClickHours = Math.max(0, (END_MINUTES - latestClicks.minutes) / 60);
+        const remainingSpendHours = Math.max(0, (END_MINUTES - latestSpend.minutes) / 60);
+        const remainingTotalOrderHours = Math.max(0, (END_MINUTES - latestTotalOrders.minutes) / 60);
+        const remainingAdOrderHours = Math.max(0, (END_MINUTES - latestAdOrders.minutes) / 60);
+        const remainingNaturalOrderHours = latestNaturalOrders
+          ? Math.max(0, (END_MINUTES - latestNaturalOrders.minutes) / 60)
+          : 0;
+        const latestClickRow = clickSeries.find((row) => row.minutes === latestClicks.minutes);
+        const latestSpendRow = spendSeries.find((row) => row.minutes === latestSpend.minutes);
+        const latestTotalOrderRow = totalOrderSeries.find((row) => row.minutes === latestTotalOrders.minutes);
+        const latestAdOrderRow = adOrderSeries.find((row) => row.minutes === latestAdOrders.minutes);
+        const clickSpeed = latestClickRow && Number.isFinite(latestClickRow.speed) ? latestClickRow.speed : null;
+        const spendSpeed = latestSpendRow && Number.isFinite(latestSpendRow.speed) ? latestSpendRow.speed : null;
+        const clicksPerEuro = clickSpeed !== null && spendSpeed !== null && spendSpeed > 0
+          ? clickSpeed / spendSpeed
+          : null;
+        const totalOrderSpeed = latestTotalOrderRow && Number.isFinite(latestTotalOrderRow.speed)
+          ? latestTotalOrderRow.speed
+          : null;
+        const adOrderSpeed = latestAdOrderRow && Number.isFinite(latestAdOrderRow.speed)
+          ? latestAdOrderRow.speed
+          : null;
+        const naturalOrderSpeed = latestNaturalOrders && Number.isFinite(latestNaturalOrders.speed)
+          ? latestNaturalOrders.speed
+          : null;
+        const clickGoal = Number(day.goals[productKey].clicks) || 0;
+        const spendGoal = Number(day.goals[productKey].spend) || 0;
+        const baselineClicks = entryValue(day, productKey, day.start, "clicks") ?? 0;
+        const baselineSpend = entryValue(day, productKey, day.start, "spend") ?? 0;
+        const projectedClicks = clickSpeed !== null
+          ? latestClicks.value + clickSpeed * remainingClickHours
+          : clickSeries[clickSeries.length - 1]?.value ?? baselineClicks + clickGoal;
+        const projectedSpend = spendSpeed !== null
+          ? latestSpend.value + spendSpeed * remainingSpendHours
+          : spendSeries[spendSeries.length - 1]?.value ?? baselineSpend + spendGoal;
+        const projectedTotalOrders = totalOrderSpeed !== null
+          ? latestTotalOrders.value + totalOrderSpeed * remainingTotalOrderHours
+          : totalOrderSeries[totalOrderSeries.length - 1]?.value ?? latestTotalOrders.value;
+        const projectedAdOrders = adOrderSpeed !== null
+          ? latestAdOrders.value + adOrderSpeed * remainingAdOrderHours
+          : adOrderSeries[adOrderSeries.length - 1]?.value ?? latestAdOrders.value;
+        const projectedNaturalOrders = Math.max(0, projectedTotalOrders - projectedAdOrders);
+        const naturalOrders = latestTotalOrders.hasValue && latestAdOrders.hasValue
+          ? Math.max(0, latestTotalOrders.value - latestAdOrders.value)
+          : null;
+        const adOrderShare = latestTotalOrders.hasValue && latestAdOrders.hasValue
+          ? orderSharePercent(latestTotalOrders.value, latestAdOrders.value)
+          : null;
+        const estimatedCpc = projectedClicks > 0 ? projectedSpend / projectedClicks : null;
+        const budget = Number(day.budgets[productKey]) || 0;
+        return {
+          latestClicks,
+          latestSpend,
+          latestTotalOrders,
+          latestAdOrders,
+          latestNaturalOrders,
+          naturalOrders,
+          adOrderShare,
+          clickSpeed,
+          spendSpeed,
+          clicksPerEuro,
+          totalOrderSpeed,
+          adOrderSpeed,
+          naturalOrderSpeed,
+          projectedClicks,
+          projectedSpend,
+          projectedTotalOrders,
+          projectedAdOrders,
+          projectedNaturalOrders,
+          clickGoal,
+          spendGoal,
+          baselineClicks,
+          baselineSpend,
+          estimatedCpc,
+          budget
+        };
+      }
+
+      function updateSummary() {
+        const day = currentDay();
+        const summaries = {
+          ono3p: summaryForProduct(day, "ono3p"),
+          l61p: summaryForProduct(day, "l61p")
+        };
+
+        for (const [productKey, summary] of Object.entries(summaries)) {
+          const ui = metricElements[productKey];
+          const latestMinutes = Math.max(
+            summary.latestClicks.minutes,
+            summary.latestSpend.minutes,
+            summary.latestTotalOrders.minutes,
+            summary.latestAdOrders.minutes
+          );
+          const latestHasValue =
+            summary.latestClicks.hasValue ||
+            summary.latestSpend.hasValue ||
+            summary.latestTotalOrders.hasValue ||
+            summary.latestAdOrders.hasValue;
+          ui.latestTime.textContent = latestHasValue
+            ? `中国 ${timeFromMinutes(latestMinutes)} / DE ${germanyTimeLabel(day.date, latestMinutes)} 最新`
+            : "等待录入起点";
+          ui.currentClicks.textContent = clickFormat.format(summary.latestClicks.value);
+          ui.currentSpend.textContent = moneyFormat.format(summary.latestSpend.value);
+          ui.clicksDetail.textContent =
+            `从中国 ${day.start} / DE ${germanyTimeLabel(day.date, minutesFromTime(day.start))} 起`;
+          ui.spendDetail.textContent = ui.clicksDetail.textContent;
+          ui.clickSpeed.textContent = summary.clickSpeed === null ? "—" : speedFormat.format(summary.clickSpeed);
+          ui.spendSpeed.textContent = summary.spendSpeed === null ? "—" : moneySpeedFormat.format(summary.spendSpeed);
+          ui.spendSpeedDetail.textContent = summary.clicksPerEuro === null
+            ? "EUR/小时 · 等待点击与花费速度"
+            : `EUR/小时 · 每 €1 约 ${speedFormat.format(summary.clicksPerEuro)} 次点击`;
+          ui.projectedClicks.textContent = clickFormat.format(Math.max(0, summary.projectedClicks));
+          ui.projectedSpend.textContent = moneyFormat.format(Math.max(0, summary.projectedSpend));
+          ui.currentOrders.textContent = clickFormat.format(summary.latestTotalOrders.value);
+          if (summary.latestTotalOrders.hasValue && summary.latestAdOrders.hasValue) {
+            ui.ordersDetail.textContent =
+              `广告 ${clickFormat.format(summary.latestAdOrders.value)} · 自然 ${clickFormat.format(summary.naturalOrders)}` +
+              (summary.adOrderShare === null ? " · 广告占比待核对" : ` · 广告占比 ${percentFormat.format(summary.adOrderShare)}%`);
+          } else {
+            ui.ordersDetail.textContent = "同时录入总单和广告单后显示自然单";
+          }
+          ui.orderSpeed.textContent = summary.totalOrderSpeed === null
+            ? "—"
+            : speedFormat.format(summary.totalOrderSpeed);
+          if (summary.totalOrderSpeed === null) {
+            ui.orderSpeedDetail.textContent = "录入下一时段后计算";
+          } else {
+            ui.orderSpeedDetail.textContent =
+              `广告 ${summary.adOrderSpeed === null ? "—" : speedFormat.format(summary.adOrderSpeed)}` +
+              ` · 自然 ${summary.naturalOrderSpeed === null ? "—" : speedFormat.format(summary.naturalOrderSpeed)} 单/小时`;
+          }
+          ui.projectedOrders.textContent = clickFormat.format(Math.max(0, summary.projectedTotalOrders));
+          ui.ordersProjectionDetail.textContent =
+            `预计广告 ${clickFormat.format(Math.max(0, summary.projectedAdOrders))}` +
+            ` · 自然 ${clickFormat.format(summary.projectedNaturalOrders)}`;
+          ui.cpc.textContent = summary.estimatedCpc === null ? "—" : moneyFormat.format(summary.estimatedCpc);
+          ui.cpcDetail.textContent = summary.estimatedCpc === null
+            ? "预计点击为 0，暂不能计算"
+            : "预计花费 ÷ 预计点击";
+          if (document.activeElement !== ui.budget) {
+            ui.budget.value = summary.budget.toFixed(2);
+          }
+          ui.budgetDetail.textContent = "可自行填写每日额度";
+          ui.budgetActual.textContent = moneyFormat.format(summary.latestSpend.value);
+
+          const budgetUsage = summary.budget > 0
+            ? summary.latestSpend.value / summary.budget * 100
+            : null;
+          ui.budgetUsage.classList.remove("is-good", "is-bad");
+          if (budgetUsage === null) {
+            ui.budgetUsage.textContent = summary.latestSpend.value > 0 ? "未设额度" : "额度为 €0.00";
+          } else {
+            ui.budgetUsage.textContent = `已用 ${percentFormat.format(budgetUsage)}%`;
+            if (budgetUsage > 100) ui.budgetUsage.classList.add("is-bad");
+          }
+
+          const clickDiff = summary.projectedClicks - (summary.baselineClicks + summary.clickGoal);
+          const spendDiff = summary.projectedSpend - (summary.baselineSpend + summary.spendGoal);
+          setGap(ui.clickGap, clickDiff, `${clickFormat.format(Math.abs(clickDiff))} 次`);
+          setGap(ui.spendGap, spendDiff, moneyFormat.format(Math.abs(spendDiff)));
+        }
+
+        const hasRecorded = Object.values(summaries).some((summary) => {
+          return summary.latestClicks.hasValue ||
+            summary.latestSpend.hasValue ||
+            summary.latestTotalOrders.hasValue ||
+            summary.latestAdOrders.hasValue;
+        });
+
+        if (hasRecorded) {
+          const ono = summaries.ono3p;
+          const l61 = summaries.l61p;
+          const onoOrderText = ono.totalOrderSpeed === null
+            ? "待录出单速度"
+            : `总单 ${speedFormat.format(ono.totalOrderSpeed)} 单/小时`;
+          const l61OrderText = l61.totalOrderSpeed === null
+            ? "待录出单速度"
+            : `总单 ${speedFormat.format(l61.totalOrderSpeed)} 单/小时`;
+          const onoText = ono.spendSpeed === null
+            ? "等待下一次累计花费"
+            : `${moneySpeedFormat.format(ono.spendSpeed)}/小时`;
+          const l61Text = l61.spendSpeed === null
+            ? "等待下一次累计花费"
+            : `${moneySpeedFormat.format(l61.spendSpeed)}/小时`;
+          els.insightText.textContent =
+            `ONO3P ${onoText}，出单 ${onoOrderText}；L61P ${l61Text}，出单 ${l61OrderText}。`;
+          els.insightDot.classList.add("is-ok");
+        } else {
+          els.insightText.textContent =
+            `先从中国时间 ${day.start}（DE ${germanyTimeLabel(day.date, minutesFromTime(day.start))}）开始，录入下一时段的累计点击和花费，页面才会算出速度。`;
+          els.insightDot.classList.remove("is-ok");
+        }
+      }
+
+      function setGap(element, difference, absoluteText) {
+        element.classList.remove("is-good", "is-bad");
+        if (Math.abs(difference) < 0.05) {
+          element.textContent = "与参照持平";
+          return;
+        }
+        element.textContent = `${difference > 0 ? "高于" : "低于"}参照 ${absoluteText}`;
+        element.classList.add(difference > 0 ? "is-bad" : "is-good");
+      }
+
+      function renderHistory() {
+        if (!HISTORY.length) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = '<td class="empty-state" colspan="7">公开版不含公司历史数据；你保存的每日版本可在“版本记录”里查看和恢复。</td>';
+          els.historyBody.replaceChildren(emptyRow);
+          els.historyFoot.replaceChildren();
+          return;
+        }
+        els.historyBody.replaceChildren(...HISTORY.map((row) => {
+          const tr = document.createElement("tr");
+          const statusBadge = row.complete
+            ? ""
+            : '<span class="history-incomplete">采集不完整</span>';
+          tr.innerHTML = `
+            <th scope="row"><span class="history-date">${row.date}${statusBadge}</span></th>
+            <td class="num" data-label="ONO3P 点击">${clickFormat.format(row.ono3p.clicks)}</td>
+            <td class="num" data-label="ONO3P 花费">${moneyFormat.format(row.ono3p.spend)}</td>
+            <td class="num" data-label="ONO3P CPC">${cpcText(row.ono3p)}</td>
+            <td class="num" data-label="L61P 点击">${clickFormat.format(row.l61p.clicks)}</td>
+            <td class="num" data-label="L61P 花费">${moneyFormat.format(row.l61p.spend)}</td>
+            <td class="num" data-label="L61P CPC">${cpcText(row.l61p)}</td>
+          `;
+          return tr;
+        }));
+
+        const totals = {
+          ono3p: { clicks: 0, spend: 0 },
+          l61p: { clicks: 0, spend: 0 }
+        };
+        for (const row of HISTORY_REFERENCE) {
+          for (const productKey of Object.keys(totals)) {
+            totals[productKey].clicks += row[productKey].clicks;
+            totals[productKey].spend += row[productKey].spend;
+          }
+        }
+        const averages = {};
+        for (const productKey of Object.keys(totals)) {
+          averages[productKey] = {
+            clicks: HISTORY_REFERENCE.length ? totals[productKey].clicks / HISTORY_REFERENCE.length : 0,
+            spend: HISTORY_REFERENCE.length ? totals[productKey].spend / HISTORY_REFERENCE.length : 0
+          };
+        }
+
+        const footRow = document.createElement("tr");
+        footRow.innerHTML = `
+          <th scope="row">历史日均</th>
+          <td class="num" data-label="ONO3P 点击">${clickFormat.format(averages.ono3p.clicks)}</td>
+          <td class="num" data-label="ONO3P 花费">${moneyFormat.format(averages.ono3p.spend)}</td>
+          <td class="num" data-label="ONO3P CPC">${cpcText(totals.ono3p)}</td>
+          <td class="num" data-label="L61P 点击">${clickFormat.format(averages.l61p.clicks)}</td>
+          <td class="num" data-label="L61P 花费">${moneyFormat.format(averages.l61p.spend)}</td>
+          <td class="num" data-label="L61P CPC">${cpcText(totals.l61p)}</td>
+        `;
+        els.historyFoot.replaceChildren(footRow);
+      }
+
+      function cpcText(row) {
+        return row.clicks > 0 ? moneyFormat.format(row.spend / row.clicks) : "—";
+      }
+
+      function syncGoalInputs() {
+        const day = currentDay();
+        for (const productKey of Object.keys(goalInputs)) {
+          goalInputs[productKey].clicks.value = Number(day.goals[productKey].clicks).toFixed(1);
+          goalInputs[productKey].spend.value = Number(day.goals[productKey].spend).toFixed(2);
+        }
+      }
+
+      function renderAll() {
+        const day = currentDay();
+        els.businessDate.value = day.date;
+        els.startTime.value = day.start;
+        const windowHours = dayWindowHours(day);
+        const startMinutes = minutesFromTime(day.start);
+        els.subtitle.textContent =
+          `德国站 · 中国时间 ${day.start} / DE ${germanyTimeLabel(day.date, startMinutes)} 起记录当日累计`;
+        els.timelineTimeNote.textContent =
+          `中国时间为录入口径；DE 时间按欧洲柏林时区自动换算，本次两国相差 ${chinaGermanyHourGap(day.date, startMinutes)} 小时。` +
+          "速度只在有两次累计值后成立；空值不当 0。";
+        els.windowSummary.innerHTML =
+          `${day.date} · 中国 <strong>${day.start} 到 24:00</strong>` +
+          `（DE ${germanyTimeLabel(day.date, startMinutes)} 到 ${germanyTimeLabel(day.date, END_MINUTES)}）` +
+          ` · 共 ${speedFormat.format(windowHours)} 小时`;
+        syncGoalInputs();
+        renderTimeline();
+        renderHistory();
+        renderVersions();
+        updateSummary();
+      }
+
+      function recalculate() {
+        updateTimelineComputed();
+        updateSummary();
+      }
+
+      function displayNumber(input) {
+        if (input.value === "") return;
+        const number = Number(input.value);
+        if (!Number.isFinite(number)) {
+          input.value = "";
+          return;
+        }
+        if (input.dataset.entryMetric === "spend") {
+          input.value = number.toFixed(2);
+        } else if (Number.isInteger(number)) {
+          input.value = String(number);
+        }
+      }
+
+      function handleEntryInput(event) {
+        const input = event.target.closest("[data-entry-product]");
+        if (!input) return;
+        const day = currentDay();
+        const value = input.value === "" ? null : Number(input.value);
+        if (value !== null && (!Number.isFinite(value) || value < 0)) return;
+        setEntryValue(
+          day,
+          input.dataset.entryProduct,
+          input.dataset.entryTime,
+          input.dataset.entryMetric,
+          value
+        );
+        recalculate();
+        scheduleSave();
+      }
+
+      function handleEntryChange(event) {
+        const input = event.target.closest("[data-entry-product]");
+        if (!input) return;
+        displayNumber(input);
+      }
+
+      function setActiveTab(tab) {
+        for (const item of els.tabs) {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          item.tabIndex = selected ? 0 : -1;
+          const panel = document.getElementById(item.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !selected;
+        }
+        tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+
+      function tabByPanel(panelId) {
+        return els.tabs.find((tab) => tab.getAttribute("aria-controls") === panelId);
+      }
+
+      function nextVersionLabel() {
+        const max = store.versions.reduce((highest, version) => {
+          const match = /^v1\.(\d+)$/.exec(version.label || "");
+          return match ? Math.max(highest, Number(match[1])) : highest;
+        }, 0);
+        return `v1.${max + 1}`;
+      }
+
+      function currentVersionSnapshot(day) {
+        return clone({
+          date: day.date,
+          start: day.start,
+          goals: day.goals,
+          budgets: day.budgets,
+          baselineSeeded: day.baselineSeeded,
+          entries: day.entries
+        });
+      }
+
+      function saveVersion(note = "") {
+        const day = currentDay();
+        const now = new Date();
+        const cleanNote = note.trim() || "手动留档";
+        const version = {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          label: nextVersionLabel(),
+          savedAt: now.toISOString(),
+          note: cleanNote,
+          snapshot: currentVersionSnapshot(day)
+        };
+        store.versions.push(version);
+        saveStore(false);
+        renderVersions();
+        els.saveState.textContent = `已保存 ${version.label}`;
+      }
+
+      function versionTotals(snapshot) {
+        const day = normalizeDay(snapshot, snapshot.date || DEFAULT_DATE);
+        const onoTotal = latestRecorded(day, "ono3p", "totalOrders");
+        const onoAd = latestRecorded(day, "ono3p", "adOrders");
+        const l61Total = latestRecorded(day, "l61p", "totalOrders");
+        const l61Ad = latestRecorded(day, "l61p", "adOrders");
+        return {
+          ono3p: {
+            clicks: latestRecorded(day, "ono3p", "clicks").value,
+            spend: latestRecorded(day, "ono3p", "spend").value,
+            totalOrders: onoTotal.value,
+            adOrders: onoAd.value,
+            naturalOrders: onoTotal.hasValue && onoAd.hasValue
+              ? Math.max(0, onoTotal.value - onoAd.value)
+              : null
+          },
+          l61p: {
+            clicks: latestRecorded(day, "l61p", "clicks").value,
+            spend: latestRecorded(day, "l61p", "spend").value,
+            totalOrders: l61Total.value,
+            adOrders: l61Ad.value,
+            naturalOrders: l61Total.hasValue && l61Ad.hasValue
+              ? Math.max(0, l61Total.value - l61Ad.value)
+              : null
+          }
+        };
+      }
+
+      function renderVersions() {
+        const versions = [...store.versions].sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+        els.versionSummary.textContent = versions.length
+          ? `共 ${versions.length} 个版本，最早 ${formatSavedAt(versions[versions.length - 1].savedAt)}`
+          : "还没有保存版本";
+        els.versionEmpty.hidden = versions.length > 0;
+
+        els.versionBody.replaceChildren(...versions.map((version) => {
+          const totals = versionTotals(version.snapshot || {});
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <th scope="row"><span class="version-label">${escapeHtml(version.label)}</span></th>
+            <td data-label="保存时间">${formatSavedAt(version.savedAt)}</td>
+            <td data-label="说明"><span class="version-note" title="${escapeHtml(version.note || "")}">${escapeHtml(version.note || "手动留档")}</span></td>
+            <td class="num" data-label="ONO3P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.ono3p.clicks)} / ${moneyFormat.format(totals.ono3p.spend)} / ${countText(totals.ono3p.totalOrders)}（${countText(totals.ono3p.adOrders)} / ${countText(totals.ono3p.naturalOrders)}）</td>
+            <td class="num" data-label="L61P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.l61p.clicks)} / ${moneyFormat.format(totals.l61p.spend)} / ${countText(totals.l61p.totalOrders)}（${countText(totals.l61p.adOrders)} / ${countText(totals.l61p.naturalOrders)}）</td>
+            <td data-label="操作"><button class="button-text" type="button" data-restore-version="${escapeHtml(version.id)}">载入此版</button></td>
+          `;
+          return tr;
+        }));
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function countText(value) {
+        return value === null || value === undefined || !Number.isFinite(Number(value))
+          ? "—"
+          : clickFormat.format(Number(value));
+      }
+
+      function formatSavedAt(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "—";
+        return new Intl.DateTimeFormat("zh-CN", {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23"
+        }).format(date);
+      }
+
+      function restoreVersion(id) {
+        const version = store.versions.find((item) => item.id === id);
+        if (!version || !version.snapshot) return;
+        const day = currentDay();
+        const safetyVersion = {
+          id: `${Date.now()}-safety`,
+          label: nextVersionLabel(),
+          savedAt: new Date().toISOString(),
+          note: `载入 ${version.label} 前的自动留档`,
+          snapshot: currentVersionSnapshot(day)
+        };
+        store.versions.push(safetyVersion);
+        const snapshot = clone(version.snapshot);
+        activeDate = snapshot.date || activeDate;
+        store.activeDate = activeDate;
+        store.days[activeDate] = normalizeDay(snapshot, activeDate);
+        if (snapshot.baselineSeeded === undefined) {
+          store.days[activeDate].baselineSeeded = true;
+        }
+        saveStore(false);
+        renderAll();
+        setActiveTab(tabByPanel("panel-today"));
+        els.saveState.textContent = `已载入 ${version.label}`;
+      }
+
+      function openSaveDialog() {
+        els.versionNote.value = "";
+        els.saveVersionDialog.showModal();
+      }
+
+      function exportBackup() {
+        saveStore(false);
+        const blob = new Blob([JSON.stringify(store, null, 2)], {
+          type: "application/json;charset=utf-8"
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ONO3P_L61P_点击花费速度_备份_${activeDate}.json`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportDayCsv() {
+        const day = currentDay();
+        const slots = generatedSlots(day);
+        const rows = [
+          ["日期", day.date],
+          ["开始盯盘（中国时间）", day.start],
+          ["开始盯盘（DE时间）", germanyTimeLabel(day.date, minutesFromTime(day.start))],
+          ["说明", "中国时间为录入口径；DE 时间按欧洲柏林时区自动换算；累计值按广告后台当日累计录入"],
+          ["ONO3P每日广告额度(EUR)", Number(day.budgets.ono3p).toFixed(2)],
+          ["ONO3P额度实际花费(EUR)", latestRecorded(day, "ono3p", "spend").value.toFixed(2)],
+          ["L61P每日广告额度(EUR)", Number(day.budgets.l61p).toFixed(2)],
+          ["L61P额度实际花费(EUR)", latestRecorded(day, "l61p", "spend").value.toFixed(2)],
+          [],
+          [
+            "中国时间",
+            "DE时间",
+            "ONO3P点击累计",
+            "ONO3P点击速度(次/小时)",
+            "ONO3P花费累计(EUR)",
+            "ONO3P花费速度(EUR/小时)",
+            "ONO3P总单累计",
+            "ONO3P总单速度(单/小时)",
+            "ONO3P广告单累计",
+            "ONO3P广告单速度(单/小时)",
+            "ONO3P自然单累计",
+            "ONO3P自然单速度(单/小时)",
+            "ONO3P广告单占比(%)",
+            "L61P点击累计",
+            "L61P点击速度(次/小时)",
+            "L61P花费累计(EUR)",
+            "L61P花费速度(EUR/小时)",
+            "L61P总单累计",
+            "L61P总单速度(单/小时)",
+            "L61P广告单累计",
+            "L61P广告单速度(单/小时)",
+            "L61P自然单累计",
+            "L61P自然单速度(单/小时)",
+            "L61P广告单占比(%)"
+          ]
+        ];
+        for (const minutes of slots) {
+          const time = timeFromMinutes(minutes);
+          const values = [];
+          for (const productKey of ["ono3p", "l61p"]) {
+            const directSeries = {
+              clicks: metricSeries(day, productKey, "clicks"),
+              spend: metricSeries(day, productKey, "spend"),
+              totalOrders: metricSeries(day, productKey, "totalOrders"),
+              adOrders: metricSeries(day, productKey, "adOrders")
+            };
+            directSeries.naturalOrders = naturalSeries(
+              day,
+              productKey,
+              directSeries.totalOrders,
+              directSeries.adOrders
+            );
+            for (const metric of DIRECT_METRICS) {
+              const row = directSeries[metric].find((item) => item.time === time) ||
+                { value: null, speed: null, kind: "reference" };
+              const isEntered = row.kind === "actual" || row.kind === "start";
+              values.push(isEntered ? Number(row.value).toFixed(metric === "spend" ? 2 : 1) : "");
+              values.push(row.speed === null || !Number.isFinite(row.speed) ? "" : Number(row.speed).toFixed(2));
+            }
+            const naturalRow = directSeries.naturalOrders.find((item) => item.time === time) ||
+              { value: null, speed: null, kind: "reference" };
+            const naturalEntered = naturalRow.kind === "actual" || naturalRow.kind === "start";
+            values.push(naturalEntered ? Number(naturalRow.value).toFixed(1) : "");
+            values.push(naturalRow.speed === null || !Number.isFinite(naturalRow.speed)
+              ? ""
+              : Number(naturalRow.speed).toFixed(2));
+            const totalRow = directSeries.totalOrders.find((item) => item.time === time);
+            const adRow = directSeries.adOrders.find((item) => item.time === time);
+            const share = totalRow && adRow ? orderSharePercent(totalRow.value, adRow.value) : null;
+            values.push(share === null ? "" : Number(share).toFixed(1));
+          }
+          rows.push([slotLabel(minutes), germanyTimeLabel(day.date, minutes), ...values]);
+        }
+        const csv = "\ufeff" + rows
+          .map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(","))
+          .join("\r\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ONO3P_L61P_点击花费速度_${day.date}.csv`;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function importBackup(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          try {
+            const raw = JSON.parse(String(reader.result || ""));
+            if (!raw || raw.schema !== 1 || !raw.days) throw new Error("format");
+            const safety = {
+              id: `${Date.now()}-import-safety`,
+              label: nextVersionLabel(),
+              savedAt: new Date().toISOString(),
+              note: "导入备份前的自动留档",
+              snapshot: currentVersionSnapshot(currentDay())
+            };
+            store.versions.push(safety);
+            const imported = loadStoreObject(raw);
+            imported.versions = [...store.versions, ...imported.versions];
+            store = imported;
+            activeDate = store.activeDate;
+            saveStore(false);
+            renderAll();
+            setActiveTab(tabByPanel("panel-today"));
+            els.saveState.textContent = "备份已导入";
+          } catch (_) {
+            els.saveState.textContent = "这个备份文件读不出来";
+          }
+        });
+        reader.readAsText(file, "utf-8");
+      }
+
+      function loadStoreObject(raw) {
+        const days = {};
+        for (const [date, day] of Object.entries(raw.days || {})) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            const normalized = normalizeDay(day, date);
+            days[date] = date === DEFAULT_DATE && !normalized.baselineSeeded
+              ? seedDefaultBaseline(normalized)
+              : normalized;
+          }
+        }
+        if (!Object.keys(days).length) {
+          days[DEFAULT_DATE] = seedDefaultBaseline(createDay(DEFAULT_DATE, DEFAULT_START));
+        }
+        return {
+          schema: 1,
+          activeDate: days[raw.activeDate] ? raw.activeDate : Object.keys(days)[0],
+          days,
+          versions: Array.isArray(raw.versions)
+            ? raw.versions.filter((version) => version && version.snapshot)
+            : []
+        };
+      }
+
+      function handleDateChange() {
+        const value = els.businessDate.value;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+        saveStore(false);
+        activeDate = value;
+        store.activeDate = value;
+        if (!store.days[value]) {
+          store.days[value] = createDay(value, els.startTime.value || DEFAULT_START);
+          if (value === DEFAULT_DATE) seedDefaultBaseline(store.days[value]);
+        }
+        saveStore(false);
+        renderAll();
+      }
+
+      function handleStartChange() {
+        const value = els.startTime.value;
+        if (!/^\d{2}:\d{2}$/.test(value)) return;
+        const minutes = minutesFromTime(value);
+        if (!Number.isFinite(minutes) || minutes >= END_MINUTES) {
+          els.startTime.value = currentDay().start;
+          return;
+        }
+        const day = currentDay();
+        day.start = value;
+        day.goals = defaultGoals(value);
+        for (const time of Object.keys(day.entries)) {
+          if (minutesFromTime(time) < minutes) delete day.entries[time];
+        }
+        syncGoalInputs();
+        renderAll();
+        scheduleSave();
+      }
+
+      function bindEvents() {
+        els.tabs.forEach((tab, index) => {
+          tab.addEventListener("click", () => setActiveTab(tab));
+          tab.addEventListener("keydown", (event) => {
+            let nextIndex = null;
+            if (event.key === "ArrowRight") nextIndex = (index + 1) % els.tabs.length;
+            if (event.key === "ArrowLeft") nextIndex = (index - 1 + els.tabs.length) % els.tabs.length;
+            if (event.key === "Home") nextIndex = 0;
+            if (event.key === "End") nextIndex = els.tabs.length - 1;
+            if (nextIndex === null) return;
+            event.preventDefault();
+            setActiveTab(els.tabs[nextIndex]);
+            els.tabs[nextIndex].focus();
+          });
+        });
+
+        document.querySelectorAll("[data-open-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            setActiveTab(tabByPanel("panel-history"));
+            const productKey = button.dataset.openHistory;
+            goalInputs[productKey].clicks.focus();
+          });
+        });
+
+        els.businessDate.addEventListener("change", handleDateChange);
+        els.startTime.addEventListener("change", handleStartChange);
+        els.timelineBody.addEventListener("input", handleEntryInput);
+        els.timelineBody.addEventListener("change", handleEntryChange);
+        els.timelineBody.addEventListener("focusout", (event) => {
+          const input = event.target.closest("[data-entry-product]");
+          if (input) displayNumber(input);
+        });
+
+        document.querySelectorAll("[data-goal-product]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const value = Number(input.value);
+            if (input.value === "" || !Number.isFinite(value) || value < 0) return;
+            currentDay().goals[input.dataset.goalProduct][input.dataset.goalMetric] = value;
+            recalculate();
+            scheduleSave();
+          });
+          input.addEventListener("change", () => {
+            const value = Number(input.value);
+            if (input.dataset.goalMetric === "clicks") input.value = value.toFixed(1);
+            else input.value = value.toFixed(2);
+          });
+        });
+
+        document.querySelectorAll("[data-budget-product]").forEach((input) => {
+          input.addEventListener("input", () => {
+            const value = input.value === "" ? 0 : Number(input.value);
+            if (!Number.isFinite(value) || value < 0) return;
+            currentDay().budgets[input.dataset.budgetProduct] = value;
+            updateSummary();
+            scheduleSave();
+          });
+          input.addEventListener("change", () => {
+            const value = input.value === "" ? 0 : Number(input.value);
+            if (Number.isFinite(value) && value >= 0) input.value = value.toFixed(2);
+          });
+        });
+
+        document.getElementById("jumpEntryButton").addEventListener("click", () => {
+          setActiveTab(tabByPanel("panel-today"));
+          const firstBlank = els.timelineBody.querySelector("[data-entry-product]:not([readonly])");
+          els.timelineSection.scrollIntoView({ block: "start", behavior: "smooth" });
+          if (firstBlank) firstBlank.focus({ preventScroll: true });
+        });
+        document.getElementById("saveVersionButton").addEventListener("click", openSaveDialog);
+        document.getElementById("saveVersionInline").addEventListener("click", openSaveDialog);
+        document.getElementById("exportButton").addEventListener("click", exportDayCsv);
+        document.getElementById("backupButton").addEventListener("click", exportBackup);
+        document.getElementById("importButton").addEventListener("click", () => els.importFile.click());
+        els.importFile.addEventListener("change", () => {
+          importBackup(els.importFile.files && els.importFile.files[0]);
+          els.importFile.value = "";
+        });
+        document.getElementById("restoreGoalButton").addEventListener("click", () => {
+          const day = currentDay();
+          day.goals = defaultGoals(day.start);
+          syncGoalInputs();
+          recalculate();
+          scheduleSave();
+        });
+
+        els.saveVersionForm.addEventListener("submit", (event) => {
+          if (event.submitter && event.submitter.value === "save") {
+            event.preventDefault();
+            saveVersion(els.versionNote.value);
+            els.saveVersionDialog.close("saved");
+          }
+        });
+        els.saveVersionDialog.addEventListener("close", () => {
+          els.saveVersionDialog.returnValue = "";
+        });
+
+        els.versionBody.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-restore-version]");
+          if (button) restoreVersion(button.dataset.restoreVersion);
+        });
+
+        if (!("closedBy" in HTMLDialogElement.prototype)) {
+          const dialog = els.saveVersionDialog;
+          let pressedOutside = false;
+          const isOutside = (event) => {
+            const rect = dialog.getBoundingClientRect();
+            return event.clientX < rect.left || event.clientX > rect.right ||
+              event.clientY < rect.top || event.clientY > rect.bottom;
+          };
+          dialog.addEventListener("pointerdown", (event) => {
+            pressedOutside = isOutside(event);
+          });
+          dialog.addEventListener("pointerup", (event) => {
+            if (pressedOutside && isOutside(event)) dialog.close();
+            pressedOutside = false;
+          });
+        }
+      }
+
+      function initializeVersions() {
+        if (store.versions.length) return;
+        const day = currentDay();
+        store.versions.push({
+          id: `${Date.now()}-initial`,
+          label: "v1.0",
+          savedAt: new Date("2026-11-27T14:30:00+08:00").toISOString(),
+          note: "初始版：公开版已建立当日录入起点，等待填写累计值",
+          snapshot: currentVersionSnapshot(day)
+        });
+        saveStore(false);
+      }
+
+      bindEvents();
+      initializeVersions();
+      renderAll();
+      saveStore(false);
+    })();
+  </script>
+</body>
+</html>
