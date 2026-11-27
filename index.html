@@ -132,12 +132,6 @@
       font-size: 12px;
     }
 
-    .public-notice {
-      margin: 7px 0 0;
-      color: var(--ink-2);
-      font-size: 12px;
-    }
-
     .top-actions {
       display: flex;
       align-items: center;
@@ -842,6 +836,273 @@
       background: var(--bad);
     }
 
+    .decision-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(280px, .8fr);
+      gap: 24px;
+      align-items: stretch;
+      padding-top: 6px;
+    }
+
+    .decision-form {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .form-field > label {
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .form-field > small {
+      color: var(--ink-3);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .form-field input[readonly] {
+      background: var(--surface-2);
+      color: var(--ink-2);
+      cursor: default;
+    }
+
+    .input-with-unit {
+      position: relative;
+    }
+
+    .input-with-unit input,
+    .input-with-unit select {
+      padding-right: 38px;
+    }
+
+    .input-with-unit > span {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      color: var(--ink-3);
+      font-size: 12px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .form-action {
+      display: flex;
+      align-items: end;
+    }
+
+    .form-action .button-secondary {
+      width: 100%;
+      min-height: 34px;
+    }
+
+    .form-action .button-secondary:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .decision-answer {
+      display: grid;
+      align-content: start;
+      gap: 7px;
+      min-height: 100%;
+      border-left: 1px solid var(--line);
+      padding: 3px 0 3px 24px;
+    }
+
+    .answer-label {
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .answer-value {
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 500;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .answer-value.is-good {
+      color: var(--ok);
+    }
+
+    .answer-value.is-bad {
+      color: var(--bad);
+    }
+
+    .answer-detail {
+      min-height: 42px;
+      margin-bottom: 2px;
+      color: var(--ink-2);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .answer-breakdown {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .answer-breakdown div {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .answer-breakdown dt,
+    .answer-breakdown dd {
+      margin: 0;
+    }
+
+    .answer-breakdown dd {
+      color: var(--ink);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .locked-rule {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      border-radius: var(--r-chip);
+      padding: 1px 8px;
+      background: var(--surface-2);
+      color: var(--ink-2);
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .budget-tier-wrap {
+      margin-top: 18px;
+      max-width: 600px;
+      border-top: 1px solid var(--line);
+    }
+
+    .budget-tier-table {
+      min-width: 420px;
+    }
+
+    .budget-tier-table th,
+    .budget-tier-table td {
+      height: 36px;
+    }
+
+    .budget-tier-table tr.is-selected th,
+    .budget-tier-table tr.is-selected td {
+      background: rgb(40 40 48 / .07);
+      color: var(--ink);
+    }
+
+    .click-controls {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .click-ratio-field {
+      display: grid;
+      gap: 4px;
+      width: min(260px, 100%);
+    }
+
+    .click-ratio-field label {
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .click-summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px 18px;
+      color: var(--ink-3);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .click-summary strong {
+      color: var(--ink);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .click-check-table {
+      min-width: 820px;
+    }
+
+    .click-check-table th:nth-child(1) {
+      width: 94px;
+    }
+
+    .click-check-table th:nth-child(2) {
+      width: 86px;
+    }
+
+    .click-actual-input {
+      width: 100px;
+      min-height: 30px;
+      border-color: var(--control);
+      text-align: right;
+    }
+
+    .click-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 22px;
+      border-radius: var(--r-chip);
+      padding: 1px 7px;
+      background: var(--surface-2);
+      color: var(--ink-2);
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .click-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ink-3);
+    }
+
+    .click-status.is-ok {
+      background: var(--ok-tint);
+      color: var(--ok);
+    }
+
+    .click-status.is-ok::before {
+      background: var(--ok);
+    }
+
+    .click-status.is-bad {
+      background: var(--bad-tint);
+      color: var(--bad);
+    }
+
+    .click-status.is-bad::before {
+      background: var(--bad);
+    }
+
     .history-table {
       min-width: 880px;
     }
@@ -1082,6 +1343,17 @@
       .history-targets {
         grid-template-columns: 1fr;
       }
+
+      .decision-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-answer {
+        min-height: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+        padding: 20px 0 0;
+      }
     }
 
     @media (max-width: 760px) {
@@ -1179,7 +1451,9 @@
 
       .timeline-table,
       .history-table,
-      .version-table {
+      .version-table,
+      .click-check-table,
+      .budget-tier-table {
         min-width: 0;
       }
 
@@ -1200,13 +1474,27 @@
       .version-table tr,
       .version-table th,
       .version-table td,
-      .version-table thead {
+      .version-table thead,
+      .click-check-table,
+      .click-check-table tbody,
+      .click-check-table tr,
+      .click-check-table th,
+      .click-check-table td,
+      .click-check-table thead,
+      .budget-tier-table,
+      .budget-tier-table tbody,
+      .budget-tier-table tr,
+      .budget-tier-table th,
+      .budget-tier-table td,
+      .budget-tier-table thead {
         display: block;
       }
 
       .timeline-table thead,
       .history-table thead,
-      .version-table thead {
+      .version-table thead,
+      .click-check-table thead,
+      .budget-tier-table thead {
         display: none;
       }
 
@@ -1329,7 +1617,9 @@
       }
 
       .history-table tbody tr,
-      .version-table tbody tr {
+      .version-table tbody tr,
+      .click-check-table tbody tr,
+      .budget-tier-table tbody tr {
         padding: 12px 0;
         border-bottom: 1px solid var(--line);
       }
@@ -1337,7 +1627,11 @@
       .history-table th,
       .history-table td,
       .version-table th,
-      .version-table td {
+      .version-table td,
+      .click-check-table th,
+      .click-check-table td,
+      .budget-tier-table th,
+      .budget-tier-table td {
         height: auto;
         border-bottom: 0;
         padding: 4px 0;
@@ -1359,6 +1653,45 @@
 
       .target-group-title {
         grid-column: 1 / -1;
+      }
+
+      .decision-form {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .form-field:first-child,
+      .form-field:nth-child(4),
+      .form-action {
+        grid-column: 1 / -1;
+      }
+
+      .click-controls {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .click-summary {
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .click-actual-input {
+        width: 100%;
+        max-width: 140px;
+      }
+
+      .click-check-table td::before,
+      .budget-tier-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 2px;
+        color: var(--ink-3);
+        font-size: 11px;
+        text-align: left;
+      }
+
+      .budget-tier-wrap {
+        max-width: none;
       }
 
       .history-callout,
@@ -1393,9 +1726,8 @@
   <main class="page">
     <header class="topbar">
       <div class="title-block">
-        <h1>ONO3P / L61P 点击花费出单速度 · 公开版</h1>
-        <p class="subtitle" id="subtitle">德国站 · 中国时间 14:30 / DE 07:30 起记录当日累计</p>
-        <p class="public-notice">公开版不含公司业务数据，录入数据仅保存在访问者自己的浏览器。</p>
+        <h1>ONO3P / L61P 点击花费出单速度</h1>
+        <p class="subtitle" id="subtitle">德国站 · 中国时间与 DE 时间对照记录当日累计</p>
       </div>
       <div class="top-actions">
         <button id="saveVersionButton" class="button-secondary" type="button">保存版本</button>
@@ -1405,6 +1737,7 @@
 
     <nav class="tabs" role="tablist" aria-label="页面内容">
       <button class="tab" id="tab-today" role="tab" type="button" aria-selected="true" aria-controls="panel-today" tabindex="0">今日盯盘</button>
+      <button class="tab" id="tab-click-check" role="tab" type="button" aria-selected="false" aria-controls="panel-click-check" tabindex="-1">点击达标与投放</button>
       <button class="tab" id="tab-history" role="tab" type="button" aria-selected="false" aria-controls="panel-history" tabindex="-1">历史参照</button>
       <button class="tab" id="tab-versions" role="tab" type="button" aria-selected="false" aria-controls="panel-versions" tabindex="-1">版本记录</button>
     </nav>
@@ -1413,20 +1746,20 @@
       <div class="controls">
         <div class="field">
           <label for="businessDate">日期</label>
-          <input id="businessDate" type="date" value="2026-11-27">
+          <input id="businessDate" type="date">
         </div>
         <div class="field">
           <label for="startTime">开始盯盘（中国时间）</label>
           <input id="startTime" type="time" value="14:30" step="60">
         </div>
-        <div class="context-line" id="windowSummary">2026-11-27 · 中国 14:30 到 24:00（DE 07:30 到 17:00）· 共 9.5 小时</div>
+        <div class="context-line" id="windowSummary">按中国时间录入，DE 时间自动换算</div>
         <button id="exportButton" class="button-secondary" type="button">导出当天</button>
       </div>
 
       <div class="insight">
         <div class="insight-copy">
           <span class="status-dot" id="insightDot" aria-hidden="true"></span>
-          <p id="insightText" aria-live="polite">从 14:30 起点录入累计点击和花费；再录 15:00 累计值即可算速度。</p>
+          <p id="insightText" aria-live="polite">先录入起点累计值，再按小时录入下一时段累计值，即可计算速度。</p>
         </div>
         <span class="save-state" id="saveState" aria-live="polite">已保存在本机</span>
       </div>
@@ -1441,13 +1774,13 @@
               </div>
               <button class="button-text target-link" type="button" data-open-history="ono3p">改历史参照</button>
             </div>
-            <span class="product-time" id="onoLatestTime">14:30 起点</span>
+            <span class="product-time" id="onoLatestTime">等待第一次录入</span>
           </div>
           <div class="metrics">
             <div class="metric">
               <span class="metric-label">累计点击</span>
               <strong class="metric-value" id="onoCurrentClicks">0</strong>
-              <span class="metric-detail" id="onoClicksDetail">从 14:30 起</span>
+              <span class="metric-detail" id="onoClicksDetail">从起点开始</span>
             </div>
             <div class="metric">
               <span class="metric-label">点击速度</span>
@@ -1462,7 +1795,7 @@
             <div class="metric">
               <span class="metric-label">累计花费</span>
               <strong class="metric-value" id="onoCurrentSpend">€0.00</strong>
-              <span class="metric-detail" id="onoSpendDetail">从 14:30 起</span>
+              <span class="metric-detail" id="onoSpendDetail">从起点开始</span>
             </div>
             <div class="metric">
               <span class="metric-label">花费速度</span>
@@ -1500,7 +1833,7 @@
                 <span>€</span>
                 <input id="onoBudget" data-budget-product="ono3p" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="onoBudgetDetail">
               </div>
-              <span class="metric-detail" id="onoBudgetDetail">可自行填写每日额度</span>
+              <span class="metric-detail" id="onoBudgetDetail">手动参照日均，可修改</span>
             </div>
             <div class="metric">
               <span class="metric-label">额度实际花费</span>
@@ -1519,13 +1852,13 @@
               </div>
               <button class="button-text target-link" type="button" data-open-history="l61p">改历史参照</button>
             </div>
-            <span class="product-time" id="l61LatestTime">14:30 起点</span>
+            <span class="product-time" id="l61LatestTime">等待第一次录入</span>
           </div>
           <div class="metrics">
             <div class="metric">
               <span class="metric-label">累计点击</span>
               <strong class="metric-value" id="l61CurrentClicks">0</strong>
-              <span class="metric-detail" id="l61ClicksDetail">从 14:30 起</span>
+              <span class="metric-detail" id="l61ClicksDetail">从起点开始</span>
             </div>
             <div class="metric">
               <span class="metric-label">点击速度</span>
@@ -1540,7 +1873,7 @@
             <div class="metric">
               <span class="metric-label">累计花费</span>
               <strong class="metric-value" id="l61CurrentSpend">€0.00</strong>
-              <span class="metric-detail" id="l61SpendDetail">从 14:30 起</span>
+              <span class="metric-detail" id="l61SpendDetail">从起点开始</span>
             </div>
             <div class="metric">
               <span class="metric-label">花费速度</span>
@@ -1578,7 +1911,7 @@
                 <span>€</span>
                 <input id="l61Budget" data-budget-product="l61p" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="l61BudgetDetail">
               </div>
-              <span class="metric-detail" id="l61BudgetDetail">可自行填写每日额度</span>
+              <span class="metric-detail" id="l61BudgetDetail">手动参照日均，可修改</span>
             </div>
             <div class="metric">
               <span class="metric-label">额度实际花费</span>
@@ -1623,11 +1956,164 @@
       </section>
     </section>
 
+    <section class="tab-panel" id="panel-click-check" role="tabpanel" aria-labelledby="tab-click-check" hidden>
+      <section class="section" aria-labelledby="spendDecisionTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="spendDecisionTitle">ONO3P 今日投放判断</h2>
+            <p class="section-note">先用“累计总单 × CPA”算可花金额，再与你填写的每日最高广告额度比较；两个数取较小值。</p>
+          </div>
+          <span class="locked-rule">单量 CPA 与最高额度取较小值</span>
+        </div>
+
+        <div class="decision-layout">
+          <form class="decision-form" id="spendDecisionForm" autocomplete="off">
+            <div class="form-field" id="tierSelectField">
+              <label for="orderTierSelect">今日总单档位</label>
+              <select id="orderTierSelect">
+                <option value="">请选择</option>
+              </select>
+              <small id="orderTierHint">选择后才会套用固定最高广告额度。</small>
+            </div>
+            <div class="form-field" id="manualTierBudgetField" hidden>
+              <label for="manualTierBudgetInput">每日最高广告额度</label>
+              <div class="input-with-unit">
+                <input id="manualTierBudgetInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填人民币金额">
+                <span>元</span>
+              </div>
+              <small>填写本产品当天的最高广告额度，再与单量 CPA 取较小值。</small>
+            </div>
+            <div class="form-field">
+              <label for="cpaInput">单均 CPA</label>
+              <div class="input-with-unit">
+                <input id="cpaInput" type="number" min="0.01" step="0.01" inputmode="decimal" value="39" aria-describedby="cpaHint">
+                <span>元</span>
+              </div>
+              <small id="cpaHint">默认 39 元/单，可按自己的口径修改。</small>
+            </div>
+            <div class="form-field">
+              <label for="currentTotalOrders">当前累计总单</label>
+              <input id="currentTotalOrders" type="text" readonly aria-describedby="currentTotalOrdersHint">
+              <small id="currentTotalOrdersHint">自动取今日盯盘里最新录入的总单。</small>
+            </div>
+            <div class="form-field">
+              <label for="latestEuroSpend">广告后台累计花费</label>
+              <div class="input-with-unit">
+                <input id="latestEuroSpend" type="text" readonly>
+                <span>€</span>
+              </div>
+              <small>自动取最新欧元花费，不会直接当作人民币。</small>
+            </div>
+            <div class="form-field">
+              <label for="exchangeRateInput">欧元兑人民币汇率</label>
+              <input id="exchangeRateInput" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="选填，例如 8.20" aria-describedby="exchangeRateHint">
+              <small id="exchangeRateHint">填写后可按最新欧元花费换算人民币。</small>
+            </div>
+            <div class="form-field">
+              <label for="actualSpendCnyInput">当前实际广告花费</label>
+              <div class="input-with-unit">
+                <input id="actualSpendCnyInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填人民币金额">
+                <span>元</span>
+              </div>
+              <small id="actualSpendCnyHint">可直接填，也可用右侧按钮按汇率换算。</small>
+            </div>
+            <div class="form-action">
+              <button id="convertSpendButton" class="button-secondary" type="button" disabled>按汇率换算最新花费</button>
+            </div>
+          </form>
+
+          <aside class="decision-answer" aria-live="polite" aria-atomic="true">
+            <span class="answer-label">当前结论</span>
+            <strong class="answer-value" id="spendDecision">等待填写</strong>
+            <p class="answer-detail" id="spendDecisionDetail">录入累计总单、选择今日档位并填写实际广告花费后，才会判断超支或可继续投放。</p>
+            <dl class="answer-breakdown">
+              <div>
+                <dt>按单量允许花费</dt>
+                <dd id="cpaAllowedSpend">—</dd>
+              </div>
+              <div>
+                <dt>固定最高额度</dt>
+                <dd id="tierAllowedSpend">—</dd>
+              </div>
+              <div>
+                <dt>最终允许花费</dt>
+                <dd id="finalAllowedSpend">—</dd>
+              </div>
+              <div>
+                <dt>当前实际花费</dt>
+                <dd id="actualSpendCnyDisplay">—</dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+
+        <div class="budget-tier-wrap" id="budgetTierWrap">
+          <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="budgetTierTitle">
+            <table class="budget-tier-table">
+              <caption id="budgetTierTitle">ONO3P 每日总单档位与固定最高广告额度</caption>
+              <thead>
+                <tr>
+                  <th scope="col" class="num">每日总单</th>
+                  <th scope="col" class="num">最高广告额度（人民币）</th>
+                </tr>
+              </thead>
+              <tbody id="budgetTierBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="clickCheckTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="clickCheckTitle">小时点击达标</h2>
+            <p class="section-note" id="clickReferenceNote">按 8 天小时出单均值计算每小时目标点击；实际点击填该小时新增值，不是后台累计值。</p>
+          </div>
+        </div>
+
+        <div class="click-controls">
+          <div class="click-ratio-field">
+            <label for="clicksPerOrderInput">每单所需点击</label>
+            <div class="input-with-unit">
+              <input id="clicksPerOrderInput" type="number" min="0.1" step="0.1" inputmode="decimal" value="33.3" aria-describedby="clicksPerOrderHint">
+              <span>次/单</span>
+            </div>
+            <small class="source-note" id="clicksPerOrderHint">默认 33.3，来自截图 CVR 3%：1 ÷ 3%。</small>
+          </div>
+          <div class="click-summary" id="clickCheckSummary" aria-live="polite">
+            <span>已填 <strong id="clickFilledCount">0</strong> 小时</span>
+            <span>达标 <strong id="clickMetCount">0</strong></span>
+            <span>不达标 <strong id="clickMissedCount">0</strong></span>
+            <span>最大缺口 <strong id="clickLargestGap">—</strong></span>
+          </div>
+        </div>
+
+        <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="clickCheckTitle">
+          <table class="click-check-table">
+            <caption>中国时间和德国时间对照的每小时订单均值、每单所需点击、目标点击、实际点击与达标状态</caption>
+            <thead>
+              <tr>
+                <th scope="col">中国时间</th>
+                <th scope="col">DE 时间</th>
+                <th scope="col" class="num">小时日均订单</th>
+                <th scope="col" class="num">每单所需点击</th>
+                <th scope="col" class="num">目标点击</th>
+                <th scope="col" class="num">实际点击</th>
+                <th scope="col">状态</th>
+              </tr>
+            </thead>
+            <tbody id="clickCheckBody"></tbody>
+          </table>
+        </div>
+        <p class="source-note" id="clickCheckSourceNote">每格目标点击 = 小时日均订单 × 每单所需点击。中国时间为填入口径，DE 时间自动换算，空值不当 0。</p>
+      </section>
+    </section>
+
     <section class="tab-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
       <section class="section" aria-labelledby="historyTargetTitle">
         <div class="section-heading">
           <h2 id="historyTargetTitle">历史参照目标</h2>
-          <p class="section-note">公开版不带历史日均；请按自己的业务填写本次时段要追的点击和花费。</p>
+          <p class="section-note">填写你准备参照的点击和花费目标，按本次时间窗口折算，可直接改成今天真正要追的数。</p>
         </div>
         <div class="history-targets">
           <div class="target-group" aria-label="ONO3P 时段参照">
@@ -1666,19 +2152,19 @@
           </div>
         </div>
         <div class="history-callout">
-          <span>参照目标可随时修改，只保存在当前浏览器。</span>
-          <button id="restoreGoalButton" class="button-text" type="button">清空参照目标</button>
+          <span>公开版不预置历史数据；参照目标和下面的日汇总都由你手动填写。</span>
+          <button id="restoreGoalButton" class="button-text" type="button">恢复默认折算</button>
         </div>
       </section>
 
       <section class="section" aria-labelledby="historyTableTitle">
         <div class="section-heading">
           <h2 id="historyTableTitle">历史日汇总</h2>
-          <p class="section-note">公开版不包含公司历史数据；你保存的每日版本可在“版本记录”里查看和恢复。</p>
+          <p class="section-note">日汇总只保留你手动填写的参照值；今日各时段按录入的累计值计算真实速度。</p>
         </div>
         <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="historyTableTitle">
           <table class="history-table">
-            <caption>公开版不提供历史日数据</caption>
+            <caption>ONO3P 和 L61P 的手动日参照点击、花费与 CPC</caption>
             <thead>
               <tr>
                 <th scope="col">日期</th>
@@ -1702,7 +2188,7 @@
       <section class="section" aria-labelledby="versionsTitle">
         <div class="section-heading">
           <h2 id="versionsTitle">版本记录</h2>
-          <p class="section-note">保存的是当时全部录入值、历史参照和开始时间；恢复前会自动留一份当前版本。</p>
+          <p class="section-note">保存的是当时全部录入值、历史参照、点击达标与投放判断和开始时间；恢复前会自动留一份当前版本。</p>
         </div>
         <div class="version-toolbar">
           <p id="versionSummary">还没有保存版本</p>
@@ -1722,6 +2208,7 @@
                 <th scope="col">说明</th>
                 <th scope="col" class="num">ONO3P 点击 / 花费 / 总单（广告 / 自然）</th>
                 <th scope="col" class="num">L61P 点击 / 花费 / 总单（广告 / 自然）</th>
+                <th scope="col" class="num">点击达标 / 投放判断</th>
                 <th scope="col">操作</th>
               </tr>
             </thead>
@@ -1759,8 +2246,18 @@
     (() => {
       "use strict";
 
-      const STORAGE_KEY = "ono3p-l61p-pace-public-v1";
-      const DEFAULT_DATE = "2026-11-27";
+      const STORAGE_KEY = "ono3p-l61p-pace-v1";
+      const initialDateParts = Object.fromEntries(
+        new Intl.DateTimeFormat("zh-CN", {
+          timeZone: "Asia/Shanghai",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).formatToParts(new Date())
+          .filter((part) => part.type !== "literal")
+          .map((part) => [part.type, part.value])
+      );
+      const DEFAULT_DATE = `${initialDateParts.year}-${initialDateParts.month}-${initialDateParts.day}`;
       const DEFAULT_START = "14:30";
       const END_MINUTES = 24 * 60;
       const PRODUCTS = {
@@ -1775,9 +2272,20 @@
         ono3p: 0,
         l61p: 0
       };
-      const DEFAULT_START_VALUES = {
-        "2026-11-27": {}
-      };
+      const ONO3P_BUDGET_TIERS = Object.freeze([]);
+      const HOURLY_ORDER_REFERENCE = Object.freeze({
+        source: "",
+        startDate: "",
+        endDate: "",
+        dayCount: 0,
+        orderTotal: 0,
+        hourlyTotalOrders: Object.freeze([])
+      });
+      const DEFAULT_CLICKS_PER_ORDER = 33.3;
+      const DEFAULT_CPA = 39;
+      const LOCK_1430_START = false;
+
+      const DEFAULT_START_VALUES = {};
 
       const els = {
         businessDate: document.getElementById("businessDate"),
@@ -1799,6 +2307,36 @@
         saveVersionForm: document.getElementById("saveVersionForm"),
         versionNote: document.getElementById("versionNote"),
         importFile: document.getElementById("importFile"),
+        tierSelectField: document.getElementById("tierSelectField"),
+        orderTierSelect: document.getElementById("orderTierSelect"),
+        orderTierHint: document.getElementById("orderTierHint"),
+        manualTierBudgetField: document.getElementById("manualTierBudgetField"),
+        manualTierBudgetInput: document.getElementById("manualTierBudgetInput"),
+        cpaInput: document.getElementById("cpaInput"),
+        currentTotalOrders: document.getElementById("currentTotalOrders"),
+        currentTotalOrdersHint: document.getElementById("currentTotalOrdersHint"),
+        latestEuroSpend: document.getElementById("latestEuroSpend"),
+        exchangeRateInput: document.getElementById("exchangeRateInput"),
+        exchangeRateHint: document.getElementById("exchangeRateHint"),
+        actualSpendCnyInput: document.getElementById("actualSpendCnyInput"),
+        actualSpendCnyHint: document.getElementById("actualSpendCnyHint"),
+        convertSpendButton: document.getElementById("convertSpendButton"),
+        spendDecision: document.getElementById("spendDecision"),
+        spendDecisionDetail: document.getElementById("spendDecisionDetail"),
+        cpaAllowedSpend: document.getElementById("cpaAllowedSpend"),
+        tierAllowedSpend: document.getElementById("tierAllowedSpend"),
+        finalAllowedSpend: document.getElementById("finalAllowedSpend"),
+        actualSpendCnyDisplay: document.getElementById("actualSpendCnyDisplay"),
+        budgetTierBody: document.getElementById("budgetTierBody"),
+        budgetTierWrap: document.getElementById("budgetTierWrap"),
+        clicksPerOrderInput: document.getElementById("clicksPerOrderInput"),
+        clickCheckBody: document.getElementById("clickCheckBody"),
+        clickFilledCount: document.getElementById("clickFilledCount"),
+        clickMetCount: document.getElementById("clickMetCount"),
+        clickMissedCount: document.getElementById("clickMissedCount"),
+        clickLargestGap: document.getElementById("clickLargestGap"),
+        clickReferenceNote: document.getElementById("clickReferenceNote"),
+        clickCheckSourceNote: document.getElementById("clickCheckSourceNote"),
         tabs: Array.from(document.querySelectorAll('[role="tab"]')),
         panels: Array.from(document.querySelectorAll('[role="tabpanel"]'))
       };
@@ -1849,6 +2387,10 @@
         minimumFractionDigits: 0,
         maximumFractionDigits: 1
       });
+      const orderAverageFormat = new Intl.NumberFormat("zh-CN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
       const speedFormat = new Intl.NumberFormat("zh-CN", {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1
@@ -1856,6 +2398,12 @@
       const moneyFormat = new Intl.NumberFormat("zh-CN", {
         style: "currency",
         currency: "EUR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      const cnyFormat = new Intl.NumberFormat("zh-CN", {
+        style: "currency",
+        currency: "CNY",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
@@ -2007,12 +2555,77 @@
         };
       }
 
+      function defaultClickCheck() {
+        return {
+          clicksPerOrder: DEFAULT_CLICKS_PER_ORDER,
+          actualClicks: {},
+          hourlyOrders: {},
+          cpa: DEFAULT_CPA,
+          selectedOrderTier: null,
+          manualTierBudget: null,
+          actualSpendCny: null,
+          exchangeRate: null
+        };
+      }
+
+      function normalizeClickCheck(raw) {
+        const clickCheck = defaultClickCheck();
+        if (!raw || typeof raw !== "object") return clickCheck;
+
+        const clicksPerOrder = Number(raw.clicksPerOrder);
+        if (Number.isFinite(clicksPerOrder) && clicksPerOrder > 0) {
+          clickCheck.clicksPerOrder = clicksPerOrder;
+        }
+
+        const cpa = Number(raw.cpa);
+        if (Number.isFinite(cpa) && cpa > 0) clickCheck.cpa = cpa;
+
+        const selectedTier = Number(raw.selectedOrderTier);
+        if (ONO3P_BUDGET_TIERS.some((tier) => tier.orders === selectedTier)) {
+          clickCheck.selectedOrderTier = selectedTier;
+        }
+
+        const manualTierBudget = raw.manualTierBudget === "" || raw.manualTierBudget === null
+          ? null
+          : Number(raw.manualTierBudget);
+        if (manualTierBudget !== null && Number.isFinite(manualTierBudget) && manualTierBudget >= 0) {
+          clickCheck.manualTierBudget = manualTierBudget;
+        }
+
+        const actualSpend = raw.actualSpendCny === "" || raw.actualSpendCny === null
+          ? null
+          : Number(raw.actualSpendCny);
+        if (actualSpend !== null && Number.isFinite(actualSpend) && actualSpend >= 0) {
+          clickCheck.actualSpendCny = actualSpend;
+        }
+
+        const exchangeRate = raw.exchangeRate === "" || raw.exchangeRate === null
+          ? null
+          : Number(raw.exchangeRate);
+        if (exchangeRate !== null && Number.isFinite(exchangeRate) && exchangeRate > 0) {
+          clickCheck.exchangeRate = exchangeRate;
+        }
+
+        const actualClicks = raw.actualClicks;
+        const hourlyOrders = raw.hourlyOrders;
+        for (let hour = 0; hour < 24; hour += 1) {
+          const key = pad(hour);
+          for (const [source, target] of [[actualClicks, clickCheck.actualClicks], [hourlyOrders, clickCheck.hourlyOrders]]) {
+            const value = source && source[key] !== undefined ? source[key] : null;
+            const number = value === "" || value === null ? null : Number(value);
+            if (number !== null && Number.isFinite(number) && number >= 0) target[key] = number;
+          }
+        }
+        return clickCheck;
+      }
+
       function createDay(date, start = DEFAULT_START) {
         return {
           date,
           start,
           goals: defaultGoals(start),
           budgets: defaultBudgets(),
+          clickCheck: defaultClickCheck(),
           baselineSeeded: false,
           entries: {}
         };
@@ -2062,6 +2675,7 @@
             day.budgets[productKey] = value;
           }
         }
+        day.clickCheck = normalizeClickCheck(raw.clickCheck);
         if (raw.entries && typeof raw.entries === "object") {
           for (const [time, entry] of Object.entries(raw.entries)) {
             if (!/^\d{2}:\d{2}$/.test(time) || !entry || typeof entry !== "object") continue;
@@ -2395,6 +3009,7 @@
         const inputValue = entered
           ? (metric !== "spend" ? clickFormat.format(row.value) : Number(row.value).toFixed(2))
           : "";
+        const isLockedStart = LOCK_1430_START && isStart && row.time === "14:30";
         return `
           <td class="num" data-label="${productLabel} ${metricName}">
             <div class="cell-stack">
@@ -2412,7 +3027,8 @@
                 step="${metric !== "spend" ? "1" : "0.01"}"
                 inputmode="decimal"
                 value="${inputValue}"
-                placeholder="${isStart && !entered ? "录起点" : `预计 ${formattedProjection}`}"
+                ${isLockedStart ? 'readonly title="14:30 起点固定，不能编辑"' : ""}
+                placeholder="${isLockedStart ? "固定值" : isStart && !entered ? "录起点" : `预计 ${formattedProjection}`}"
               >
             </div>
           </td>
@@ -2434,6 +3050,7 @@
               ? `预计 ${clickFormat.format(naturalRow.value)}`
               : "—";
         const timeId = totalRow.time.replace(":", "");
+        const isLockedStart = LOCK_1430_START && isStart && totalRow.time === "14:30";
         return `
           <td class="num" data-label="${productLabel} 出单拆分（总单 / 广告单 / 自然单）">
             <div class="order-entry-grid">
@@ -2450,7 +3067,8 @@
                   step="1"
                   inputmode="numeric"
                   value="${totalValue}"
-                  placeholder="${isStart ? "录起点" : `预计 ${clickFormat.format(totalRow.value)}`}"
+                  ${isLockedStart ? 'readonly title="14:30 起点固定，不能编辑"' : ""}
+                  placeholder="${isLockedStart ? "固定值" : isStart ? "录起点" : `预计 ${clickFormat.format(totalRow.value)}`}"
                 >
               </label>
               <label class="order-entry">
@@ -2466,7 +3084,8 @@
                   step="1"
                   inputmode="numeric"
                   value="${adValue}"
-                  placeholder="${isStart ? "录起点" : `预计 ${clickFormat.format(adRow.value)}`}"
+                  ${isLockedStart ? 'readonly title="14:30 起点固定，不能编辑"' : ""}
+                  placeholder="${isLockedStart ? "固定值" : isStart ? "录起点" : `预计 ${clickFormat.format(adRow.value)}`}"
                 >
               </label>
               <span class="order-derived${invalid ? " is-invalid" : ""}" data-natural-wrap="${productKey}">
@@ -2793,7 +3412,7 @@
           if (document.activeElement !== ui.budget) {
             ui.budget.value = summary.budget.toFixed(2);
           }
-          ui.budgetDetail.textContent = "可自行填写每日额度";
+          ui.budgetDetail.textContent = "手动参照日均，可修改";
           ui.budgetActual.textContent = moneyFormat.format(summary.latestSpend.value);
 
           const budgetUsage = summary.budget > 0
@@ -2856,13 +3475,6 @@
       }
 
       function renderHistory() {
-        if (!HISTORY.length) {
-          const emptyRow = document.createElement("tr");
-          emptyRow.innerHTML = '<td class="empty-state" colspan="7">公开版不含公司历史数据；你保存的每日版本可在“版本记录”里查看和恢复。</td>';
-          els.historyBody.replaceChildren(emptyRow);
-          els.historyFoot.replaceChildren();
-          return;
-        }
         els.historyBody.replaceChildren(...HISTORY.map((row) => {
           const tr = document.createElement("tr");
           const statusBadge = row.complete
@@ -2900,7 +3512,7 @@
 
         const footRow = document.createElement("tr");
         footRow.innerHTML = `
-          <th scope="row">历史日均</th>
+          <th scope="row">手动参照日均</th>
           <td class="num" data-label="ONO3P 点击">${clickFormat.format(averages.ono3p.clicks)}</td>
           <td class="num" data-label="ONO3P 花费">${moneyFormat.format(averages.ono3p.spend)}</td>
           <td class="num" data-label="ONO3P CPC">${cpcText(totals.ono3p)}</td>
@@ -2913,6 +3525,272 @@
 
       function cpcText(row) {
         return row.clicks > 0 ? moneyFormat.format(row.spend / row.clicks) : "—";
+      }
+
+      function selectedBudgetTier(clickCheck) {
+        return ONO3P_BUDGET_TIERS.find((tier) => tier.orders === clickCheck.selectedOrderTier) || null;
+      }
+
+      function referenceHourOrderAverage(day, hour) {
+        const values = HOURLY_ORDER_REFERENCE.hourlyTotalOrders;
+        if (Array.isArray(values) && values.length === 24 && HOURLY_ORDER_REFERENCE.dayCount > 0) {
+          const total = Number(values[hour]);
+          if (Number.isFinite(total) && total >= 0) {
+            return total / HOURLY_ORDER_REFERENCE.dayCount;
+          }
+        }
+        const manual = Number(day.clickCheck.hourlyOrders[pad(hour)]);
+        return Number.isFinite(manual) && manual >= 0 ? manual : null;
+      }
+
+      function renderBudgetTiers() {
+        const clickCheck = currentDay().clickCheck;
+        const hasFixedTiers = ONO3P_BUDGET_TIERS.length > 0;
+        els.tierSelectField.hidden = !hasFixedTiers;
+        els.manualTierBudgetField.hidden = hasFixedTiers;
+        els.budgetTierWrap.hidden = !hasFixedTiers;
+
+        if (!hasFixedTiers) {
+          els.orderTierSelect.replaceChildren(new Option("请选择", ""));
+          els.budgetTierBody.replaceChildren();
+          els.manualTierBudgetInput.value = clickCheck.manualTierBudget === null
+            ? ""
+            : Number(clickCheck.manualTierBudget).toFixed(2);
+          return;
+        }
+
+        const options = [new Option("请选择", "")];
+        for (const tier of ONO3P_BUDGET_TIERS) {
+          options.push(new Option(`${tier.orders} 单 · ${cnyFormat.format(tier.budget)}`, String(tier.orders)));
+        }
+        els.orderTierSelect.replaceChildren(...options);
+        els.orderTierSelect.value = clickCheck.selectedOrderTier === null
+          ? ""
+          : String(clickCheck.selectedOrderTier);
+
+        els.budgetTierBody.replaceChildren(...ONO3P_BUDGET_TIERS.map((tier) => {
+          const tr = document.createElement("tr");
+          if (tier.orders === clickCheck.selectedOrderTier) tr.className = "is-selected";
+          tr.innerHTML = `
+            <td class="num" data-label="每日总单">${clickFormat.format(tier.orders)}</td>
+            <td class="num" data-label="最高广告额度">${cnyFormat.format(tier.budget)}</td>
+          `;
+          return tr;
+        }));
+      }
+
+      function clickStatusFor(orderAverage, targetClicks, actualClicks) {
+        if (orderAverage === null || targetClicks === null) {
+          return { text: "待填基准", className: "" };
+        }
+        if (actualClicks === null) {
+          return { text: "待填写", className: "" };
+        }
+        if (actualClicks < targetClicks) {
+          return {
+            text: `不达标 · 差 ${clickFormat.format(targetClicks - actualClicks)}`,
+            className: "is-bad"
+          };
+        }
+        return { text: "达标", className: "is-ok" };
+      }
+
+      function updateClickCheckComputed(day) {
+        const clickCheck = day.clickCheck;
+        let filled = 0;
+        let met = 0;
+        let missed = 0;
+        let largestGap = null;
+        const bodyRows = Array.from(els.clickCheckBody.children);
+
+        for (let hour = 0; hour < 24; hour += 1) {
+          const average = referenceHourOrderAverage(day, hour);
+          const target = average === null ? null : average * clickCheck.clicksPerOrder;
+          const actual = clickCheck.actualClicks[pad(hour)] ?? null;
+          const status = clickStatusFor(average, target, actual);
+          if (actual !== null) filled += 1;
+          if (status.className === "is-ok") met += 1;
+          if (status.className === "is-bad") {
+            missed += 1;
+            const gap = target - actual;
+            if (largestGap === null || gap > largestGap.gap) largestGap = { hour, gap };
+          }
+          const badge = bodyRows[hour] && bodyRows[hour].querySelector(".click-status");
+          if (badge) {
+            badge.className = `click-status ${status.className}`;
+            badge.textContent = status.text;
+          }
+        }
+
+        els.clickFilledCount.textContent = String(filled);
+        els.clickMetCount.textContent = String(met);
+        els.clickMissedCount.textContent = String(missed);
+        els.clickLargestGap.textContent = largestGap === null
+          ? "—"
+          : `${pad(largestGap.hour)}:00 差 ${clickFormat.format(largestGap.gap)}`;
+      }
+
+      function renderClickCheck() {
+        const day = currentDay();
+        const clickCheck = day.clickCheck;
+        renderBudgetTiers();
+
+        els.cpaInput.value = Number(clickCheck.cpa).toFixed(2);
+        els.exchangeRateInput.value = clickCheck.exchangeRate === null
+          ? ""
+          : Number(clickCheck.exchangeRate).toFixed(4);
+        els.actualSpendCnyInput.value = clickCheck.actualSpendCny === null
+          ? ""
+          : Number(clickCheck.actualSpendCny).toFixed(2);
+        els.clicksPerOrderInput.value = Number(clickCheck.clicksPerOrder).toFixed(1);
+
+        els.clickReferenceNote.textContent =
+          "先填写每小时日均订单作为基准，再填该小时新增点击；实际点击不是后台累计值。";
+        els.clickCheckSourceNote.textContent =
+          "每格目标点击 = 小时日均订单 × 每单所需点击。中国时间为填入口径，DE 时间自动换算，空值不当 0。";
+
+        const rows = [];
+        for (let hour = 0; hour < 24; hour += 1) {
+          const key = pad(hour);
+          const average = referenceHourOrderAverage(day, hour);
+          const target = average === null ? null : average * clickCheck.clicksPerOrder;
+          const actual = clickCheck.actualClicks[key] ?? null;
+          const status = clickStatusFor(average, target, actual);
+
+          const tr = document.createElement("tr");
+          const averageCell = average === null
+            ? `<input class="click-actual-input" type="number" min="0" step="0.01" inputmode="decimal"
+                data-click-hour-order="${key}" value="${clickCheck.hourlyOrders[key] ?? ""}"
+                aria-label="中国时间 ${key}:00 小时日均订单">`
+            : orderAverageFormat.format(average);
+          tr.innerHTML = `
+            <th scope="row">${key}:00</th>
+            <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, hour * 60)}</td>
+            <td class="num" data-label="小时日均订单">${averageCell}</td>
+            <td class="num" data-label="每单所需点击">${clickFormat.format(clickCheck.clicksPerOrder)}</td>
+            <td class="num" data-label="目标点击">${target === null ? "—" : clickFormat.format(target)}</td>
+            <td class="num" data-label="实际点击"><input class="click-actual-input" type="number" min="0" step="1"
+              inputmode="numeric" data-click-hour-actual="${key}" value="${actual ?? ""}"
+              aria-label="中国时间 ${key}:00 实际新增点击"></td>
+            <td data-label="状态"><span class="click-status ${status.className}">${status.text}</span></td>
+          `;
+          rows.push(tr);
+        }
+        els.clickCheckBody.replaceChildren(...rows);
+        updateClickCheckComputed(day);
+        renderSpendDecision();
+      }
+
+      function calculateSpendDecision(day) {
+        const clickCheck = day.clickCheck;
+        const latestOrders = latestRecorded(day, "ono3p", "totalOrders");
+        const latestSpend = latestRecorded(day, "ono3p", "spend");
+        const tier = selectedBudgetTier(clickCheck);
+        const tierBudget = tier
+          ? tier.budget
+          : ONO3P_BUDGET_TIERS.length === 0 ? clickCheck.manualTierBudget : null;
+        const cpa = Number(clickCheck.cpa);
+        const orderCount = latestOrders.hasValue ? latestOrders.value : null;
+        const cpaAllowed = orderCount === null ? null : orderCount * cpa;
+        const finalAllowed = cpaAllowed === null || tierBudget === null
+          ? null
+          : Math.min(cpaAllowed, tierBudget);
+        const actualSpend = clickCheck.actualSpendCny;
+        return {
+          clickCheck,
+          latestOrders,
+          latestSpend,
+          tier,
+          tierBudget,
+          cpa,
+          orderCount,
+          cpaAllowed,
+          finalAllowed,
+          actualSpend,
+          remaining: finalAllowed === null || actualSpend === null ? null : finalAllowed - actualSpend
+        };
+      }
+
+      function renderSpendDecision() {
+        const day = currentDay();
+        const result = calculateSpendDecision(day);
+        const {
+          clickCheck,
+          latestOrders,
+          latestSpend,
+          tierBudget,
+          cpa,
+          orderCount,
+          cpaAllowed,
+          finalAllowed,
+          remaining
+        } = result;
+
+        els.currentTotalOrders.value = orderCount === null
+          ? "尚未录入"
+          : `${clickFormat.format(orderCount)} 单`;
+        els.currentTotalOrdersHint.textContent = orderCount === null
+          ? "在“今日盯盘”录入累计总单后自动带入。"
+          : `取 ${latestOrders.time} 的最新累计总单。`;
+        els.latestEuroSpend.value = latestSpend.hasValue
+          ? moneyFormat.format(latestSpend.value)
+          : "尚未录入";
+        els.convertSpendButton.disabled =
+          !latestSpend.hasValue || clickCheck.exchangeRate === null || !(clickCheck.exchangeRate > 0);
+        els.exchangeRateHint.textContent = latestSpend.hasValue
+          ? `最新 €${Number(latestSpend.value).toFixed(2)}；填写汇率后可换算为人民币。`
+          : "填写汇率后，可按最新欧元花费换算人民币。";
+        els.actualSpendCnyHint.textContent = latestSpend.hasValue && clickCheck.exchangeRate !== null
+          ? `按 ${Number(clickCheck.exchangeRate).toFixed(4)} 换算约为 ${cnyFormat.format(latestSpend.value * clickCheck.exchangeRate)}。`
+          : "可直接填，也可按欧元花费和汇率换算。";
+
+        els.cpaAllowedSpend.textContent = cpaAllowed === null ? "—" : cnyFormat.format(cpaAllowed);
+        els.tierAllowedSpend.textContent = tierBudget === null
+          ? "—"
+          : cnyFormat.format(tierBudget);
+        els.finalAllowedSpend.textContent = finalAllowed === null ? "—" : cnyFormat.format(finalAllowed);
+        els.actualSpendCnyDisplay.textContent = clickCheck.actualSpendCny === null
+          ? "—"
+          : cnyFormat.format(clickCheck.actualSpendCny);
+
+        if (orderCount === null) {
+          els.spendDecision.className = "answer-value";
+          els.spendDecision.textContent = "等待总单";
+          els.spendDecisionDetail.textContent = "先在“今日盯盘”录入 ONO3P 累计总单；页面会自动用最新一次录入计算。";
+          return;
+        }
+        if (tierBudget === null) {
+          els.spendDecision.className = "answer-value";
+          els.spendDecision.textContent = "等待额度";
+          els.spendDecisionDetail.textContent = ONO3P_BUDGET_TIERS.length
+            ? "请选择今日总单档位，套用固定的最高广告额度。"
+            : "请填写该产品当天的最高广告额度。";
+          return;
+        }
+        if (clickCheck.actualSpendCny === null) {
+          els.spendDecision.className = "answer-value";
+          els.spendDecision.textContent = "等待花费";
+          els.spendDecisionDetail.textContent =
+            `按 ${clickFormat.format(orderCount)} 单 × CPA ${cnyFormat.format(cpa)}，并受最高额度封顶后，最终允许花费 ${cnyFormat.format(finalAllowed)}。`;
+          return;
+        }
+
+        if (remaining < -0.004) {
+          els.spendDecision.className = "answer-value is-bad";
+          els.spendDecision.textContent = `已超出 ${cnyFormat.format(Math.abs(remaining))}`;
+          els.spendDecisionDetail.textContent =
+            `最终允许花费 ${cnyFormat.format(finalAllowed)}，当前实际 ${cnyFormat.format(clickCheck.actualSpendCny)}。`;
+        } else if (remaining <= 0.004) {
+          els.spendDecision.className = "answer-value";
+          els.spendDecision.textContent = "额度正好用完";
+          els.spendDecisionDetail.textContent =
+            `最终允许花费与当前实际花费均为 ${cnyFormat.format(finalAllowed)}，不建议继续加投。`;
+        } else {
+          els.spendDecision.className = "answer-value is-good";
+          els.spendDecision.textContent = `还能投放 ${cnyFormat.format(remaining)}`;
+          els.spendDecisionDetail.textContent =
+            `最终允许花费 ${cnyFormat.format(finalAllowed)}，当前实际 ${cnyFormat.format(clickCheck.actualSpendCny)}。`;
+        }
       }
 
       function syncGoalInputs() {
@@ -2940,6 +3818,7 @@
           ` · 共 ${speedFormat.format(windowHours)} 小时`;
         syncGoalInputs();
         renderTimeline();
+        renderClickCheck();
         renderHistory();
         renderVersions();
         updateSummary();
@@ -2947,6 +3826,7 @@
 
       function recalculate() {
         updateTimelineComputed();
+        renderSpendDecision();
         updateSummary();
       }
 
@@ -3016,6 +3896,7 @@
           start: day.start,
           goals: day.goals,
           budgets: day.budgets,
+          clickCheck: day.clickCheck,
           baselineSeeded: day.baselineSeeded,
           entries: day.entries
         });
@@ -3066,6 +3947,32 @@
         };
       }
 
+      function versionClickCheckSummary(snapshot) {
+        const day = normalizeDay(snapshot, snapshot.date || DEFAULT_DATE);
+        const clickCheck = day.clickCheck;
+        let filled = 0;
+        let met = 0;
+        for (let hour = 0; hour < 24; hour += 1) {
+          const average = referenceHourOrderAverage(day, hour);
+          const actual = clickCheck.actualClicks[pad(hour)] ?? null;
+          if (actual === null || average === null) continue;
+          filled += 1;
+          if (actual >= average * clickCheck.clicksPerOrder) met += 1;
+        }
+
+        const result = calculateSpendDecision(day);
+        let spendText = "投放待填";
+        if (result.remaining !== null) {
+          const remaining = result.remaining;
+          spendText = remaining < -0.004
+            ? `超支 ${cnyFormat.format(Math.abs(remaining))}`
+            : remaining <= 0.004
+              ? "额度用尽"
+              : `还能投 ${cnyFormat.format(remaining)}`;
+        }
+        return `点击 ${filled}/24 已填，达标 ${met} · ${spendText}`;
+      }
+
       function renderVersions() {
         const versions = [...store.versions].sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
         els.versionSummary.textContent = versions.length
@@ -3075,6 +3982,7 @@
 
         els.versionBody.replaceChildren(...versions.map((version) => {
           const totals = versionTotals(version.snapshot || {});
+          const clickSummary = versionClickCheckSummary(version.snapshot || {});
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <th scope="row"><span class="version-label">${escapeHtml(version.label)}</span></th>
@@ -3082,6 +3990,7 @@
             <td data-label="说明"><span class="version-note" title="${escapeHtml(version.note || "")}">${escapeHtml(version.note || "手动留档")}</span></td>
             <td class="num" data-label="ONO3P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.ono3p.clicks)} / ${moneyFormat.format(totals.ono3p.spend)} / ${countText(totals.ono3p.totalOrders)}（${countText(totals.ono3p.adOrders)} / ${countText(totals.ono3p.naturalOrders)}）</td>
             <td class="num" data-label="L61P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.l61p.clicks)} / ${moneyFormat.format(totals.l61p.spend)} / ${countText(totals.l61p.totalOrders)}（${countText(totals.l61p.adOrders)} / ${countText(totals.l61p.naturalOrders)}）</td>
+            <td data-label="点击达标 / 投放判断">${clickSummary}</td>
             <td data-label="操作"><button class="button-text" type="button" data-restore-version="${escapeHtml(version.id)}">载入此版</button></td>
           `;
           return tr;
@@ -3163,6 +4072,7 @@
       function exportDayCsv() {
         const day = currentDay();
         const slots = generatedSlots(day);
+        const spendResult = calculateSpendDecision(day);
         const rows = [
           ["日期", day.date],
           ["开始盯盘（中国时间）", day.start],
@@ -3172,6 +4082,23 @@
           ["ONO3P额度实际花费(EUR)", latestRecorded(day, "ono3p", "spend").value.toFixed(2)],
           ["L61P每日广告额度(EUR)", Number(day.budgets.l61p).toFixed(2)],
           ["L61P额度实际花费(EUR)", latestRecorded(day, "l61p", "spend").value.toFixed(2)],
+          ["ONO3P当前累计总单", spendResult.orderCount === null ? "" : Number(spendResult.orderCount).toFixed(0)],
+          ["ONO3P单均CPA(CNY)", Number(spendResult.cpa).toFixed(2)],
+          ["ONO3P固定总单档位", spendResult.clickCheck.selectedOrderTier ?? ""],
+          ["ONO3P按单量允许花费(CNY)", spendResult.cpaAllowed === null ? "" : Number(spendResult.cpaAllowed).toFixed(2)],
+          ["ONO3P固定最高额度(CNY)", spendResult.tierBudget === null ? "" : Number(spendResult.tierBudget).toFixed(2)],
+          ["ONO3P最终允许花费(CNY)", spendResult.finalAllowed === null ? "" : Number(spendResult.finalAllowed).toFixed(2)],
+          ["ONO3P当前实际广告花费(CNY)", spendResult.actualSpend === null ? "" : Number(spendResult.actualSpend).toFixed(2)],
+          [
+            "ONO3P投放判断",
+            spendResult.remaining === null
+              ? "等待填写"
+              : spendResult.remaining < -0.004
+                ? `超出 ${Math.abs(spendResult.remaining).toFixed(2)}`
+                : spendResult.remaining <= 0.004
+                  ? "额度用尽"
+                  : `还能投放 ${spendResult.remaining.toFixed(2)}`
+          ],
           [],
           [
             "中国时间",
@@ -3236,6 +4163,26 @@
             values.push(share === null ? "" : Number(share).toFixed(1));
           }
           rows.push([slotLabel(minutes), germanyTimeLabel(day.date, minutes), ...values]);
+        }
+        rows.push(
+          [],
+          ["点击达标（手动小时出单基准）"],
+          ["中国时间", "DE时间", "小时日均订单", "每单所需点击", "目标点击", "实际点击", "状态"]
+        );
+        for (let hour = 0; hour < 24; hour += 1) {
+          const average = referenceHourOrderAverage(day, hour);
+          const target = average === null ? null : average * day.clickCheck.clicksPerOrder;
+          const actual = day.clickCheck.actualClicks[pad(hour)] ?? null;
+          const status = clickStatusFor(average, target, actual);
+          rows.push([
+            `${pad(hour)}:00`,
+            germanyTimeLabel(day.date, hour * 60),
+            average === null ? "" : Number(average).toFixed(4),
+            Number(day.clickCheck.clicksPerOrder).toFixed(1),
+            target === null ? "" : Number(target).toFixed(2),
+            actual === null ? "" : Number(actual).toFixed(0),
+            status.text
+          ]);
         }
         const csv = "\ufeff" + rows
           .map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(","))
@@ -3399,6 +4346,127 @@
           });
         });
 
+        els.orderTierSelect.addEventListener("change", () => {
+          const value = els.orderTierSelect.value === "" ? null : Number(els.orderTierSelect.value);
+          const day = currentDay();
+          day.clickCheck.selectedOrderTier = ONO3P_BUDGET_TIERS.some((tier) => tier.orders === value)
+            ? value
+            : null;
+          renderBudgetTiers();
+          renderSpendDecision();
+          scheduleSave();
+        });
+
+        els.manualTierBudgetInput.addEventListener("input", () => {
+          const day = currentDay();
+          const value = els.manualTierBudgetInput.value === "" ? null : Number(els.manualTierBudgetInput.value);
+          if (value !== null && (!Number.isFinite(value) || value < 0)) return;
+          day.clickCheck.manualTierBudget = value;
+          renderSpendDecision();
+          scheduleSave();
+        });
+        els.manualTierBudgetInput.addEventListener("change", () => {
+          const value = Number(els.manualTierBudgetInput.value);
+          if (Number.isFinite(value) && value >= 0) els.manualTierBudgetInput.value = value.toFixed(2);
+        });
+
+        els.cpaInput.addEventListener("input", () => {
+          const value = Number(els.cpaInput.value);
+          if (!Number.isFinite(value) || value <= 0) return;
+          currentDay().clickCheck.cpa = value;
+          renderSpendDecision();
+          scheduleSave();
+        });
+        els.cpaInput.addEventListener("change", () => {
+          const value = Number(els.cpaInput.value);
+          if (Number.isFinite(value) && value > 0) els.cpaInput.value = value.toFixed(2);
+        });
+
+        els.exchangeRateInput.addEventListener("input", () => {
+          const value = els.exchangeRateInput.value === "" ? null : Number(els.exchangeRateInput.value);
+          if (value !== null && (!Number.isFinite(value) || value <= 0)) return;
+          currentDay().clickCheck.exchangeRate = value;
+          renderSpendDecision();
+          scheduleSave();
+        });
+        els.exchangeRateInput.addEventListener("change", () => {
+          const value = Number(els.exchangeRateInput.value);
+          if (Number.isFinite(value) && value > 0) els.exchangeRateInput.value = value.toFixed(4);
+        });
+
+        els.actualSpendCnyInput.addEventListener("input", () => {
+          const value = els.actualSpendCnyInput.value === "" ? null : Number(els.actualSpendCnyInput.value);
+          if (value !== null && (!Number.isFinite(value) || value < 0)) return;
+          currentDay().clickCheck.actualSpendCny = value;
+          renderSpendDecision();
+          scheduleSave();
+        });
+        els.actualSpendCnyInput.addEventListener("change", () => {
+          const value = Number(els.actualSpendCnyInput.value);
+          if (Number.isFinite(value) && value >= 0) els.actualSpendCnyInput.value = value.toFixed(2);
+        });
+
+        els.convertSpendButton.addEventListener("click", () => {
+          const day = currentDay();
+          const latestSpend = latestRecorded(day, "ono3p", "spend");
+          const rate = Number(day.clickCheck.exchangeRate);
+          if (!latestSpend.hasValue || !Number.isFinite(rate) || rate <= 0) return;
+          const converted = Math.round(latestSpend.value * rate * 100) / 100;
+          day.clickCheck.actualSpendCny = converted;
+          els.actualSpendCnyInput.value = converted.toFixed(2);
+          renderSpendDecision();
+          scheduleSave();
+        });
+
+        els.clicksPerOrderInput.addEventListener("input", () => {
+          const value = Number(els.clicksPerOrderInput.value);
+          if (!Number.isFinite(value) || value <= 0) return;
+          currentDay().clickCheck.clicksPerOrder = value;
+          for (const row of els.clickCheckBody.children) {
+            const ratioCells = row.querySelectorAll('[data-label="每单所需点击"]');
+            ratioCells.forEach((cell) => {
+              cell.textContent = clickFormat.format(value);
+            });
+            const targetCell = row.querySelector('[data-label="目标点击"]');
+            if (!targetCell) continue;
+            const hour = Array.from(els.clickCheckBody.children).indexOf(row);
+            const average = referenceHourOrderAverage(currentDay(), hour);
+            targetCell.textContent = average === null ? "—" : clickFormat.format(average * value);
+          }
+          updateClickCheckComputed(currentDay());
+          scheduleSave();
+        });
+        els.clicksPerOrderInput.addEventListener("change", () => {
+          const value = Number(els.clicksPerOrderInput.value);
+          if (Number.isFinite(value) && value > 0) els.clicksPerOrderInput.value = value.toFixed(1);
+        });
+
+        els.clickCheckBody.addEventListener("input", (event) => {
+          const actualInput = event.target.closest("[data-click-hour-actual]");
+          const orderInput = event.target.closest("[data-click-hour-order]");
+          if (!actualInput && !orderInput) return;
+          const input = actualInput || orderInput;
+          const value = input.value === "" ? null : Number(input.value);
+          if (value !== null && (!Number.isFinite(value) || value < 0)) return;
+          const day = currentDay();
+          const key = actualInput
+            ? actualInput.dataset.clickHourActual
+            : orderInput.dataset.clickHourOrder;
+          if (actualInput) day.clickCheck.actualClicks[key] = value;
+          else day.clickCheck.hourlyOrders[key] = value;
+          if (orderInput) {
+            const average = referenceHourOrderAverage(day, Number(key));
+            const targetCell = orderInput.closest("tr")?.querySelector('[data-label="目标点击"]');
+            if (targetCell) {
+              targetCell.textContent = average === null
+                ? "—"
+                : clickFormat.format(average * day.clickCheck.clicksPerOrder);
+            }
+          }
+          updateClickCheckComputed(day);
+          scheduleSave();
+        });
+
         document.getElementById("jumpEntryButton").addEventListener("click", () => {
           setActiveTab(tabByPanel("panel-today"));
           const firstBlank = els.timelineBody.querySelector("[data-entry-product]:not([readonly])");
@@ -3462,8 +4530,8 @@
         store.versions.push({
           id: `${Date.now()}-initial`,
           label: "v1.0",
-          savedAt: new Date("2026-11-27T14:30:00+08:00").toISOString(),
-          note: "初始版：公开版已建立当日录入起点，等待填写累计值",
+          savedAt: new Date().toISOString(),
+          note: "初始版：通用空模板",
           snapshot: currentVersionSnapshot(day)
         });
         saveStore(false);
