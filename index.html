@@ -944,6 +944,10 @@
       color: var(--bad);
     }
 
+    .answer-value.is-warn {
+      color: var(--warn);
+    }
+
     .answer-detail {
       min-height: 42px;
       margin-bottom: 2px;
@@ -1022,6 +1026,12 @@
       margin-bottom: 16px;
     }
 
+    .click-control-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 260px));
+      gap: 16px;
+    }
+
     .click-ratio-field {
       display: grid;
       gap: 4px;
@@ -1049,8 +1059,49 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .pace-decision {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .95fr);
+      gap: 24px;
+      align-items: start;
+      margin: 0 0 16px;
+      padding: 20px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pace-decision-summary {
+      min-width: 0;
+    }
+
+    .pace-breakdown {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 20px;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .pace-breakdown div {
+      min-width: 0;
+    }
+
+    .pace-breakdown dt,
+    .pace-breakdown dd {
+      min-width: 0;
+    }
+
+    .pace-breakdown dt {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pace-breakdown dd {
+      overflow-wrap: anywhere;
+    }
+
     .click-check-table {
-      min-width: 820px;
+      min-width: 860px;
     }
 
     .click-check-table th:nth-child(1) {
@@ -1106,6 +1157,15 @@
 
     .click-status.is-bad::before {
       background: var(--bad);
+    }
+
+    .click-status.is-warn {
+      background: var(--warn-tint);
+      color: var(--warn);
+    }
+
+    .click-status.is-warn::before {
+      background: var(--warn);
     }
 
     .history-table {
@@ -1350,6 +1410,10 @@
       }
 
       .decision-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .pace-decision {
         grid-template-columns: 1fr;
       }
 
@@ -1675,6 +1739,10 @@
         flex-direction: column;
       }
 
+      .click-control-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .click-summary {
         justify-content: flex-start;
         text-align: left;
@@ -1683,6 +1751,10 @@
       .click-actual-input {
         width: 100%;
         max-width: 140px;
+      }
+
+      .pace-breakdown {
+        grid-template-columns: 1fr;
       }
 
       .click-check-table td::before,
@@ -1742,7 +1814,7 @@
 
     <nav class="tabs" role="tablist" aria-label="页面内容">
       <button class="tab" id="tab-today" role="tab" type="button" aria-selected="true" aria-controls="panel-today" tabindex="0">今日盯盘</button>
-      <button class="tab" id="tab-click-check" role="tab" type="button" aria-selected="false" aria-controls="panel-click-check" tabindex="-1">点击达标与投放</button>
+      <button class="tab" id="tab-click-check" role="tab" type="button" aria-selected="false" aria-controls="panel-click-check" tabindex="-1">点击与投放</button>
       <button class="tab" id="tab-history" role="tab" type="button" aria-selected="false" aria-controls="panel-history" tabindex="-1">历史参照</button>
       <button class="tab" id="tab-versions" role="tab" type="button" aria-selected="false" aria-controls="panel-versions" tabindex="-1">版本记录</button>
     </nav>
@@ -1983,8 +2055,8 @@
             <div class="form-field" id="manualTierBudgetField" hidden>
               <label for="manualTierBudgetInput">每日最高广告额度</label>
               <div class="input-with-unit">
-                <input id="manualTierBudgetInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填人民币金额">
-                <span>元</span>
+                <input id="manualTierBudgetInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填欧元金额">
+                <span>€</span>
               </div>
               <small>填写本产品当天的最高广告额度，再与单量 CPA 取较小值。</small>
             </div>
@@ -1992,9 +2064,9 @@
               <label for="cpaInput">单均 CPA</label>
               <div class="input-with-unit">
                 <input id="cpaInput" type="number" min="0.01" step="0.01" inputmode="decimal" value="39" aria-describedby="cpaHint">
-                <span>元</span>
+                <span>€</span>
               </div>
-              <small id="cpaHint">默认 39 元/单，可按自己的口径修改。</small>
+              <small id="cpaHint">默认 €39.00/单，可按自己的口径修改。</small>
             </div>
             <div class="form-field">
               <label for="currentTotalOrders">当前累计总单</label>
@@ -2007,23 +2079,15 @@
                 <input id="latestEuroSpend" type="text" readonly>
                 <span>€</span>
               </div>
-              <small>自动取最新欧元花费，不会直接当作人民币。</small>
+              <small>自动取今日盯盘里最新录入的欧元累计花费。</small>
             </div>
             <div class="form-field">
-              <label for="exchangeRateInput">欧元兑人民币汇率</label>
-              <input id="exchangeRateInput" type="number" min="0.0001" step="0.0001" inputmode="decimal" placeholder="选填，例如 8.20" aria-describedby="exchangeRateHint">
-              <small id="exchangeRateHint">填写后可按最新欧元花费换算人民币。</small>
-            </div>
-            <div class="form-field">
-              <label for="actualSpendCnyInput">当前实际广告花费</label>
+              <label for="actualSpendEurInput">当前实际广告花费</label>
               <div class="input-with-unit">
-                <input id="actualSpendCnyInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填人民币金额">
-                <span>元</span>
+                <input id="actualSpendEurInput" type="number" min="0" step="0.01" inputmode="decimal" placeholder="填欧元金额" aria-describedby="actualSpendEurHint">
+                <span>€</span>
               </div>
-              <small id="actualSpendCnyHint">可直接填，也可用右侧按钮按汇率换算。</small>
-            </div>
-            <div class="form-action">
-              <button id="convertSpendButton" class="button-secondary" type="button" disabled>按汇率换算最新花费</button>
+              <small id="actualSpendEurHint">填写广告后台当前实际花费，所有金额统一按欧元计算。</small>
             </div>
           </form>
 
@@ -2046,7 +2110,7 @@
               </div>
               <div>
                 <dt>当前实际花费</dt>
-                <dd id="actualSpendCnyDisplay">—</dd>
+                <dd id="actualSpendEurDisplay">—</dd>
               </div>
             </dl>
           </aside>
@@ -2059,7 +2123,7 @@
               <thead>
                 <tr>
                   <th scope="col" class="num">每日总单</th>
-                  <th scope="col" class="num">最高广告额度（人民币）</th>
+                  <th scope="col" class="num">最高广告额度（欧元）</th>
                 </tr>
               </thead>
               <tbody id="budgetTierBody"></tbody>
@@ -2071,38 +2135,91 @@
       <section class="section" aria-labelledby="clickCheckTitle">
         <div class="section-heading">
           <div>
-            <h2 id="clickCheckTitle">小时点击达标</h2>
-            <p class="section-note" id="clickReferenceNote">按 8 天小时出单均值计算每小时目标点击；实际点击填该小时新增值，不是后台累计值。</p>
+            <h2 id="clickCheckTitle">点击与花费节奏</h2>
+            <p class="section-note" id="clickReferenceNote">当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断，历史小时出单只作转化参考。</p>
           </div>
         </div>
 
         <div class="click-controls">
-          <div class="click-ratio-field">
-            <label for="clicksPerOrderInput">每单所需点击</label>
-            <div class="input-with-unit">
-              <input id="clicksPerOrderInput" type="number" min="0.1" step="0.1" inputmode="decimal" value="33.3" aria-describedby="clicksPerOrderHint">
-              <span>次/单</span>
+          <div class="click-control-fields">
+            <div class="click-ratio-field">
+              <label for="targetCpcInput">目标 CPC 上限</label>
+              <div class="input-with-unit">
+                <input id="targetCpcInput" type="number" min="0.01" step="0.01" inputmode="decimal" value="2.50" aria-describedby="targetCpcHint">
+                <span>€</span>
+              </div>
+              <small class="source-note" id="targetCpcHint">实际 CPC 低于这个数，同样的花费买到的点击才算够。</small>
             </div>
-            <small class="source-note" id="clicksPerOrderHint">默认 33.3，来自截图 CVR 3%：1 ÷ 3%。</small>
+            <div class="click-ratio-field">
+              <label for="clicksPerOrderInput">历史转化参考</label>
+              <div class="input-with-unit">
+                <input id="clicksPerOrderInput" type="number" min="0.1" step="0.1" inputmode="decimal" value="33.3" aria-describedby="clicksPerOrderHint">
+                <span>次/单</span>
+              </div>
+              <small class="source-note" id="clicksPerOrderHint">按历史 CVR 3% 约需 33.3 次点击/单，只用来对照转化，不再单独判盈利。</small>
+            </div>
           </div>
           <div class="click-summary" id="clickCheckSummary" aria-live="polite">
             <span>已填 <strong id="clickFilledCount">0</strong> 小时</span>
-            <span>达标 <strong id="clickMetCount">0</strong></span>
-            <span>不达标 <strong id="clickMissedCount">0</strong></span>
-            <span>最大缺口 <strong id="clickLargestGap">—</strong></span>
+            <span>高于参考 <strong id="clickMetCount">0</strong></span>
+            <span>低于参考 <strong id="clickMissedCount">0</strong></span>
+            <span>最大转化差 <strong id="clickLargestGap">—</strong></span>
           </div>
         </div>
 
+        <aside class="pace-decision" aria-live="polite" aria-atomic="true">
+          <div class="pace-decision-summary">
+            <span class="answer-label">当前点击与花费节奏</span>
+            <strong class="answer-value" id="paceDecision">等待录入</strong>
+            <p class="answer-detail" id="paceDecisionDetail">先在今日盯盘录入 ONO3P 累计总单、点击和花费，再按目标 CPC 判断点击是否偏少。</p>
+            <p class="source-note" id="clickAssumptionWarning"></p>
+          </div>
+          <dl class="answer-breakdown pace-breakdown">
+            <div>
+              <dt>当前总单 / 历史同期</dt>
+              <dd id="paceOrdersHistory">—</dd>
+            </div>
+            <div>
+              <dt>当前点击 / 花费</dt>
+              <dd id="paceClicksSpend">—</dd>
+            </div>
+            <div>
+              <dt>当前 CPC / 目标</dt>
+              <dd id="paceCpcTarget">—</dd>
+            </div>
+            <div>
+              <dt>当前花费应有点击</dt>
+              <dd id="paceClickFloor">—</dd>
+            </div>
+            <div>
+              <dt>点击余量</dt>
+              <dd id="paceClickGap">—</dd>
+            </div>
+            <div>
+              <dt>利润帽内最多点击</dt>
+              <dd id="paceClickCap">—</dd>
+            </div>
+            <div>
+              <dt>预计收盘花费</dt>
+              <dd id="paceProjectedSpend">—</dd>
+            </div>
+            <div>
+              <dt>预计收盘合理花费</dt>
+              <dd id="paceProjectedAllowed">—</dd>
+            </div>
+          </dl>
+        </aside>
+
         <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="clickCheckTitle">
           <table class="click-check-table">
-            <caption>中国时间和德国时间对照的每小时订单均值、每单所需点击、目标点击、实际点击与达标状态</caption>
+            <caption>中国时间和德国时间对照的每小时订单均值、历史转化参考点击、实际点击与相对参考状态</caption>
             <thead>
               <tr>
                 <th scope="col">中国时间</th>
                 <th scope="col">DE 时间</th>
                 <th scope="col" class="num">小时日均订单</th>
                 <th scope="col" class="num">每单所需点击</th>
-                <th scope="col" class="num">目标点击</th>
+                <th scope="col" class="num">转化参考点击</th>
                 <th scope="col" class="num">实际点击</th>
                 <th scope="col">状态</th>
               </tr>
@@ -2110,7 +2227,7 @@
             <tbody id="clickCheckBody"></tbody>
           </table>
         </div>
-        <p class="source-note" id="clickCheckSourceNote">每格目标点击 = 小时日均订单 × 每单所需点击。中国时间为填入口径，DE 时间自动换算，空值不当 0。</p>
+        <p class="source-note" id="clickCheckSourceNote">转化参考点击 = 小时日均订单 × 每单所需点击，只反映历史转化；盈利与点击效率看上方的实际花费、实际点击和目标 CPC。历史小时若来自德国后台，先按 DE/CN 时间差对齐到中国时间再填。</p>
       </section>
     </section>
 
@@ -2193,7 +2310,7 @@
       <section class="section" aria-labelledby="versionsTitle">
         <div class="section-heading">
           <h2 id="versionsTitle">版本记录</h2>
-          <p class="section-note">保存的是当时全部录入值、历史参照、点击达标与投放判断和开始时间；恢复前会自动留一份当前版本。</p>
+          <p class="section-note">保存的是当时全部录入值、历史参照、点击与花费节奏判断和开始时间；恢复前会自动留一份当前版本。</p>
         </div>
         <div class="version-toolbar">
           <p id="versionSummary">还没有保存版本</p>
@@ -2213,7 +2330,7 @@
                 <th scope="col">说明</th>
                 <th scope="col" class="num">ONO3P 点击 / 花费 / 总单（广告 / 自然）</th>
                 <th scope="col" class="num">L61P 点击 / 花费 / 总单（广告 / 自然）</th>
-                <th scope="col" class="num">点击达标 / 投放判断</th>
+                <th scope="col" class="num">点击节奏 / 投放判断</th>
                 <th scope="col">操作</th>
               </tr>
             </thead>
@@ -2287,6 +2404,7 @@
         hourlyTotalOrders: Object.freeze([])
       });
       const DEFAULT_CLICKS_PER_ORDER = 33.3;
+      const DEFAULT_TARGET_CPC = 2.5;
       const DEFAULT_CPA = 39;
       const LOCK_1430_START = false;
 
@@ -2321,19 +2439,17 @@
         currentTotalOrders: document.getElementById("currentTotalOrders"),
         currentTotalOrdersHint: document.getElementById("currentTotalOrdersHint"),
         latestEuroSpend: document.getElementById("latestEuroSpend"),
-        exchangeRateInput: document.getElementById("exchangeRateInput"),
-        exchangeRateHint: document.getElementById("exchangeRateHint"),
-        actualSpendCnyInput: document.getElementById("actualSpendCnyInput"),
-        actualSpendCnyHint: document.getElementById("actualSpendCnyHint"),
-        convertSpendButton: document.getElementById("convertSpendButton"),
+        actualSpendEurInput: document.getElementById("actualSpendEurInput"),
+        actualSpendEurHint: document.getElementById("actualSpendEurHint"),
         spendDecision: document.getElementById("spendDecision"),
         spendDecisionDetail: document.getElementById("spendDecisionDetail"),
         cpaAllowedSpend: document.getElementById("cpaAllowedSpend"),
         tierAllowedSpend: document.getElementById("tierAllowedSpend"),
         finalAllowedSpend: document.getElementById("finalAllowedSpend"),
-        actualSpendCnyDisplay: document.getElementById("actualSpendCnyDisplay"),
+        actualSpendEurDisplay: document.getElementById("actualSpendEurDisplay"),
         budgetTierBody: document.getElementById("budgetTierBody"),
         budgetTierWrap: document.getElementById("budgetTierWrap"),
+        targetCpcInput: document.getElementById("targetCpcInput"),
         clicksPerOrderInput: document.getElementById("clicksPerOrderInput"),
         clickCheckBody: document.getElementById("clickCheckBody"),
         clickFilledCount: document.getElementById("clickFilledCount"),
@@ -2342,6 +2458,17 @@
         clickLargestGap: document.getElementById("clickLargestGap"),
         clickReferenceNote: document.getElementById("clickReferenceNote"),
         clickCheckSourceNote: document.getElementById("clickCheckSourceNote"),
+        paceDecision: document.getElementById("paceDecision"),
+        paceDecisionDetail: document.getElementById("paceDecisionDetail"),
+        clickAssumptionWarning: document.getElementById("clickAssumptionWarning"),
+        paceOrdersHistory: document.getElementById("paceOrdersHistory"),
+        paceClicksSpend: document.getElementById("paceClicksSpend"),
+        paceCpcTarget: document.getElementById("paceCpcTarget"),
+        paceClickFloor: document.getElementById("paceClickFloor"),
+        paceClickGap: document.getElementById("paceClickGap"),
+        paceClickCap: document.getElementById("paceClickCap"),
+        paceProjectedSpend: document.getElementById("paceProjectedSpend"),
+        paceProjectedAllowed: document.getElementById("paceProjectedAllowed"),
         tabs: Array.from(document.querySelectorAll('[role="tab"]')),
         panels: Array.from(document.querySelectorAll('[role="tabpanel"]'))
       };
@@ -2403,12 +2530,6 @@
       const moneyFormat = new Intl.NumberFormat("zh-CN", {
         style: "currency",
         currency: "EUR",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-      const cnyFormat = new Intl.NumberFormat("zh-CN", {
-        style: "currency",
-        currency: "CNY",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
@@ -2563,13 +2684,13 @@
       function defaultClickCheck() {
         return {
           clicksPerOrder: DEFAULT_CLICKS_PER_ORDER,
+          targetCpc: DEFAULT_TARGET_CPC,
           actualClicks: {},
           hourlyOrders: {},
           cpa: DEFAULT_CPA,
           selectedOrderTier: null,
-          manualTierBudget: null,
-          actualSpendCny: null,
-          exchangeRate: null
+          manualTierBudgetEur: null,
+          actualSpendEur: null
         };
       }
 
@@ -2582,6 +2703,11 @@
           clickCheck.clicksPerOrder = clicksPerOrder;
         }
 
+        const targetCpc = Number(raw.targetCpc);
+        if (Number.isFinite(targetCpc) && targetCpc > 0) {
+          clickCheck.targetCpc = targetCpc;
+        }
+
         const cpa = Number(raw.cpa);
         if (Number.isFinite(cpa) && cpa > 0) clickCheck.cpa = cpa;
 
@@ -2590,25 +2716,19 @@
           clickCheck.selectedOrderTier = selectedTier;
         }
 
-        const manualTierBudget = raw.manualTierBudget === "" || raw.manualTierBudget === null
+        const manualTierBudgetEur = raw.manualTierBudgetEur === "" || raw.manualTierBudgetEur === null
           ? null
-          : Number(raw.manualTierBudget);
-        if (manualTierBudget !== null && Number.isFinite(manualTierBudget) && manualTierBudget >= 0) {
-          clickCheck.manualTierBudget = manualTierBudget;
+          : Number(raw.manualTierBudgetEur);
+        if (manualTierBudgetEur !== null && Number.isFinite(manualTierBudgetEur) && manualTierBudgetEur >= 0) {
+          clickCheck.manualTierBudgetEur = manualTierBudgetEur;
         }
 
-        const actualSpend = raw.actualSpendCny === "" || raw.actualSpendCny === null
+        const actualSpendSource = raw.actualSpendEur;
+        const actualSpend = actualSpendSource === "" || actualSpendSource === null || actualSpendSource === undefined
           ? null
-          : Number(raw.actualSpendCny);
+          : Number(actualSpendSource);
         if (actualSpend !== null && Number.isFinite(actualSpend) && actualSpend >= 0) {
-          clickCheck.actualSpendCny = actualSpend;
-        }
-
-        const exchangeRate = raw.exchangeRate === "" || raw.exchangeRate === null
-          ? null
-          : Number(raw.exchangeRate);
-        if (exchangeRate !== null && Number.isFinite(exchangeRate) && exchangeRate > 0) {
-          clickCheck.exchangeRate = exchangeRate;
+          clickCheck.actualSpendEur = actualSpend;
         }
 
         const actualClicks = raw.actualClicks;
@@ -3558,15 +3678,15 @@
         if (!hasFixedTiers) {
           els.orderTierSelect.replaceChildren(new Option("请选择", ""));
           els.budgetTierBody.replaceChildren();
-          els.manualTierBudgetInput.value = clickCheck.manualTierBudget === null
+          els.manualTierBudgetInput.value = clickCheck.manualTierBudgetEur === null
             ? ""
-            : Number(clickCheck.manualTierBudget).toFixed(2);
+            : Number(clickCheck.manualTierBudgetEur).toFixed(2);
           return;
         }
 
         const options = [new Option("请选择", "")];
         for (const tier of ONO3P_BUDGET_TIERS) {
-          options.push(new Option(`${tier.orders} 单 · ${cnyFormat.format(tier.budget)}`, String(tier.orders)));
+          options.push(new Option(`${tier.orders} 单 · ${moneyFormat.format(tier.budget)}`, String(tier.orders)));
         }
         els.orderTierSelect.replaceChildren(...options);
         els.orderTierSelect.value = clickCheck.selectedOrderTier === null
@@ -3578,7 +3698,7 @@
           if (tier.orders === clickCheck.selectedOrderTier) tr.className = "is-selected";
           tr.innerHTML = `
             <td class="num" data-label="每日总单">${clickFormat.format(tier.orders)}</td>
-            <td class="num" data-label="最高广告额度">${cnyFormat.format(tier.budget)}</td>
+            <td class="num" data-label="最高广告额度">${moneyFormat.format(tier.budget)}</td>
           `;
           return tr;
         }));
@@ -3591,13 +3711,23 @@
         if (actualClicks === null) {
           return { text: "待填写", className: "" };
         }
-        if (actualClicks < targetClicks) {
+        if (targetClicks <= 0) {
           return {
-            text: `不达标 · 差 ${clickFormat.format(targetClicks - actualClicks)}`,
-            className: "is-bad"
+            text: actualClicks > 0 ? "高于转化参考" : "参考为 0",
+            className: actualClicks > 0 ? "is-ok" : ""
           };
         }
-        return { text: "达标", className: "is-ok" };
+        const ratio = actualClicks / targetClicks;
+        if (ratio < 0.9) {
+          return {
+            text: `低于参考 · 差 ${clickFormat.format(targetClicks - actualClicks)}`,
+            className: "is-warn"
+          };
+        }
+        if (ratio > 1.1) {
+          return { text: "高于转化参考", className: "is-ok" };
+        }
+        return { text: "接近转化参考", className: "" };
       }
 
       function updateClickCheckComputed(day) {
@@ -3615,7 +3745,7 @@
           const status = clickStatusFor(average, target, actual);
           if (actual !== null) filled += 1;
           if (status.className === "is-ok") met += 1;
-          if (status.className === "is-bad") {
+          if (status.className === "is-warn") {
             missed += 1;
             const gap = target - actual;
             if (largestGap === null || gap > largestGap.gap) largestGap = { hour, gap };
@@ -3641,18 +3771,16 @@
         renderBudgetTiers();
 
         els.cpaInput.value = Number(clickCheck.cpa).toFixed(2);
-        els.exchangeRateInput.value = clickCheck.exchangeRate === null
+        els.actualSpendEurInput.value = clickCheck.actualSpendEur === null
           ? ""
-          : Number(clickCheck.exchangeRate).toFixed(4);
-        els.actualSpendCnyInput.value = clickCheck.actualSpendCny === null
-          ? ""
-          : Number(clickCheck.actualSpendCny).toFixed(2);
+          : Number(clickCheck.actualSpendEur).toFixed(2);
+        els.targetCpcInput.value = Number(clickCheck.targetCpc).toFixed(2);
         els.clicksPerOrderInput.value = Number(clickCheck.clicksPerOrder).toFixed(1);
 
         els.clickReferenceNote.textContent =
-          "先填写每小时日均订单作为基准，再填该小时新增点击；实际点击不是后台累计值。";
+          "当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断，历史小时出单只作转化参考。";
         els.clickCheckSourceNote.textContent =
-          "每格目标点击 = 小时日均订单 × 每单所需点击。中国时间为填入口径，DE 时间自动换算，空值不当 0。";
+          "转化参考点击 = 小时日均订单 × 每单所需点击，只反映历史转化；盈利与点击效率看上方的实际花费、实际点击和目标 CPC。历史小时若来自德国后台，先按 DE/CN 时间差对齐到中国时间再填。";
 
         const rows = [];
         for (let hour = 0; hour < 24; hour += 1) {
@@ -3673,7 +3801,7 @@
             <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, hour * 60)}</td>
             <td class="num" data-label="小时日均订单">${averageCell}</td>
             <td class="num" data-label="每单所需点击">${clickFormat.format(clickCheck.clicksPerOrder)}</td>
-            <td class="num" data-label="目标点击">${target === null ? "—" : clickFormat.format(target)}</td>
+            <td class="num" data-label="转化参考点击">${target === null ? "—" : clickFormat.format(target)}</td>
             <td class="num" data-label="实际点击"><input class="click-actual-input" type="number" min="0" step="1"
               inputmode="numeric" data-click-hour-actual="${key}" value="${actual ?? ""}"
               aria-label="中国时间 ${key}:00 实际新增点击"></td>
@@ -3686,24 +3814,54 @@
         renderSpendDecision();
       }
 
+      function historicalCumulativeOrderAverage(day, minutes) {
+        if (!Number.isFinite(minutes) || minutes < 0) return null;
+        const fullHours = Math.min(24, Math.floor(minutes / 60));
+        const partialHourShare = Math.min(1, Math.max(0, (minutes % 60) / 60));
+        const hourCount = Math.min(24, fullHours + (partialHourShare > 0 ? 1 : 0));
+        let total = 0;
+        for (let hour = 0; hour < hourCount; hour += 1) {
+          const average = referenceHourOrderAverage(day, hour);
+          if (average === null) return null;
+          total += average * (hour < fullHours ? 1 : partialHourShare);
+        }
+        return total;
+      }
+
       function calculateSpendDecision(day) {
         const clickCheck = day.clickCheck;
         const latestOrders = latestRecorded(day, "ono3p", "totalOrders");
+        const latestClicks = latestRecorded(day, "ono3p", "clicks");
         const latestSpend = latestRecorded(day, "ono3p", "spend");
         const tier = selectedBudgetTier(clickCheck);
         const tierBudget = tier
           ? tier.budget
-          : ONO3P_BUDGET_TIERS.length === 0 ? clickCheck.manualTierBudget : null;
+          : ONO3P_BUDGET_TIERS.length === 0 ? clickCheck.manualTierBudgetEur : null;
         const cpa = Number(clickCheck.cpa);
         const orderCount = latestOrders.hasValue ? latestOrders.value : null;
         const cpaAllowed = orderCount === null ? null : orderCount * cpa;
-        const finalAllowed = cpaAllowed === null || tierBudget === null
+        const finalAllowed = cpaAllowed === null
           ? null
-          : Math.min(cpaAllowed, tierBudget);
-        const actualSpend = clickCheck.actualSpendCny;
+          : tierBudget === null
+            ? cpaAllowed
+            : Math.min(cpaAllowed, tierBudget);
+        const actualSpend = clickCheck.actualSpendEur
+          ?? (latestSpend.hasValue ? latestSpend.value : null);
+        const actualSpendSource = clickCheck.actualSpendEur !== null
+          ? "manual"
+          : latestSpend.hasValue
+            ? "timeline"
+            : "none";
+        const projection = summaryForProduct(day, "ono3p");
+        const projectedCpaAllowed = projection.projectedTotalOrders * cpa;
+        const projectedAllowed = tierBudget === null
+          ? projectedCpaAllowed
+          : Math.min(projectedCpaAllowed, tierBudget);
         return {
+          day,
           clickCheck,
           latestOrders,
+          latestClicks,
           latestSpend,
           tier,
           tierBudget,
@@ -3712,8 +3870,132 @@
           cpaAllowed,
           finalAllowed,
           actualSpend,
+          actualSpendSource,
+          projection,
+          projectedCpaAllowed,
+          projectedAllowed,
           remaining: finalAllowed === null || actualSpend === null ? null : finalAllowed - actualSpend
         };
+      }
+
+      function renderClickPace(result) {
+        const {
+          day,
+          clickCheck,
+          latestOrders,
+          latestClicks,
+          latestSpend,
+          cpa,
+          orderCount,
+          cpaAllowed,
+          finalAllowed,
+          actualSpend,
+          projection,
+          projectedAllowed
+        } = result;
+        const targetCpc = Number(clickCheck.targetCpc) > 0
+          ? Number(clickCheck.targetCpc)
+          : DEFAULT_TARGET_CPC;
+        const actualClicks = latestClicks.hasValue ? latestClicks.value : null;
+        const actualCpc = actualSpend !== null && actualClicks !== null && actualClicks > 0
+          ? actualSpend / actualClicks
+          : null;
+        const clickFloor = actualSpend === null ? null : actualSpend / targetCpc;
+        const clickGap = clickFloor === null || actualClicks === null
+          ? null
+          : actualClicks - clickFloor;
+        const clickCap = finalAllowed === null ? null : finalAllowed / targetCpc;
+        const historicalOrders = historicalCumulativeOrderAverage(day, latestOrders.minutes);
+        const orderPaceRatio = orderCount !== null && historicalOrders !== null && historicalOrders > 0
+          ? orderCount / historicalOrders
+          : null;
+
+        els.paceOrdersHistory.textContent = orderCount === null
+          ? "—"
+          : historicalOrders === null
+            ? `${clickFormat.format(orderCount)} 单 / —`
+            : `${clickFormat.format(orderCount)} 单 / ${clickFormat.format(historicalOrders)} 单（${speedFormat.format(orderPaceRatio)}×）`;
+        els.paceClicksSpend.textContent = actualClicks === null && actualSpend === null
+          ? "—"
+          : `${actualClicks === null ? "—" : `${clickFormat.format(actualClicks)} 次`} / ${actualSpend === null ? "—" : moneyFormat.format(actualSpend)}`;
+        els.paceCpcTarget.textContent = `${actualCpc === null ? "—" : moneyFormat.format(actualCpc)} / ${moneyFormat.format(targetCpc)}`;
+        els.paceClickFloor.textContent = clickFloor === null ? "—" : `${clickFormat.format(clickFloor)} 次起`;
+        els.paceClickGap.textContent = clickGap === null
+          ? "—"
+          : clickGap >= 0
+            ? `多 ${clickFormat.format(clickGap)} 次`
+            : `少 ${clickFormat.format(Math.abs(clickGap))} 次`;
+        els.paceClickCap.textContent = clickCap === null ? "—" : `${clickFormat.format(clickCap)} 次`;
+        els.paceProjectedSpend.textContent = projection.projectedSpend === null
+          ? "—"
+          : moneyFormat.format(projection.projectedSpend);
+        els.paceProjectedAllowed.textContent = projectedAllowed === null
+          ? "—"
+          : moneyFormat.format(projectedAllowed);
+
+        const impliedClicksPerOrder = cpa / targetCpc;
+        const impliedCvr = impliedClicksPerOrder > 0 ? 1 / impliedClicksPerOrder : null;
+        const referenceCostPerOrder = clickCheck.clicksPerOrder * targetCpc;
+        const conflictingAssumptions = referenceCostPerOrder > cpa + 0.004;
+        els.clickAssumptionWarning.textContent = conflictingAssumptions
+          ? `口径冲突：历史 ${clickFormat.format(clickCheck.clicksPerOrder)} 次/单 × 目标 CPC ${moneyFormat.format(targetCpc)} = ${moneyFormat.format(referenceCostPerOrder)}/单，高于 CPA ${moneyFormat.format(cpa)}。按 CPA 与目标 CPC 反推，每单最多 ${clickFormat.format(impliedClicksPerOrder)} 次点击，CVR 至少要 ${percentFormat.format((impliedCvr || 0) * 100)}% 才能同时成立。`
+          : "";
+
+        if (orderCount === null) {
+          els.paceDecision.className = "answer-value";
+          els.paceDecision.textContent = "等待总单";
+          els.paceDecisionDetail.textContent = "先录入 ONO3P 累计总单，页面会用总单 × CPA 算出当前利润花费上限。";
+          return;
+        }
+
+        if (actualSpend === null || actualClicks === null) {
+          els.paceDecision.className = "answer-value";
+          els.paceDecision.textContent = "等待点击与花费";
+          els.paceDecisionDetail.textContent =
+            `${clickFormat.format(orderCount)} 单对应利润花费上限 ${moneyFormat.format(cpaAllowed)}；按目标 CPC ${moneyFormat.format(targetCpc)}，把上限用完最多是 ${clickFormat.format((cpaAllowed || 0) / targetCpc)} 次点击。录入实际点击和花费后，才会判断 CPC 偏高还是偏低。`;
+          return;
+        }
+
+        if (actualSpend <= 0.004 && actualClicks <= 0) {
+          els.paceDecision.className = "answer-value";
+          els.paceDecision.textContent = "尚无点击与花费";
+          els.paceDecisionDetail.textContent =
+            `${clickFormat.format(orderCount)} 单对应利润花费上限 ${moneyFormat.format(finalAllowed)}；当前累计点击和花费都是 0，先确认广告是否实际开始投放。`;
+          return;
+        }
+
+        const overCap = actualSpend > finalAllowed + 0.004;
+        const cpcTooHigh = actualClicks <= 0 || actualCpc > targetCpc * 1.01;
+        const projectedOverCap = projection.projectedSpend > projectedAllowed + 0.004;
+
+        if (overCap) {
+          els.paceDecision.className = "answer-value is-bad";
+          els.paceDecision.textContent = "花费已超过利润上限";
+          els.paceDecisionDetail.textContent =
+            `当前花费 ${moneyFormat.format(actualSpend)}，比 ${clickFormat.format(orderCount)} 单支撑的 ${moneyFormat.format(finalAllowed)} 多 ${moneyFormat.format(actualSpend - finalAllowed)}。先降速，不要用再加点击来掩盖超花费。`;
+        } else if (cpcTooHigh) {
+          els.paceDecision.className = "answer-value is-bad";
+          els.paceDecision.textContent = "点击偏少，CPC 偏高";
+          els.paceDecisionDetail.textContent =
+            `花 ${moneyFormat.format(actualSpend)} 只买到 ${clickFormat.format(actualClicks)} 次点击，实际 CPC ${actualCpc === null ? "无法计算" : moneyFormat.format(actualCpc)}，高于目标 ${moneyFormat.format(targetCpc)}。同样的花费至少要有 ${clickFormat.format(clickFloor)} 次点击。`;
+        } else if (projectedOverCap) {
+          els.paceDecision.className = "answer-value is-warn";
+          els.paceDecision.textContent = "当前正常，收盘预计超花费帽";
+          els.paceDecisionDetail.textContent =
+            `当前花费仍在 ${moneyFormat.format(finalAllowed)} 内，但按当前速度预计收盘 ${moneyFormat.format(projection.projectedSpend)}，高于预计订单支撑的 ${moneyFormat.format(projectedAllowed)}。`;
+        } else if (orderPaceRatio !== null && orderPaceRatio < 0.85) {
+          els.paceDecision.className = "answer-value is-warn";
+          els.paceDecision.textContent = "点击效率正常，订单偏慢";
+          els.paceDecisionDetail.textContent =
+            `当前 CPC 没有超过目标，花费也在利润帽内；但订单只有历史同期的 ${speedFormat.format(orderPaceRatio)} 倍，先盯转化，不要只因为还能花就继续加速。`;
+        } else {
+          els.paceDecision.className = "answer-value is-good";
+          els.paceDecision.textContent = orderPaceRatio !== null && orderPaceRatio >= 1.15
+            ? "订单领先，花费仍在利润帽内"
+            : "点击与花费节奏正常";
+          els.paceDecisionDetail.textContent =
+            `当前 CPC ${moneyFormat.format(actualCpc)} 不高于目标 ${moneyFormat.format(targetCpc)}，花费 ${moneyFormat.format(actualSpend)} 仍在 ${clickFormat.format(orderCount)} 单支撑的 ${moneyFormat.format(finalAllowed)} 内。${clickGap >= 0 ? `同花费下点击多 ${clickFormat.format(clickGap)} 次。` : ""}`;
+        }
       }
 
       function renderSpendDecision() {
@@ -3728,7 +4010,9 @@
           orderCount,
           cpaAllowed,
           finalAllowed,
-          remaining
+          remaining,
+          actualSpend,
+          actualSpendSource
         } = result;
 
         els.currentTotalOrders.value = orderCount === null
@@ -3740,23 +4024,21 @@
         els.latestEuroSpend.value = latestSpend.hasValue
           ? moneyFormat.format(latestSpend.value)
           : "尚未录入";
-        els.convertSpendButton.disabled =
-          !latestSpend.hasValue || clickCheck.exchangeRate === null || !(clickCheck.exchangeRate > 0);
-        els.exchangeRateHint.textContent = latestSpend.hasValue
-          ? `最新 €${Number(latestSpend.value).toFixed(2)}；填写汇率后可换算为人民币。`
-          : "填写汇率后，可按最新欧元花费换算人民币。";
-        els.actualSpendCnyHint.textContent = latestSpend.hasValue && clickCheck.exchangeRate !== null
-          ? `按 ${Number(clickCheck.exchangeRate).toFixed(4)} 换算约为 ${cnyFormat.format(latestSpend.value * clickCheck.exchangeRate)}。`
-          : "可直接填，也可按欧元花费和汇率换算。";
+        els.actualSpendEurHint.textContent = actualSpendSource === "timeline"
+          ? `留空会自动使用今日盯盘最新累计 ${moneyFormat.format(latestSpend.value)}；填写后以填写值为准。`
+          : actualSpendSource === "manual"
+            ? `当前按手动值 ${moneyFormat.format(actualSpend)} 判断；清空后改为今日盯盘最新累计。`
+          : "填写广告后台当前实际花费，所有金额统一按欧元计算。";
 
-        els.cpaAllowedSpend.textContent = cpaAllowed === null ? "—" : cnyFormat.format(cpaAllowed);
+        els.cpaAllowedSpend.textContent = cpaAllowed === null ? "—" : moneyFormat.format(cpaAllowed);
         els.tierAllowedSpend.textContent = tierBudget === null
           ? "—"
-          : cnyFormat.format(tierBudget);
-        els.finalAllowedSpend.textContent = finalAllowed === null ? "—" : cnyFormat.format(finalAllowed);
-        els.actualSpendCnyDisplay.textContent = clickCheck.actualSpendCny === null
+          : moneyFormat.format(tierBudget);
+        els.finalAllowedSpend.textContent = finalAllowed === null ? "—" : moneyFormat.format(finalAllowed);
+        els.actualSpendEurDisplay.textContent = actualSpend === null
           ? "—"
-          : cnyFormat.format(clickCheck.actualSpendCny);
+          : moneyFormat.format(actualSpend);
+        renderClickPace(result);
 
         if (orderCount === null) {
           els.spendDecision.className = "answer-value";
@@ -3764,37 +4046,29 @@
           els.spendDecisionDetail.textContent = "先在“今日盯盘”录入 ONO3P 累计总单；页面会自动用最新一次录入计算。";
           return;
         }
-        if (tierBudget === null) {
-          els.spendDecision.className = "answer-value";
-          els.spendDecision.textContent = "等待额度";
-          els.spendDecisionDetail.textContent = ONO3P_BUDGET_TIERS.length
-            ? "请选择今日总单档位，套用固定的最高广告额度。"
-            : "请填写该产品当天的最高广告额度。";
-          return;
-        }
-        if (clickCheck.actualSpendCny === null) {
+        if (actualSpend === null) {
           els.spendDecision.className = "answer-value";
           els.spendDecision.textContent = "等待花费";
           els.spendDecisionDetail.textContent =
-            `按 ${clickFormat.format(orderCount)} 单 × CPA ${cnyFormat.format(cpa)}，并受最高额度封顶后，最终允许花费 ${cnyFormat.format(finalAllowed)}。`;
+            `按 ${clickFormat.format(orderCount)} 单 × CPA ${moneyFormat.format(cpa)}${tierBudget === null ? "（最高额度未填，暂按 CPA）" : "，并与最高额度取较小值"}，最终允许花费 ${moneyFormat.format(finalAllowed)}。`;
           return;
         }
 
         if (remaining < -0.004) {
           els.spendDecision.className = "answer-value is-bad";
-          els.spendDecision.textContent = `已超出 ${cnyFormat.format(Math.abs(remaining))}`;
+          els.spendDecision.textContent = `已超出 ${moneyFormat.format(Math.abs(remaining))}`;
           els.spendDecisionDetail.textContent =
-            `最终允许花费 ${cnyFormat.format(finalAllowed)}，当前实际 ${cnyFormat.format(clickCheck.actualSpendCny)}。`;
+            `最终允许花费 ${moneyFormat.format(finalAllowed)}，当前实际 ${moneyFormat.format(actualSpend)}。`;
         } else if (remaining <= 0.004) {
           els.spendDecision.className = "answer-value";
           els.spendDecision.textContent = "额度正好用完";
           els.spendDecisionDetail.textContent =
-            `最终允许花费与当前实际花费均为 ${cnyFormat.format(finalAllowed)}，不建议继续加投。`;
+            `最终允许花费与当前实际花费均为 ${moneyFormat.format(finalAllowed)}，不建议继续加投。`;
         } else {
           els.spendDecision.className = "answer-value is-good";
-          els.spendDecision.textContent = `还能投放 ${cnyFormat.format(remaining)}`;
+          els.spendDecision.textContent = `还能投放 ${moneyFormat.format(remaining)}`;
           els.spendDecisionDetail.textContent =
-            `最终允许花费 ${cnyFormat.format(finalAllowed)}，当前实际 ${cnyFormat.format(clickCheck.actualSpendCny)}。`;
+            `最终允许花费 ${moneyFormat.format(finalAllowed)}，当前实际 ${moneyFormat.format(actualSpend)}。`;
         }
       }
 
@@ -3970,12 +4244,12 @@
         if (result.remaining !== null) {
           const remaining = result.remaining;
           spendText = remaining < -0.004
-            ? `超支 ${cnyFormat.format(Math.abs(remaining))}`
+            ? `超支 ${moneyFormat.format(Math.abs(remaining))}`
             : remaining <= 0.004
               ? "额度用尽"
-              : `还能投 ${cnyFormat.format(remaining)}`;
+              : `还能投 ${moneyFormat.format(remaining)}`;
         }
-        return `点击 ${filled}/24 已填，达标 ${met} · ${spendText}`;
+        return `点击 ${filled}/24 已填，高于转化参考 ${met} · ${spendText}`;
       }
 
       function renderVersions() {
@@ -3995,7 +4269,7 @@
             <td data-label="说明"><span class="version-note" title="${escapeHtml(version.note || "")}">${escapeHtml(version.note || "手动留档")}</span></td>
             <td class="num" data-label="ONO3P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.ono3p.clicks)} / ${moneyFormat.format(totals.ono3p.spend)} / ${countText(totals.ono3p.totalOrders)}（${countText(totals.ono3p.adOrders)} / ${countText(totals.ono3p.naturalOrders)}）</td>
             <td class="num" data-label="L61P 点击 / 花费 / 总单（广告 / 自然）">${clickFormat.format(totals.l61p.clicks)} / ${moneyFormat.format(totals.l61p.spend)} / ${countText(totals.l61p.totalOrders)}（${countText(totals.l61p.adOrders)} / ${countText(totals.l61p.naturalOrders)}）</td>
-            <td data-label="点击达标 / 投放判断">${clickSummary}</td>
+            <td data-label="点击节奏 / 投放判断">${clickSummary}</td>
             <td data-label="操作"><button class="button-text" type="button" data-restore-version="${escapeHtml(version.id)}">载入此版</button></td>
           `;
           return tr;
@@ -4088,12 +4362,12 @@
           ["L61P每日广告额度(EUR)", Number(day.budgets.l61p).toFixed(2)],
           ["L61P额度实际花费(EUR)", latestRecorded(day, "l61p", "spend").value.toFixed(2)],
           ["ONO3P当前累计总单", spendResult.orderCount === null ? "" : Number(spendResult.orderCount).toFixed(0)],
-          ["ONO3P单均CPA(CNY)", Number(spendResult.cpa).toFixed(2)],
+          ["ONO3P单均CPA(EUR)", Number(spendResult.cpa).toFixed(2)],
           ["ONO3P固定总单档位", spendResult.clickCheck.selectedOrderTier ?? ""],
-          ["ONO3P按单量允许花费(CNY)", spendResult.cpaAllowed === null ? "" : Number(spendResult.cpaAllowed).toFixed(2)],
-          ["ONO3P固定最高额度(CNY)", spendResult.tierBudget === null ? "" : Number(spendResult.tierBudget).toFixed(2)],
-          ["ONO3P最终允许花费(CNY)", spendResult.finalAllowed === null ? "" : Number(spendResult.finalAllowed).toFixed(2)],
-          ["ONO3P当前实际广告花费(CNY)", spendResult.actualSpend === null ? "" : Number(spendResult.actualSpend).toFixed(2)],
+          ["ONO3P按单量允许花费(EUR)", spendResult.cpaAllowed === null ? "" : Number(spendResult.cpaAllowed).toFixed(2)],
+          ["ONO3P固定最高额度(EUR)", spendResult.tierBudget === null ? "" : Number(spendResult.tierBudget).toFixed(2)],
+          ["ONO3P最终允许花费(EUR)", spendResult.finalAllowed === null ? "" : Number(spendResult.finalAllowed).toFixed(2)],
+          ["ONO3P当前实际广告花费(EUR)", spendResult.actualSpend === null ? "" : Number(spendResult.actualSpend).toFixed(2)],
           [
             "ONO3P投放判断",
             spendResult.remaining === null
@@ -4171,8 +4445,8 @@
         }
         rows.push(
           [],
-          ["点击达标（手动小时出单基准）"],
-          ["中国时间", "DE时间", "小时日均订单", "每单所需点击", "目标点击", "实际点击", "状态"]
+          ["点击与花费节奏（历史转化参考）"],
+          ["中国时间", "DE时间", "小时日均订单", "每单所需点击", "转化参考点击", "实际点击", "状态"]
         );
         for (let hour = 0; hour < 24; hour += 1) {
           const average = referenceHourOrderAverage(day, hour);
@@ -4366,7 +4640,7 @@
           const day = currentDay();
           const value = els.manualTierBudgetInput.value === "" ? null : Number(els.manualTierBudgetInput.value);
           if (value !== null && (!Number.isFinite(value) || value < 0)) return;
-          day.clickCheck.manualTierBudget = value;
+          day.clickCheck.manualTierBudgetEur = value;
           renderSpendDecision();
           scheduleSave();
         });
@@ -4387,40 +4661,28 @@
           if (Number.isFinite(value) && value > 0) els.cpaInput.value = value.toFixed(2);
         });
 
-        els.exchangeRateInput.addEventListener("input", () => {
-          const value = els.exchangeRateInput.value === "" ? null : Number(els.exchangeRateInput.value);
-          if (value !== null && (!Number.isFinite(value) || value <= 0)) return;
-          currentDay().clickCheck.exchangeRate = value;
+        els.targetCpcInput.addEventListener("input", () => {
+          const value = Number(els.targetCpcInput.value);
+          if (!Number.isFinite(value) || value <= 0) return;
+          currentDay().clickCheck.targetCpc = value;
           renderSpendDecision();
           scheduleSave();
         });
-        els.exchangeRateInput.addEventListener("change", () => {
-          const value = Number(els.exchangeRateInput.value);
-          if (Number.isFinite(value) && value > 0) els.exchangeRateInput.value = value.toFixed(4);
+        els.targetCpcInput.addEventListener("change", () => {
+          const value = Number(els.targetCpcInput.value);
+          if (Number.isFinite(value) && value > 0) els.targetCpcInput.value = value.toFixed(2);
         });
 
-        els.actualSpendCnyInput.addEventListener("input", () => {
-          const value = els.actualSpendCnyInput.value === "" ? null : Number(els.actualSpendCnyInput.value);
+        els.actualSpendEurInput.addEventListener("input", () => {
+          const value = els.actualSpendEurInput.value === "" ? null : Number(els.actualSpendEurInput.value);
           if (value !== null && (!Number.isFinite(value) || value < 0)) return;
-          currentDay().clickCheck.actualSpendCny = value;
+          currentDay().clickCheck.actualSpendEur = value;
           renderSpendDecision();
           scheduleSave();
         });
-        els.actualSpendCnyInput.addEventListener("change", () => {
-          const value = Number(els.actualSpendCnyInput.value);
-          if (Number.isFinite(value) && value >= 0) els.actualSpendCnyInput.value = value.toFixed(2);
-        });
-
-        els.convertSpendButton.addEventListener("click", () => {
-          const day = currentDay();
-          const latestSpend = latestRecorded(day, "ono3p", "spend");
-          const rate = Number(day.clickCheck.exchangeRate);
-          if (!latestSpend.hasValue || !Number.isFinite(rate) || rate <= 0) return;
-          const converted = Math.round(latestSpend.value * rate * 100) / 100;
-          day.clickCheck.actualSpendCny = converted;
-          els.actualSpendCnyInput.value = converted.toFixed(2);
-          renderSpendDecision();
-          scheduleSave();
+        els.actualSpendEurInput.addEventListener("change", () => {
+          const value = Number(els.actualSpendEurInput.value);
+          if (Number.isFinite(value) && value >= 0) els.actualSpendEurInput.value = value.toFixed(2);
         });
 
         els.clicksPerOrderInput.addEventListener("input", () => {
@@ -4432,7 +4694,7 @@
             ratioCells.forEach((cell) => {
               cell.textContent = clickFormat.format(value);
             });
-            const targetCell = row.querySelector('[data-label="目标点击"]');
+            const targetCell = row.querySelector('[data-label="转化参考点击"]');
             if (!targetCell) continue;
             const hour = Array.from(els.clickCheckBody.children).indexOf(row);
             const average = referenceHourOrderAverage(currentDay(), hour);
@@ -4461,7 +4723,7 @@
           else day.clickCheck.hourlyOrders[key] = value;
           if (orderInput) {
             const average = referenceHourOrderAverage(day, Number(key));
-            const targetCell = orderInput.closest("tr")?.querySelector('[data-label="目标点击"]');
+            const targetCell = orderInput.closest("tr")?.querySelector('[data-label="转化参考点击"]');
             if (targetCell) {
               targetCell.textContent = average === null
                 ? "—"
