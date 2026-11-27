@@ -1029,6 +1029,10 @@
       line-height: 1.45;
     }
 
+    .form-field > small.is-stale {
+      color: var(--warn);
+    }
+
     .form-field input[readonly] {
       background: var(--surface-2);
       color: var(--ink-2);
@@ -2359,7 +2363,7 @@
             <div class="form-field">
               <label for="currentTotalOrders">当前累计总单</label>
               <input id="currentTotalOrders" type="text" readonly aria-describedby="currentTotalOrdersHint">
-              <small id="currentTotalOrdersHint">自动取今日盯盘里最新录入的总单。</small>
+              <small id="currentTotalOrdersHint">自动取今日盯盘里最后一次累计总单，并标明时间。</small>
             </div>
             <div class="form-field">
               <label for="latestEuroSpend">广告后台累计花费</label>
@@ -4361,6 +4365,12 @@
         const latestOrders = latestRecorded(day, "ono3p", "totalOrders");
         const latestClicks = latestRecorded(day, "ono3p", "clicks");
         const latestSpend = latestRecorded(day, "ono3p", "spend");
+        const latestJointMinutes = Math.max(
+          latestClicks.hasValue ? latestClicks.minutes : -1,
+          latestSpend.hasValue ? latestSpend.minutes : -1
+        );
+        const ordersBehindLatest = latestOrders.hasValue &&
+          latestJointMinutes > latestOrders.minutes;
         const tier = selectedBudgetTier(clickCheck);
         const tierBudget = tier
           ? tier.budget
@@ -4402,6 +4412,8 @@
           actualSpendSource,
           projection,
           pace,
+          latestJointMinutes,
+          ordersBehindLatest,
           projectedCpaAllowed,
           projectedAllowed,
           remaining: finalAllowed === null || actualSpend === null ? null : finalAllowed - actualSpend
@@ -4415,7 +4427,10 @@
           latestClicks,
           finalAllowed,
           actualSpend,
-          pace
+          pace,
+          latestOrders,
+          latestJointMinutes,
+          ordersBehindLatest
         } = result;
         const now = chinaNowSnapshot();
         const targetCpc = Number(clickCheck.targetCpc) > 0
@@ -4450,6 +4465,9 @@
           : finalAllowed - actualSpend;
         const nearCap = remaining !== null && finalAllowed > 0 &&
           remaining >= -0.004 && remaining <= finalAllowed * 0.1;
+        const missingOrdersAt = ordersBehindLatest
+          ? timeFromMinutes(latestJointMinutes)
+          : null;
 
         const latestText = latestClicks.hasValue
           ? sameDataDay
@@ -4539,6 +4557,15 @@
             "is-bad",
             "花费过快",
             `<strong>花费速度过快。</strong>当前允许花费 ${moneyFormat.format(finalAllowed)}，已经用了 ${moneyFormat.format(actualSpend)}，超出 ${moneyFormat.format(Math.abs(remaining))}。先降预算或竞价，等订单跟上再放量；不要用继续加点击来掩盖超花费。`
+          );
+          return;
+        }
+
+        if (ordersBehindLatest) {
+          setVerdict(
+            "is-warn",
+            "总单待更新",
+            `<strong>点击和花费已录到 ${missingOrdersAt}，累计总单还停在 ${latestOrders.time}。</strong>当前按 ${latestOrders.time} 的 ${clickFormat.format(latestOrders.value)} 单暂算花费额度。如果 ${missingOrdersAt} 还没有新增订单，也请在“今日盯盘”的 ${missingOrdersAt} 总单里再填一次当前累计数，这样本段新增单数和判断才是完整的。`
           );
           return;
         }
@@ -4638,7 +4665,9 @@
           actualSpend,
           projection,
           projectedAllowed,
-          pace
+          pace,
+          latestJointMinutes,
+          ordersBehindLatest
         } = result;
         const targetCpc = Number(clickCheck.targetCpc) > 0
           ? Number(clickCheck.targetCpc)
@@ -4754,15 +4783,23 @@
           finalAllowed,
           remaining,
           actualSpend,
-          actualSpendSource
+          actualSpendSource,
+          latestJointMinutes,
+          ordersBehindLatest
         } = result;
 
+        const missingOrdersAt = ordersBehindLatest
+          ? timeFromMinutes(latestJointMinutes)
+          : null;
         els.currentTotalOrders.value = orderCount === null
           ? "尚未录入"
-          : `${clickFormat.format(orderCount)} 单`;
+          : `${clickFormat.format(orderCount)} 单 · ${latestOrders.time}`;
+        els.currentTotalOrdersHint.classList.toggle("is-stale", orderCount !== null && ordersBehindLatest);
         els.currentTotalOrdersHint.textContent = orderCount === null
           ? "在“今日盯盘”录入累计总单后自动带入。"
-          : `取 ${latestOrders.time} 的最新累计总单。`;
+          : ordersBehindLatest
+            ? `${missingOrdersAt} 的点击和花费已更新，总单还停在 ${latestOrders.time}；请补录 ${missingOrdersAt} 的累计总单。`
+            : `截至 ${latestOrders.time}，已与最新点击和花费同步。`;
         els.latestEuroSpend.value = latestSpend.hasValue
           ? moneyFormat.format(latestSpend.value)
           : "尚未录入";
@@ -5530,7 +5567,7 @@
       renderAll();
       saveStore(false);
       window.setInterval(() => {
-        if (!document.hidden) renderLivePaceCard();
+        if (!document.hidden) renderSpendDecision();
       }, 60000);
     })();
   </script>
