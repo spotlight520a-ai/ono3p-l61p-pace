@@ -1112,6 +1112,41 @@
       width: 86px;
     }
 
+    .click-cap-summary {
+      margin: 18px 0 0;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .click-cap-summary strong {
+      color: var(--ink);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .click-milestone-table {
+      min-width: 960px;
+    }
+
+    .click-milestone-table th:nth-child(1) {
+      width: 96px;
+    }
+
+    .click-milestone-table th:nth-child(2) {
+      width: 86px;
+    }
+
+    .milestone-value {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .milestone-value.is-projected {
+      color: var(--ink-3);
+    }
+
     .click-actual-input {
       width: 100px;
       min-height: 30px;
@@ -1522,6 +1557,7 @@
       .history-table,
       .version-table,
       .click-check-table,
+      .click-milestone-table,
       .budget-tier-table {
         min-width: 0;
       }
@@ -1550,6 +1586,12 @@
       .click-check-table th,
       .click-check-table td,
       .click-check-table thead,
+      .click-milestone-table,
+      .click-milestone-table tbody,
+      .click-milestone-table tr,
+      .click-milestone-table th,
+      .click-milestone-table td,
+      .click-milestone-table thead,
       .budget-tier-table,
       .budget-tier-table tbody,
       .budget-tier-table tr,
@@ -1563,6 +1605,7 @@
       .history-table thead,
       .version-table thead,
       .click-check-table thead,
+      .click-milestone-table thead,
       .budget-tier-table thead {
         display: none;
       }
@@ -1688,6 +1731,7 @@
       .history-table tbody tr,
       .version-table tbody tr,
       .click-check-table tbody tr,
+      .click-milestone-table tbody tr,
       .budget-tier-table tbody tr {
         padding: 12px 0;
         border-bottom: 1px solid var(--line);
@@ -1699,6 +1743,8 @@
       .version-table td,
       .click-check-table th,
       .click-check-table td,
+      .click-milestone-table th,
+      .click-milestone-table td,
       .budget-tier-table th,
       .budget-tier-table td {
         height: auto;
@@ -1758,6 +1804,7 @@
       }
 
       .click-check-table td::before,
+      .click-milestone-table td::before,
       .budget-tier-table td::before {
         content: attr(data-label);
         display: block;
@@ -2160,10 +2207,10 @@
             </div>
           </div>
           <div class="click-summary" id="clickCheckSummary" aria-live="polite">
-            <span>已填 <strong id="clickFilledCount">0</strong> 小时</span>
-            <span>高于参考 <strong id="clickMetCount">0</strong></span>
-            <span>低于参考 <strong id="clickMissedCount">0</strong></span>
-            <span>最大转化差 <strong id="clickLargestGap">—</strong></span>
+            <span>已记录 <strong id="clickFilledCount">0</strong> 个整点</span>
+            <span>高于历史新增 <strong id="clickMetCount">0</strong></span>
+            <span>少于历史新增 <strong id="clickMissedCount">0</strong></span>
+            <span>最大历史差 <strong id="clickLargestGap">—</strong></span>
           </div>
         </div>
 
@@ -2212,22 +2259,51 @@
 
         <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="clickCheckTitle">
           <table class="click-check-table">
-            <caption>中国时间和德国时间对照的每小时订单均值、历史转化参考点击、实际点击与相对参考状态</caption>
+            <caption>中国时间和德国时间对照的每小时订单均值、历史参考新增、累计点击与系统算出的分段新增</caption>
             <thead>
               <tr>
                 <th scope="col">中国时间</th>
                 <th scope="col">DE 时间</th>
                 <th scope="col" class="num">小时日均订单</th>
-                <th scope="col" class="num">每单所需点击</th>
-                <th scope="col" class="num">转化参考点击</th>
-                <th scope="col" class="num">实际点击</th>
-                <th scope="col">状态</th>
+                <th scope="col" class="num">历史参考新增</th>
+                <th scope="col" class="num">累计点击</th>
+                <th scope="col" class="num">较上次记录新增</th>
+                <th scope="col">与历史新增比较</th>
               </tr>
             </thead>
             <tbody id="clickCheckBody"></tbody>
           </table>
         </div>
-        <p class="source-note" id="clickCheckSourceNote">转化参考点击 = 小时日均订单 × 每单所需点击，只反映历史转化；盈利与点击效率看上方的实际花费、实际点击和目标 CPC。历史小时若来自德国后台，先按 DE/CN 时间差对齐到中国时间再填。</p>
+        <p class="source-note" id="clickCheckSourceNote">累计点击直接取「今日盯盘」的累计录入；较上次记录新增 = 本次累计 − 上次累计。历史参考新增 = 小时日均订单 × 历史转化参考，只用于对照，不是达标硬线。</p>
+
+        <div id="clickMilestoneSection" aria-labelledby="clickMilestoneTitle">
+          <div class="section-heading">
+            <div>
+              <h2 id="clickMilestoneTitle">各时点累计点击参考上限</h2>
+              <p class="section-note">参考点击上限 = 累计总单 × CPA ÷ 目标 CPC。低于上限只表示没有买满点击，不等于不达标；高于这个数时，只要实际 CPC 不超目标、花费不超单量帽，也仍然正常。</p>
+            </div>
+          </div>
+          <p class="click-cap-summary" id="clickCapCurrent" aria-live="polite">录入累计总单、累计点击后，这里会显示当前单量对应的点击上限。</p>
+          <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="clickMilestoneTitle">
+            <table class="click-milestone-table">
+              <caption>ONO3P 从开始盯盘到收盘的累计总单、目标 CPC 下参考点击上限、实际或预计累计点击和差额</caption>
+              <thead>
+                <tr>
+                  <th scope="col">中国时间</th>
+                  <th scope="col">DE 时间</th>
+                  <th scope="col" class="num">累计总单</th>
+                  <th scope="col" class="num">参考点击上限</th>
+                  <th scope="col" class="num">累计点击</th>
+                  <th scope="col" class="num">本段新增</th>
+                  <th scope="col" class="num">距参考上限</th>
+                  <th scope="col">状态</th>
+                </tr>
+              </thead>
+              <tbody id="clickMilestoneBody"></tbody>
+            </table>
+          </div>
+          <p class="source-note">实际行取已录入的累计值；预计行按最后一次录入后的速度外推。每天广告最高额度仍单独与单量利润花费取较小值。</p>
+        </div>
       </section>
     </section>
 
@@ -2458,6 +2534,8 @@
         clickLargestGap: document.getElementById("clickLargestGap"),
         clickReferenceNote: document.getElementById("clickReferenceNote"),
         clickCheckSourceNote: document.getElementById("clickCheckSourceNote"),
+        clickCapCurrent: document.getElementById("clickCapCurrent"),
+        clickMilestoneBody: document.getElementById("clickMilestoneBody"),
         paceDecision: document.getElementById("paceDecision"),
         paceDecisionDetail: document.getElementById("paceDecisionDetail"),
         clickAssumptionWarning: document.getElementById("clickAssumptionWarning"),
@@ -3704,30 +3782,54 @@
         }));
       }
 
+      function hourlyClickSnapshots(day) {
+        const snapshots = new Map();
+        const clickSeries = metricSeries(day, "ono3p", "clicks");
+        let lastActual = null;
+        for (const row of clickSeries) {
+          if (row.kind !== "actual" && row.kind !== "start") continue;
+          const added = lastActual === null ? null : row.value - lastActual.value;
+          snapshots.set(row.minutes, {
+            row,
+            cumulative: row.value,
+            added: added !== null && added >= 0 ? added : null,
+            sinceMinutes: lastActual ? lastActual.minutes : null
+          });
+          lastActual = row;
+        }
+        return snapshots;
+      }
+
       function clickStatusFor(orderAverage, targetClicks, actualClicks) {
         if (orderAverage === null || targetClicks === null) {
           return { text: "待填基准", className: "" };
         }
         if (actualClicks === null) {
-          return { text: "待填写", className: "" };
+          return { text: "未记录", className: "" };
         }
         if (targetClicks <= 0) {
           return {
-            text: actualClicks > 0 ? "高于转化参考" : "参考为 0",
-            className: actualClicks > 0 ? "is-ok" : ""
+            text: actualClicks > 0 ? "历史参考为 0" : "参考为 0",
+            className: "",
+            tone: actualClicks > 0 ? "above" : null
           };
         }
         const ratio = actualClicks / targetClicks;
         if (ratio < 0.9) {
           return {
-            text: `低于参考 · 差 ${clickFormat.format(targetClicks - actualClicks)}`,
-            className: "is-warn"
+            text: `少于历史 ${clickFormat.format(targetClicks - actualClicks)}`,
+            className: "",
+            tone: "below"
           };
         }
         if (ratio > 1.1) {
-          return { text: "高于转化参考", className: "is-ok" };
+          return {
+            text: `多于历史 ${clickFormat.format(actualClicks - targetClicks)}`,
+            className: "",
+            tone: "above"
+          };
         }
-        return { text: "接近转化参考", className: "" };
+        return { text: "接近历史", className: "", tone: "near" };
       }
 
       function updateClickCheckComputed(day) {
@@ -3737,17 +3839,19 @@
         let missed = 0;
         let largestGap = null;
         const bodyRows = Array.from(els.clickCheckBody.children);
+        const snapshots = hourlyClickSnapshots(day);
 
         for (let hour = 0; hour < 24; hour += 1) {
           const average = referenceHourOrderAverage(day, hour);
           const target = average === null ? null : average * clickCheck.clicksPerOrder;
-          const actual = clickCheck.actualClicks[pad(hour)] ?? null;
-          const status = clickStatusFor(average, target, actual);
-          if (actual !== null) filled += 1;
-          if (status.className === "is-ok") met += 1;
-          if (status.className === "is-warn") {
+          const snapshot = snapshots.get(hour * 60) || null;
+          const added = snapshot ? snapshot.added : null;
+          const status = clickStatusFor(average, target, added);
+          if (snapshot) filled += 1;
+          if (status.tone === "above") met += 1;
+          if (status.tone === "below") {
             missed += 1;
-            const gap = target - actual;
+            const gap = target - added;
             if (largestGap === null || gap > largestGap.gap) largestGap = { hour, gap };
           }
           const badge = bodyRows[hour] && bodyRows[hour].querySelector(".click-status");
@@ -3778,17 +3882,19 @@
         els.clicksPerOrderInput.value = Number(clickCheck.clicksPerOrder).toFixed(1);
 
         els.clickReferenceNote.textContent =
-          "当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断，历史小时出单只作转化参考。";
+          "当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断。下方历史小时只对照转化，不单独判达标。";
         els.clickCheckSourceNote.textContent =
-          "转化参考点击 = 小时日均订单 × 每单所需点击，只反映历史转化；盈利与点击效率看上方的实际花费、实际点击和目标 CPC。历史小时若来自德国后台，先按 DE/CN 时间差对齐到中国时间再填。";
+          "累计点击直接取「今日盯盘」的累计录入；较上次记录新增 = 本次累计 − 上次累计。历史参考新增 = 小时日均订单 × 历史转化参考，只用于对照，不是达标硬线。";
 
         const rows = [];
+        const snapshots = hourlyClickSnapshots(day);
         for (let hour = 0; hour < 24; hour += 1) {
           const key = pad(hour);
           const average = referenceHourOrderAverage(day, hour);
           const target = average === null ? null : average * clickCheck.clicksPerOrder;
-          const actual = clickCheck.actualClicks[key] ?? null;
-          const status = clickStatusFor(average, target, actual);
+          const snapshot = snapshots.get(hour * 60) || null;
+          const added = snapshot ? snapshot.added : null;
+          const status = clickStatusFor(average, target, added);
 
           const tr = document.createElement("tr");
           const averageCell = average === null
@@ -3800,18 +3906,121 @@
             <th scope="row">${key}:00</th>
             <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, hour * 60)}</td>
             <td class="num" data-label="小时日均订单">${averageCell}</td>
-            <td class="num" data-label="每单所需点击">${clickFormat.format(clickCheck.clicksPerOrder)}</td>
-            <td class="num" data-label="转化参考点击">${target === null ? "—" : clickFormat.format(target)}</td>
-            <td class="num" data-label="实际点击"><input class="click-actual-input" type="number" min="0" step="1"
-              inputmode="numeric" data-click-hour-actual="${key}" value="${actual ?? ""}"
-              aria-label="中国时间 ${key}:00 实际新增点击"></td>
-            <td data-label="状态"><span class="click-status ${status.className}">${status.text}</span></td>
+            <td class="num" data-label="历史参考新增">${target === null ? "—" : clickFormat.format(target)}</td>
+            <td class="num" data-label="累计点击">${snapshot ? clickFormat.format(snapshot.cumulative) : "—"}</td>
+            <td class="num" data-label="较上次记录新增">${added === null ? "—" : clickFormat.format(added)}</td>
+            <td data-label="与历史新增比较"><span class="click-status ${status.className}">${status.text}</span></td>
           `;
           rows.push(tr);
         }
         els.clickCheckBody.replaceChildren(...rows);
         updateClickCheckComputed(day);
         renderSpendDecision();
+      }
+
+      function clickMilestoneModel(day, spendResult = calculateSpendDecision(day)) {
+        const clickCheck = day.clickCheck;
+        const cpa = Number(clickCheck.cpa) || DEFAULT_CPA;
+        const targetCpc = Number(clickCheck.targetCpc) || DEFAULT_TARGET_CPC;
+        const orderSeries = metricSeries(day, "ono3p", "totalOrders");
+        const clickSeries = metricSeries(day, "ono3p", "clicks");
+        const spendSeries = metricSeries(day, "ono3p", "spend");
+
+        const rows = orderSeries.map((orderRow, index) => {
+          const clickRow = clickSeries[index];
+          const spendRow = spendSeries[index];
+          const orderKnown = ["actual", "start", "projected"].includes(orderRow.kind);
+          const clickKnown = clickRow && ["actual", "start", "projected"].includes(clickRow.kind);
+          const spendKnown = spendRow && ["actual", "start", "projected"].includes(spendRow.kind);
+          const projected = orderRow.kind === "projected" || (clickRow && clickRow.kind === "projected");
+          const previousClick = index > 0 ? clickSeries[index - 1] : null;
+          const previousClickKnown = previousClick &&
+            ["actual", "start", "projected"].includes(previousClick.kind);
+          const added = clickKnown && previousClickKnown && clickRow.value >= previousClick.value
+            ? clickRow.value - previousClick.value
+            : null;
+          const clickLimit = orderKnown ? orderRow.value * cpa / targetCpc : null;
+          const remaining = clickLimit !== null && clickKnown ? clickLimit - clickRow.value : null;
+          const overSpend = spendKnown && orderKnown && spendRow.value > orderRow.value * cpa + 0.004;
+
+          let status = { text: "待录入", className: "" };
+          if (clickLimit !== null && clickKnown) {
+            if (overSpend) {
+              status = { text: "花费超单量帽", className: "is-bad" };
+            } else if (remaining < -0.004) {
+              status = {
+                text: projected ? "预计高于参考" : "高于参考",
+                className: spendKnown ? "is-ok" : ""
+              };
+            } else if (projected) {
+              status = { text: "预计上限内", className: "is-ok" };
+            } else {
+              status = { text: "上限内", className: "is-ok" };
+            }
+          }
+
+          return {
+            minutes: orderRow.minutes,
+            orders: orderKnown ? orderRow.value : null,
+            clickLimit,
+            clicks: clickKnown ? clickRow.value : null,
+            added,
+            remaining,
+            projected: Boolean(projected),
+            status
+          };
+        });
+
+        return {
+          rows,
+          cpa,
+          targetCpc,
+          spendResult
+        };
+      }
+
+      function renderClickMilestones(day, spendResult) {
+        const model = clickMilestoneModel(day, spendResult);
+        const latestOrders = latestRecorded(day, "ono3p", "totalOrders");
+        const latestClicks = latestRecorded(day, "ono3p", "clicks");
+
+        if (!latestOrders.hasValue || !latestClicks.hasValue) {
+          els.clickCapCurrent.textContent =
+            "录入累计总单、累计点击后，这里会显示当前单量对应的点击上限。";
+        } else {
+          const clickLimit = latestOrders.value * model.cpa / model.targetCpc;
+          const remaining = clickLimit - latestClicks.value;
+          const remainingText = remaining >= -0.004
+            ? `距离参考上限还有 <strong>${clickFormat.format(Math.max(0, remaining))}</strong> 次`
+            : `比参考上限多 <strong>${clickFormat.format(Math.abs(remaining))}</strong> 次`;
+          els.clickCapCurrent.innerHTML =
+            `当前 <strong>${clickFormat.format(latestOrders.value)}</strong> 单 × ${moneyFormat.format(model.cpa)} ÷ ${moneyFormat.format(model.targetCpc)} = <strong>${clickFormat.format(clickLimit)}</strong> 次参考上限；` +
+            `当前累计 <strong>${clickFormat.format(latestClicks.value)}</strong> 次，${remainingText}。` +
+            "低于上限只表示没有买满点击；高于参考时，只要 CPC 和总花费都没有超，也仍是正常转化。";
+        }
+
+        els.clickMilestoneBody.replaceChildren(...model.rows.map((row) => {
+          const tr = document.createElement("tr");
+          const valueClass = row.projected ? "milestone-value is-projected" : "milestone-value";
+          const formatValue = (value) => value === null ? "—" : clickFormat.format(value);
+          const remainingText = row.remaining === null
+            ? "—"
+            : row.remaining >= -0.004
+              ? `余 ${clickFormat.format(Math.max(0, row.remaining))}`
+              : `超 ${clickFormat.format(Math.abs(row.remaining))}`;
+          const sourceText = row.projected ? "预计" : "实际";
+          tr.innerHTML = `
+            <th scope="row">${slotLabel(row.minutes)}</th>
+            <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, row.minutes)}</td>
+            <td class="num" data-label="累计总单"><span class="${valueClass}">${formatValue(row.orders)}</span></td>
+            <td class="num" data-label="参考点击上限"><span class="${valueClass}">${formatValue(row.clickLimit)}</span></td>
+            <td class="num" data-label="累计点击"><span class="${valueClass}">${formatValue(row.clicks)}</span></td>
+            <td class="num" data-label="本段新增"><span class="${valueClass}">${formatValue(row.added)}</span></td>
+            <td class="num" data-label="距参考上限"><span class="${valueClass}">${remainingText}</span></td>
+            <td data-label="状态 / 数据口径"><span class="click-status ${row.status.className}">${row.status.text}</span> <span class="source-note">${sourceText}</span></td>
+          `;
+          return tr;
+        }));
       }
 
       function historicalCumulativeOrderAverage(day, minutes) {
@@ -4039,6 +4248,7 @@
           ? "—"
           : moneyFormat.format(actualSpend);
         renderClickPace(result);
+        renderClickMilestones(day, result);
 
         if (orderCount === null) {
           els.spendDecision.className = "answer-value";
@@ -4105,7 +4315,7 @@
 
       function recalculate() {
         updateTimelineComputed();
-        renderSpendDecision();
+        renderClickCheck();
         updateSummary();
       }
 
@@ -4231,12 +4441,13 @@
         const clickCheck = day.clickCheck;
         let filled = 0;
         let met = 0;
+        const snapshots = hourlyClickSnapshots(day);
         for (let hour = 0; hour < 24; hour += 1) {
           const average = referenceHourOrderAverage(day, hour);
-          const actual = clickCheck.actualClicks[pad(hour)] ?? null;
-          if (actual === null || average === null) continue;
+          const snapshotAtHour = snapshots.get(hour * 60);
+          if (!snapshotAtHour || average === null || snapshotAtHour.added === null) continue;
           filled += 1;
-          if (actual >= average * clickCheck.clicksPerOrder) met += 1;
+          if (snapshotAtHour.added >= average * clickCheck.clicksPerOrder) met += 1;
         }
 
         const result = calculateSpendDecision(day);
@@ -4249,7 +4460,7 @@
               ? "额度用尽"
               : `还能投 ${moneyFormat.format(remaining)}`;
         }
-        return `点击 ${filled}/24 已填，高于转化参考 ${met} · ${spendText}`;
+        return `累计点击 ${filled}/24 个整点，高于历史新增 ${met} · ${spendText}`;
       }
 
       function renderVersions() {
@@ -4445,22 +4656,46 @@
         }
         rows.push(
           [],
-          ["点击与花费节奏（历史转化参考）"],
-          ["中国时间", "DE时间", "小时日均订单", "每单所需点击", "转化参考点击", "实际点击", "状态"]
+          ["点击与花费节奏（累计录入自动计算新增）"],
+          ["中国时间", "DE时间", "小时日均订单", "历史参考新增", "累计点击", "较上次记录新增", "与历史新增比较"]
         );
+        const clickSnapshots = hourlyClickSnapshots(day);
         for (let hour = 0; hour < 24; hour += 1) {
           const average = referenceHourOrderAverage(day, hour);
           const target = average === null ? null : average * day.clickCheck.clicksPerOrder;
-          const actual = day.clickCheck.actualClicks[pad(hour)] ?? null;
-          const status = clickStatusFor(average, target, actual);
+          const snapshot = clickSnapshots.get(hour * 60) || null;
+          const added = snapshot ? snapshot.added : null;
+          const status = clickStatusFor(average, target, added);
           rows.push([
             `${pad(hour)}:00`,
             germanyTimeLabel(day.date, hour * 60),
             average === null ? "" : Number(average).toFixed(4),
-            Number(day.clickCheck.clicksPerOrder).toFixed(1),
             target === null ? "" : Number(target).toFixed(2),
-            actual === null ? "" : Number(actual).toFixed(0),
+            snapshot ? Number(snapshot.cumulative).toFixed(1) : "",
+            added === null ? "" : Number(added).toFixed(1),
             status.text
+          ]);
+        }
+
+        const milestoneModel = clickMilestoneModel(day, spendResult);
+        rows.push(
+          [],
+          ["各时点累计点击参考上限"],
+          ["计算口径", `累计总单 × CPA ${milestoneModel.cpa.toFixed(2)} ÷ 目标 CPC ${milestoneModel.targetCpc.toFixed(2)}`],
+          ["说明", "参考上限按目标 CPC 计算；低于或高于这个数都不单独判异常。实际 CPC 不超目标且花费不超单量帽时，更多单配更少点击是更好的转化。"],
+          ["中国时间", "DE时间", "累计总单", "参考点击上限", "累计点击", "本段新增", "距参考上限", "状态", "数据口径"]
+        );
+        for (const milestone of milestoneModel.rows) {
+          rows.push([
+            slotLabel(milestone.minutes),
+            germanyTimeLabel(day.date, milestone.minutes),
+            milestone.orders === null ? "" : Number(milestone.orders).toFixed(1),
+            milestone.clickLimit === null ? "" : Number(milestone.clickLimit).toFixed(2),
+            milestone.clicks === null ? "" : Number(milestone.clicks).toFixed(1),
+            milestone.added === null ? "" : Number(milestone.added).toFixed(1),
+            milestone.remaining === null ? "" : Number(milestone.remaining).toFixed(2),
+            milestone.status.text,
+            milestone.projected ? "预计" : "实际"
           ]);
         }
         const csv = "\ufeff" + rows
@@ -4690,11 +4925,7 @@
           if (!Number.isFinite(value) || value <= 0) return;
           currentDay().clickCheck.clicksPerOrder = value;
           for (const row of els.clickCheckBody.children) {
-            const ratioCells = row.querySelectorAll('[data-label="每单所需点击"]');
-            ratioCells.forEach((cell) => {
-              cell.textContent = clickFormat.format(value);
-            });
-            const targetCell = row.querySelector('[data-label="转化参考点击"]');
+            const targetCell = row.querySelector('[data-label="历史参考新增"]');
             if (!targetCell) continue;
             const hour = Array.from(els.clickCheckBody.children).indexOf(row);
             const average = referenceHourOrderAverage(currentDay(), hour);
@@ -4709,26 +4940,19 @@
         });
 
         els.clickCheckBody.addEventListener("input", (event) => {
-          const actualInput = event.target.closest("[data-click-hour-actual]");
           const orderInput = event.target.closest("[data-click-hour-order]");
-          if (!actualInput && !orderInput) return;
-          const input = actualInput || orderInput;
-          const value = input.value === "" ? null : Number(input.value);
+          if (!orderInput) return;
+          const value = orderInput.value === "" ? null : Number(orderInput.value);
           if (value !== null && (!Number.isFinite(value) || value < 0)) return;
           const day = currentDay();
-          const key = actualInput
-            ? actualInput.dataset.clickHourActual
-            : orderInput.dataset.clickHourOrder;
-          if (actualInput) day.clickCheck.actualClicks[key] = value;
-          else day.clickCheck.hourlyOrders[key] = value;
-          if (orderInput) {
-            const average = referenceHourOrderAverage(day, Number(key));
-            const targetCell = orderInput.closest("tr")?.querySelector('[data-label="转化参考点击"]');
-            if (targetCell) {
-              targetCell.textContent = average === null
-                ? "—"
-                : clickFormat.format(average * day.clickCheck.clicksPerOrder);
-            }
+          const key = orderInput.dataset.clickHourOrder;
+          day.clickCheck.hourlyOrders[key] = value;
+          const average = referenceHourOrderAverage(day, Number(key));
+          const targetCell = orderInput.closest("tr")?.querySelector('[data-label="历史参考新增"]');
+          if (targetCell) {
+            targetCell.textContent = average === null
+              ? "—"
+              : clickFormat.format(average * day.clickCheck.clicksPerOrder);
           }
           updateClickCheckComputed(day);
           scheduleSave();
