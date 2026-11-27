@@ -2066,7 +2066,7 @@
     <header class="topbar">
       <div class="title-block">
         <h1>ONO3P / L61P 点击花费出单速度</h1>
-        <p class="subtitle" id="subtitle">德国站 · 中国时间与 DE 时间对照记录当日累计</p>
+        <p class="subtitle" id="subtitle">德国站 · 中国时间与 DE 时间对照记录到德国凌晨</p>
       </div>
       <div class="top-actions">
         <button id="saveVersionButton" class="button-secondary" type="button">保存版本</button>
@@ -2268,7 +2268,7 @@
         </div>
         <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="timelineTitle">
           <table class="timeline-table">
-            <caption>ONO3P 和 L61P 从开始盯盘到 24:00 的累计点击、花费、总单、广告单、自然单与各自速度</caption>
+            <caption>ONO3P 和 L61P 从开始盯盘到中国次日 07:00（德国时间 24:00）的累计点击、花费、总单、广告单、自然单与各自速度</caption>
             <thead>
               <tr>
                 <th scope="col">中国时间</th>
@@ -2291,7 +2291,7 @@
             <tbody id="timelineBody"></tbody>
           </table>
         </div>
-        <p class="source-note" id="timelineTimeNote">中国时间为录入口径；DE 时间按欧洲柏林时区自动换算。自然单不单独录入；广告单高于总单时标红，速度需要至少两次累计值。</p>
+        <p class="source-note" id="timelineTimeNote">中国时间为录入口径；DE 时间按欧洲柏林时区自动换算，德国跨日后按新一天累计重新起算。自然单不单独录入；速度需要至少两次同一天累计值。</p>
       </section>
     </section>
 
@@ -2700,9 +2700,15 @@
           .filter((part) => part.type !== "literal")
           .map((part) => [part.type, part.value])
       );
-      const DEFAULT_DATE = `${initialDateParts.year}-${initialDateParts.month}-${initialDateParts.day}`;
+      const initialDate = `${initialDateParts.year}-${initialDateParts.month}-${initialDateParts.day}`;
+      const initialMinutes = Number(initialDateParts.hour) * 60 + Number(initialDateParts.minute);
+      const DAY_MINUTES = 24 * 60;
+      const OVERNIGHT_END_MINUTES = 7 * 60;
+      const DEFAULT_DATE = initialMinutes < OVERNIGHT_END_MINUTES
+        ? previousDateString(initialDate)
+        : initialDate;
       const DEFAULT_START = "14:30";
-      const END_MINUTES = 24 * 60;
+      const END_MINUTES = DAY_MINUTES + OVERNIGHT_END_MINUTES;
       const PRODUCTS = {
         ono3p: { label: "ONO3P", model: "ONO3Pro" },
         l61p: { label: "L61P", model: "L61Pro" }
@@ -2926,27 +2932,64 @@
         if (!match) return NaN;
         const hours = Number(match[1]);
         const minutes = Number(match[2]);
-        if (hours > 23 || minutes > 59) return NaN;
-        return hours * 60 + minutes;
+        const total = hours * 60 + minutes;
+        if (minutes > 59 || total > END_MINUTES) return NaN;
+        return total;
       }
 
       function timeFromMinutes(minutes) {
-        if (minutes === END_MINUTES) return "24:00";
         return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
       }
 
-      function nextDateString(date) {
+      function shiftDateString(date, days) {
         const value = new Date(`${date}T00:00:00Z`);
-        value.setUTCDate(value.getUTCDate() + 1);
+        value.setUTCDate(value.getUTCDate() + days);
         return value.toISOString().slice(0, 10);
       }
 
-      function germanyTimeLabel(date, minutes) {
-        const isEnd = minutes === END_MINUTES;
-        const chinaDate = isEnd ? nextDateString(date) : date;
-        const chinaMinutes = isEnd ? 0 : minutes;
+      function nextDateString(date) {
+        return shiftDateString(date, 1);
+      }
+
+      function previousDateString(date) {
+        return shiftDateString(date, -1);
+      }
+
+      function chinaTimeLabel(minutes) {
+        const dayOffset = Math.floor(minutes / DAY_MINUTES);
+        const localMinutes = ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+        const time = timeFromMinutes(localMinutes);
+        if (dayOffset === 0) return time;
+        if (dayOffset === 1) return `次日 ${time}`;
+        return `第 ${dayOffset + 1} 天 ${time}`;
+      }
+
+      function germanyDateKey(date, minutes) {
+        const dayOffset = Math.floor(minutes / DAY_MINUTES);
+        const localMinutes = ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+        const chinaDate = shiftDateString(date, dayOffset);
         const instant = new Date(
-          `${chinaDate}T${pad(Math.floor(chinaMinutes / 60))}:${pad(chinaMinutes % 60)}:00+08:00`
+          `${chinaDate}T${pad(Math.floor(localMinutes / 60))}:${pad(localMinutes % 60)}:00+08:00`
+        );
+        const parts = Object.fromEntries(
+          germanyDateTimeFormat.formatToParts(instant)
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+        return `${parts.year}-${parts.month}-${parts.day}`;
+      }
+
+      function isGermanyDayStart(date, minutes) {
+        if (minutes <= 0) return false;
+        return germanyDateKey(date, minutes) !== germanyDateKey(date, minutes - 60);
+      }
+
+      function germanyTimeLabel(date, minutes) {
+        const dayOffset = Math.floor(minutes / DAY_MINUTES);
+        const localMinutes = ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+        const chinaDate = shiftDateString(date, dayOffset);
+        const instant = new Date(
+          `${chinaDate}T${pad(Math.floor(localMinutes / 60))}:${pad(localMinutes % 60)}:00+08:00`
         );
         const parts = Object.fromEntries(
           germanyDateTimeFormat.formatToParts(instant)
@@ -2954,12 +2997,15 @@
             .map((part) => [part.type, part.value])
         );
         const germanyDate = `${parts.year}-${parts.month}-${parts.day}`;
-        const dayOffset = germanyDate === date
+        const dateOffsetLabel = minutes === END_MINUTES || germanyDate === date
           ? ""
           : germanyDate > date
             ? "（次日）"
             : "（前日）";
-        return `${parts.hour}:${parts.minute}${dayOffset}`;
+        const germanyTime = parts.hour === "00" && parts.minute === "00" && minutes === END_MINUTES
+          ? "24:00"
+          : `${parts.hour}:${parts.minute}`;
+        return `${germanyTime}${dateOffsetLabel}`;
       }
 
       function chinaGermanyHourGap(date, minutes) {
@@ -2982,7 +3028,9 @@
       }
 
       function slotLabel(minutes) {
-        return minutes === END_MINUTES ? "24:00 收盘" : timeFromMinutes(minutes);
+        return minutes === END_MINUTES
+          ? `${chinaTimeLabel(minutes)} · 结束`
+          : chinaTimeLabel(minutes);
       }
 
       function hoursBetween(start, end) {
@@ -3261,6 +3309,8 @@
           const time = timeFromMinutes(minutes);
           const entered = entryValue(day, productKey, time, metric);
           const fraction = END_MINUTES > start ? (minutes - start) / (END_MINUTES - start) : 0;
+          const germanyDayStart = isGermanyDayStart(day.date, minutes);
+          if (germanyDayStart) lastActual = null;
 
           if (entered !== null && Number.isFinite(entered)) {
             let speed = null;
@@ -3277,7 +3327,7 @@
               time,
               value: entered,
               speed,
-              kind: index === 0 ? "start" : "actual",
+              kind: index === 0 ? "start" : germanyDayStart ? "reset" : "actual",
               invalid,
               goalValue: goal * fraction
             };
@@ -3313,8 +3363,10 @@
         let lastActual = null;
         return totalSeries.map((totalRow, index) => {
           const adRow = adSeries[index];
-          const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
-          const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+          const germanyDayStart = isGermanyDayStart(day.date, totalRow.minutes);
+          if (germanyDayStart) lastActual = null;
+          const totalEntered = ["actual", "start", "reset"].includes(totalRow.kind);
+          const adEntered = ["actual", "start", "reset"].includes(adRow.kind);
           const invalid = totalRow.invalid || adRow.invalid || adRow.value > totalRow.value;
           const value = Math.max(0, totalRow.value - adRow.value);
           let speed = null;
@@ -3334,7 +3386,7 @@
               time: totalRow.time,
               value,
               speed,
-              kind: index === 0 ? "start" : "actual",
+              kind: index === 0 ? "start" : germanyDayStart ? "reset" : "actual",
               invalid,
               goalValue: 0
             };
@@ -3380,7 +3432,7 @@
 
       function latestActualSeriesRow(series) {
         for (let index = series.length - 1; index >= 0; index -= 1) {
-          if (series[index].kind === "actual" || series[index].kind === "start") {
+          if (["actual", "start", "reset"].includes(series[index].kind)) {
             return series[index];
           }
         }
@@ -3483,7 +3535,7 @@
           : metric === "spend"
             ? "花费累计"
             : "出单累计";
-        const entered = row.kind === "actual" || row.kind === "start";
+        const entered = ["actual", "start", "reset"].includes(row.kind);
         const formattedProjection = metric !== "spend"
           ? clickFormat.format(Math.max(0, row.value))
           : moneyFormat.format(Math.max(0, row.value));
@@ -3495,7 +3547,7 @@
           <td class="num" data-label="${productLabel} ${metricName}">
             <div class="cell-stack">
               <label class="visually-hidden" for="entry-${productKey}-${row.time.replace(":", "")}-${metric}">
-                ${productLabel} 中国时间 ${row.time} / DE 时间 ${germanyTimeLabel(currentDay().date, row.minutes)} ${metricName}
+                ${productLabel} 中国时间 ${chinaTimeLabel(row.minutes)} / DE 时间 ${germanyTimeLabel(currentDay().date, row.minutes)} ${metricName}
               </label>
               <input
                 class="cumulative-input"
@@ -3518,8 +3570,8 @@
 
       function orderEntryCell(productKey, totalRow, adRow, naturalRow, isStart) {
         const productLabel = PRODUCTS[productKey].label;
-        const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
-        const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+        const totalEntered = ["actual", "start", "reset"].includes(totalRow.kind);
+        const adEntered = ["actual", "start", "reset"].includes(adRow.kind);
         const invalid = adRow.value > totalRow.value;
         const totalValue = totalEntered ? clickFormat.format(totalRow.value) : "";
         const adValue = adEntered ? clickFormat.format(adRow.value) : "";
@@ -3673,7 +3725,7 @@
               const input = tr.querySelector(
                 `[data-entry-product="${productKey}"][data-entry-metric="${metric}"]`
               );
-              if (input && input.value === "" && seriesRow.kind !== "actual" && seriesRow.kind !== "start") {
+              if (input && input.value === "" && !["actual", "start", "reset"].includes(seriesRow.kind)) {
                 const projection = metric !== "spend"
                   ? clickFormat.format(Math.max(0, seriesRow.value))
                   : moneyFormat.format(Math.max(0, seriesRow.value));
@@ -3705,13 +3757,13 @@
               const input = tr.querySelector(
                 `[data-entry-product="${productKey}"][data-entry-metric="${metric}"]`
               );
-              if (input && input.value === "" && seriesRow.kind !== "actual" && seriesRow.kind !== "start") {
+              if (input && input.value === "" && !["actual", "start", "reset"].includes(seriesRow.kind)) {
                 input.placeholder = `预计 ${clickFormat.format(Math.max(0, seriesRow.value))}`;
               }
             }
 
-            const totalEntered = totalRow.kind === "actual" || totalRow.kind === "start";
-            const adEntered = adRow.kind === "actual" || adRow.kind === "start";
+            const totalEntered = ["actual", "start", "reset"].includes(totalRow.kind);
+            const adEntered = ["actual", "start", "reset"].includes(adRow.kind);
             const invalidBreakdown = adRow.value > totalRow.value;
             const naturalText = invalidBreakdown
               ? "广告＞总单"
@@ -3850,7 +3902,7 @@
             summary.latestTotalOrders.hasValue ||
             summary.latestAdOrders.hasValue;
           ui.latestTime.textContent = latestHasValue
-            ? `中国 ${timeFromMinutes(latestMinutes)} / DE ${germanyTimeLabel(day.date, latestMinutes)} 最新`
+            ? `中国 ${chinaTimeLabel(latestMinutes)} / DE ${germanyTimeLabel(day.date, latestMinutes)} 最新`
             : "等待录入起点";
           ui.currentClicks.textContent = clickFormat.format(summary.latestClicks.value);
           ui.currentSpend.textContent = moneyFormat.format(summary.latestSpend.value);
@@ -4068,6 +4120,7 @@
         for (let index = 1; index < points.length; index += 1) {
           const current = points[index];
           const previous = points[index - 1];
+          if (isGermanyDayStart(day.date, current.minutes)) continue;
           const hours = hoursBetween(previous.minutes, current.minutes);
           if (!(hours > 0)) continue;
           const clickDelta = current.clicks - previous.clicks;
@@ -4241,7 +4294,9 @@
         const latestClicks = latestRecorded(day, "ono3p", "clicks");
         const latestPace = latestJointPace(day);
         const latestMovement = latestPace.movement;
-        els.clickLatestTime.textContent = latestClicks.hasValue ? latestClicks.time : "—";
+        els.clickLatestTime.textContent = latestClicks.hasValue
+          ? chinaTimeLabel(latestClicks.minutes)
+          : "—";
         els.clickLatestCumulative.textContent = latestClicks.hasValue
           ? `${clickFormat.format(latestClicks.value)} 次`
           : "—";
@@ -4266,13 +4321,13 @@
         const rows = orderSeries.map((orderRow, index) => {
           const clickRow = clickSeries[index];
           const spendRow = spendSeries[index];
-          const orderKnown = ["actual", "start", "projected"].includes(orderRow.kind);
-          const clickKnown = clickRow && ["actual", "start", "projected"].includes(clickRow.kind);
-          const spendKnown = spendRow && ["actual", "start", "projected"].includes(spendRow.kind);
+          const orderKnown = ["actual", "start", "reset", "projected"].includes(orderRow.kind);
+          const clickKnown = clickRow && ["actual", "start", "reset", "projected"].includes(clickRow.kind);
+          const spendKnown = spendRow && ["actual", "start", "reset", "projected"].includes(spendRow.kind);
           const projected = orderRow.kind === "projected" || (clickRow && clickRow.kind === "projected");
           const previousClick = index > 0 ? clickSeries[index - 1] : null;
           const previousClickKnown = previousClick &&
-            ["actual", "start", "projected"].includes(previousClick.kind);
+            ["actual", "start", "reset", "projected"].includes(previousClick.kind);
           const added = clickKnown && previousClickKnown && clickRow.value >= previousClick.value
             ? clickRow.value - previousClick.value
             : null;
@@ -4453,9 +4508,14 @@
           pace.previousMovement,
           targetCpc
         );
-        const sameDataDay = day.date === now.date;
-        const latestAge = sameDataDay && latestClicks.hasValue && now.minutes >= latestClicks.minutes
-          ? now.minutes - latestClicks.minutes
+        const timelineNowMinutes = now.date === day.date
+          ? now.minutes
+          : now.date === nextDateString(day.date)
+            ? DAY_MINUTES + now.minutes
+            : null;
+        const sameDataDay = timelineNowMinutes !== null;
+        const latestAge = sameDataDay && latestClicks.hasValue && timelineNowMinutes >= latestClicks.minutes
+          ? timelineNowMinutes - latestClicks.minutes
           : null;
         const staleData = latestAge !== null && latestAge >= 75;
         const overCap = finalAllowed !== null && actualSpend !== null &&
@@ -4466,19 +4526,22 @@
         const nearCap = remaining !== null && finalAllowed > 0 &&
           remaining >= -0.004 && remaining <= finalAllowed * 0.1;
         const missingOrdersAt = ordersBehindLatest
-          ? timeFromMinutes(latestJointMinutes)
+          ? chinaTimeLabel(latestJointMinutes)
+          : null;
+        const latestClicksLabel = latestClicks.hasValue
+          ? chinaTimeLabel(latestClicks.minutes)
           : null;
 
         const latestText = latestClicks.hasValue
           ? sameDataDay
             ? latestAge === null
-              ? `最新点击 ${latestClicks.time}`
+              ? `最新点击 ${latestClicksLabel}`
               : latestAge < 1
-                ? `最新点击 ${latestClicks.time}（刚刚）`
+                ? `最新点击 ${latestClicksLabel}（刚刚）`
                 : latestAge < 60
-                  ? `最新点击 ${latestClicks.time}（${latestAge} 分钟前）`
-                  : `最新点击 ${latestClicks.time}（${Math.floor(latestAge / 60)} 小时 ${latestAge % 60} 分钟前）`
-            : `数据日 ${day.date.slice(5)} · 最新点击 ${latestClicks.time}`
+                  ? `最新点击 ${latestClicksLabel}（${latestAge} 分钟前）`
+                  : `最新点击 ${latestClicksLabel}（${Math.floor(latestAge / 60)} 小时 ${latestAge % 60} 分钟前）`
+            : `数据日 ${day.date.slice(5)} · 最新点击 ${latestClicksLabel}`
           : "最新点击尚未录入";
         els.livePaceClock.textContent = `现在 ${now.time} · ${latestText}`;
         els.livePaceClicks.textContent = actualClicks === null
@@ -4495,7 +4558,7 @@
         const movement = latestMovement;
         const previousMovement = pace.previousMovement;
         els.livePaceSegment.innerHTML = movement
-          ? `最近一段 <strong>${timeFromMinutes(movement.fromMinutes)}–${movement.time}</strong>` +
+          ? `最近一段 <strong>${chinaTimeLabel(movement.fromMinutes)}–${chinaTimeLabel(movement.toMinutes)}</strong>` +
             ` · 点击 <strong>+${clickFormat.format(movement.clickDelta)} 次</strong>` +
             `（${clickFormat.format(movement.clickSpeed)} 次/小时）` +
             ` · 花费 <strong>+${moneyFormat.format(movement.spendDelta)}</strong>` +
@@ -4562,10 +4625,11 @@
         }
 
         if (ordersBehindLatest) {
+          const latestOrdersLabel = chinaTimeLabel(latestOrders.minutes);
           setVerdict(
             "is-warn",
             "总单待更新",
-            `<strong>点击和花费已录到 ${missingOrdersAt}，累计总单还停在 ${latestOrders.time}。</strong>当前按 ${latestOrders.time} 的 ${clickFormat.format(latestOrders.value)} 单暂算花费额度。如果 ${missingOrdersAt} 还没有新增订单，也请在“今日盯盘”的 ${missingOrdersAt} 总单里再填一次当前累计数，这样本段新增单数和判断才是完整的。`
+            `<strong>点击和花费已录到 ${missingOrdersAt}，累计总单还停在 ${latestOrdersLabel}。</strong>当前按 ${latestOrdersLabel} 的 ${clickFormat.format(latestOrders.value)} 单暂算花费额度。如果 ${missingOrdersAt} 还没有新增订单，也请在“今日盯盘”的 ${missingOrdersAt} 总单里再填一次当前累计数，这样本段新增单数和判断才是完整的。`
           );
           return;
         }
@@ -4789,17 +4853,20 @@
         } = result;
 
         const missingOrdersAt = ordersBehindLatest
-          ? timeFromMinutes(latestJointMinutes)
+          ? chinaTimeLabel(latestJointMinutes)
+          : null;
+        const latestOrdersLabel = latestOrders.hasValue
+          ? chinaTimeLabel(latestOrders.minutes)
           : null;
         els.currentTotalOrders.value = orderCount === null
           ? "尚未录入"
-          : `${clickFormat.format(orderCount)} 单 · ${latestOrders.time}`;
+          : `${clickFormat.format(orderCount)} 单 · ${latestOrdersLabel}`;
         els.currentTotalOrdersHint.classList.toggle("is-stale", orderCount !== null && ordersBehindLatest);
         els.currentTotalOrdersHint.textContent = orderCount === null
           ? "在“今日盯盘”录入累计总单后自动带入。"
           : ordersBehindLatest
-            ? `${missingOrdersAt} 的点击和花费已更新，总单还停在 ${latestOrders.time}；请补录 ${missingOrdersAt} 的累计总单。`
-            : `截至 ${latestOrders.time}，已与最新点击和花费同步。`;
+            ? `${missingOrdersAt} 的点击和花费已更新，总单还停在 ${latestOrdersLabel}；请补录 ${missingOrdersAt} 的累计总单。`
+            : `截至 ${latestOrdersLabel}，已与最新点击和花费同步。`;
         els.latestEuroSpend.value = latestSpend.hasValue
           ? moneyFormat.format(latestSpend.value)
           : "尚未录入";
@@ -4868,12 +4935,12 @@
         const windowHours = dayWindowHours(day);
         const startMinutes = minutesFromTime(day.start);
         els.subtitle.textContent =
-          `德国站 · 中国时间 ${day.start} / DE ${germanyTimeLabel(day.date, startMinutes)} 起记录当日累计`;
+          `德国站 · 中国时间 ${day.start} / DE ${germanyTimeLabel(day.date, startMinutes)} 起记录至德国 24:00`;
         els.timelineTimeNote.textContent =
           `中国时间为录入口径；DE 时间按欧洲柏林时区自动换算，本次两国相差 ${chinaGermanyHourGap(day.date, startMinutes)} 小时。` +
-          "速度只在有两次累计值后成立；空值不当 0。";
+          "德国跨日后按新一天累计重新起算；速度只在有两次同一天累计值后成立，空值不当 0。";
         els.windowSummary.innerHTML =
-          `${day.date} · 中国 <strong>${day.start} 到 24:00</strong>` +
+          `${day.date} · 中国 <strong>${day.start} 到 ${chinaTimeLabel(END_MINUTES)}</strong>` +
           `（DE ${germanyTimeLabel(day.date, startMinutes)} 到 ${germanyTimeLabel(day.date, END_MINUTES)}）` +
           ` · 共 ${speedFormat.format(windowHours)} 小时`;
         syncGoalInputs();
@@ -5130,7 +5197,7 @@
           ["日期", day.date],
           ["开始盯盘（中国时间）", day.start],
           ["开始盯盘（DE时间）", germanyTimeLabel(day.date, minutesFromTime(day.start))],
-          ["说明", "中国时间为录入口径；DE 时间按欧洲柏林时区自动换算；累计值按广告后台当日累计录入"],
+          ["说明", "中国时间为录入口径；DE 时间按欧洲柏林时区自动换算；德国跨日后按新一天累计重新起算"],
           ["ONO3P每日广告额度(EUR)", Number(day.budgets.ono3p).toFixed(2)],
           ["ONO3P额度实际花费(EUR)", latestRecorded(day, "ono3p", "spend").value.toFixed(2)],
           ["L61P每日广告额度(EUR)", Number(day.budgets.l61p).toFixed(2)],
@@ -5199,13 +5266,13 @@
             for (const metric of DIRECT_METRICS) {
               const row = directSeries[metric].find((item) => item.time === time) ||
                 { value: null, speed: null, kind: "reference" };
-              const isEntered = row.kind === "actual" || row.kind === "start";
+              const isEntered = ["actual", "start", "reset"].includes(row.kind);
               values.push(isEntered ? Number(row.value).toFixed(metric === "spend" ? 2 : 1) : "");
               values.push(row.speed === null || !Number.isFinite(row.speed) ? "" : Number(row.speed).toFixed(2));
             }
             const naturalRow = directSeries.naturalOrders.find((item) => item.time === time) ||
               { value: null, speed: null, kind: "reference" };
-            const naturalEntered = naturalRow.kind === "actual" || naturalRow.kind === "start";
+            const naturalEntered = ["actual", "start", "reset"].includes(naturalRow.kind);
             values.push(naturalEntered ? Number(naturalRow.value).toFixed(1) : "");
             values.push(naturalRow.speed === null || !Number.isFinite(naturalRow.speed)
               ? ""
