@@ -849,6 +849,147 @@
       padding-top: 6px;
     }
 
+    .live-pace-card {
+      display: grid;
+      gap: 12px;
+      margin: 4px 0 18px;
+      border-radius: var(--r-panel);
+      padding: 14px 16px 16px;
+      background: var(--surface-2);
+    }
+
+    .live-pace-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .live-pace-heading {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .live-pace-clock {
+      margin: 2px 0 0;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .live-pace-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+      border-radius: var(--r-chip);
+      padding: 1px 9px;
+      background: var(--surface-3);
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .live-pace-status::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .live-pace-card.is-good .live-pace-status {
+      background: var(--ok-tint);
+      color: var(--ok);
+    }
+
+    .live-pace-card.is-good {
+      background: var(--ok-tint);
+    }
+
+    .live-pace-card.is-warn .live-pace-status {
+      background: var(--warn-tint);
+      color: var(--warn);
+    }
+
+    .live-pace-card.is-warn {
+      background: var(--warn-tint);
+    }
+
+    .live-pace-card.is-bad .live-pace-status {
+      background: var(--bad-tint);
+      color: var(--bad);
+    }
+
+    .live-pace-card.is-bad {
+      background: var(--bad-tint);
+    }
+
+    .live-pace-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0;
+    }
+
+    .live-pace-metrics > div {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+      padding: 0 16px;
+    }
+
+    .live-pace-metrics > div:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
+
+    .live-pace-metrics > div:last-child {
+      padding-right: 0;
+    }
+
+    .live-pace-metrics dt {
+      margin: 0;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .live-pace-metrics dd {
+      margin: 1px 0 0;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.3;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .live-pace-metrics > div:first-child dd {
+      font-size: 30px;
+    }
+
+    .live-pace-guidance {
+      margin: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .live-pace-guidance strong {
+      font-weight: 600;
+    }
+
+    .live-pace-card.is-good .live-pace-guidance strong {
+      color: var(--ok);
+    }
+
+    .live-pace-card.is-warn .live-pace-guidance strong {
+      color: var(--warn);
+    }
+
+    .live-pace-card.is-bad .live-pace-guidance strong {
+      color: var(--bad);
+    }
+
     .decision-form {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1458,6 +1599,20 @@
         border-left: 0;
         padding: 20px 0 0;
       }
+
+      .live-pace-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 14px;
+      }
+
+      .live-pace-metrics > div:nth-child(odd) {
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .live-pace-metrics > div:nth-child(even) {
+        padding-right: 0;
+      }
     }
 
     @media (max-width: 760px) {
@@ -1547,6 +1702,26 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 4px;
+      }
+
+      .live-pace-card {
+        padding: 14px;
+      }
+
+      .live-pace-head {
+        gap: 10px;
+      }
+
+      .live-pace-metrics > div {
+        padding-inline: 12px;
+      }
+
+      .live-pace-metrics dd {
+        font-size: 21px;
+      }
+
+      .live-pace-metrics > div:first-child dd {
+        font-size: 26px;
       }
 
       .table-wrapper {
@@ -2090,6 +2265,35 @@
           <span class="locked-rule">单量 CPA 与最高额度取较小值</span>
         </div>
 
+        <article class="live-pace-card is-neutral" id="livePaceCard" aria-labelledby="livePaceTitle" aria-live="polite" aria-atomic="true">
+          <header class="live-pace-head">
+            <div>
+              <h3 class="live-pace-heading" id="livePaceTitle">实时点击花费速度</h3>
+              <p class="live-pace-clock" id="livePaceClock">现在 —:— · 最新点击录入 —</p>
+            </div>
+            <span class="live-pace-status" id="livePaceStatus">等待数据</span>
+          </header>
+          <dl class="live-pace-metrics">
+            <div>
+              <dt>当前累计点击</dt>
+              <dd id="livePaceClicks">—</dd>
+            </div>
+            <div>
+              <dt>当前实际花费</dt>
+              <dd id="livePaceSpend">—</dd>
+            </div>
+            <div>
+              <dt>实际 CPC / 目标</dt>
+              <dd id="livePaceCpc">—</dd>
+            </div>
+            <div>
+              <dt>按花费应有点击</dt>
+              <dd id="livePaceFloor">—</dd>
+            </div>
+          </dl>
+          <p class="live-pace-guidance" id="livePaceGuidance">录入 ONO3P 累计点击和花费后，这里会判断点击是否跟得上花费。</p>
+        </article>
+
         <div class="decision-layout">
           <form class="decision-form" id="spendDecisionForm" autocomplete="off">
             <div class="form-field" id="tierSelectField">
@@ -2536,6 +2740,14 @@
         clickCheckSourceNote: document.getElementById("clickCheckSourceNote"),
         clickCapCurrent: document.getElementById("clickCapCurrent"),
         clickMilestoneBody: document.getElementById("clickMilestoneBody"),
+        livePaceCard: document.getElementById("livePaceCard"),
+        livePaceClock: document.getElementById("livePaceClock"),
+        livePaceStatus: document.getElementById("livePaceStatus"),
+        livePaceClicks: document.getElementById("livePaceClicks"),
+        livePaceSpend: document.getElementById("livePaceSpend"),
+        livePaceCpc: document.getElementById("livePaceCpc"),
+        livePaceFloor: document.getElementById("livePaceFloor"),
+        livePaceGuidance: document.getElementById("livePaceGuidance"),
         paceDecision: document.getElementById("paceDecision"),
         paceDecisionDetail: document.getElementById("paceDecisionDetail"),
         clickAssumptionWarning: document.getElementById("clickAssumptionWarning"),
@@ -2630,6 +2842,15 @@
         minute: "2-digit",
         hourCycle: "h23"
       });
+      const chinaLiveDateTimeFormat = new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      });
 
       let saveTimer = null;
       let store = loadStore();
@@ -2641,6 +2862,21 @@
 
       function pad(value) {
         return String(value).padStart(2, "0");
+      }
+
+      function chinaNowSnapshot() {
+        const parts = Object.fromEntries(
+          chinaLiveDateTimeFormat.formatToParts(new Date())
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+        const hour = Number(parts.hour);
+        const minute = Number(parts.minute);
+        return {
+          date: `${parts.year}-${parts.month}-${parts.day}`,
+          time: `${parts.hour}:${parts.minute}`,
+          minutes: hour * 60 + minute
+        };
       }
 
       function minutesFromTime(value) {
@@ -4087,6 +4323,162 @@
         };
       }
 
+      function renderLivePaceCard(result = calculateSpendDecision(currentDay())) {
+        const {
+          day,
+          clickCheck,
+          latestClicks,
+          finalAllowed,
+          actualSpend
+        } = result;
+        const now = chinaNowSnapshot();
+        const targetCpc = Number(clickCheck.targetCpc) > 0
+          ? Number(clickCheck.targetCpc)
+          : DEFAULT_TARGET_CPC;
+        const actualClicks = latestClicks.hasValue ? latestClicks.value : null;
+        const actualCpc = actualSpend !== null && actualClicks !== null && actualClicks > 0
+          ? actualSpend / actualClicks
+          : null;
+        const clickFloor = actualSpend === null ? null : actualSpend / targetCpc;
+        const clickGap = clickFloor === null || actualClicks === null
+          ? null
+          : actualClicks - clickFloor;
+        const clickRatio = clickFloor !== null && clickFloor > 0 && actualClicks !== null
+          ? actualClicks / clickFloor
+          : null;
+        const sameDataDay = day.date === now.date;
+        const latestAge = sameDataDay && latestClicks.hasValue && now.minutes >= latestClicks.minutes
+          ? now.minutes - latestClicks.minutes
+          : null;
+        const staleData = latestAge !== null && latestAge >= 75;
+        const overCap = finalAllowed !== null && actualSpend !== null &&
+          actualSpend > finalAllowed + 0.004;
+        const remaining = finalAllowed === null || actualSpend === null
+          ? null
+          : finalAllowed - actualSpend;
+        const nearCap = remaining !== null && finalAllowed > 0 &&
+          remaining >= -0.004 && remaining <= finalAllowed * 0.1;
+
+        const latestText = latestClicks.hasValue
+          ? sameDataDay
+            ? latestAge === null
+              ? `最新点击 ${latestClicks.time}`
+              : latestAge < 1
+                ? `最新点击 ${latestClicks.time}（刚刚）`
+                : latestAge < 60
+                  ? `最新点击 ${latestClicks.time}（${latestAge} 分钟前）`
+                  : `最新点击 ${latestClicks.time}（${Math.floor(latestAge / 60)} 小时 ${latestAge % 60} 分钟前）`
+            : `数据日 ${day.date.slice(5)} · 最新点击 ${latestClicks.time}`
+          : "最新点击尚未录入";
+        els.livePaceClock.textContent = `现在 ${now.time} · ${latestText}`;
+        els.livePaceClicks.textContent = actualClicks === null
+          ? "—"
+          : `${clickFormat.format(actualClicks)} 次`;
+        els.livePaceSpend.textContent = actualSpend === null
+          ? "—"
+          : moneyFormat.format(actualSpend);
+        els.livePaceCpc.textContent =
+          `${actualCpc === null ? "—" : moneyFormat.format(actualCpc)} / ${moneyFormat.format(targetCpc)}`;
+        els.livePaceFloor.textContent = clickFloor === null
+          ? "—"
+          : `${clickFormat.format(clickFloor)} 次`;
+
+        const setVerdict = (tone, status, guidance) => {
+          els.livePaceCard.className = `live-pace-card ${tone}`;
+          els.livePaceStatus.textContent = status;
+          els.livePaceGuidance.innerHTML = guidance;
+        };
+
+        if (actualSpend === null) {
+          setVerdict(
+            "is-neutral",
+            "等待花费",
+            actualClicks === null
+              ? "先录入 ONO3P 累计点击和花费，这里才会判断点击是否跟得上花费。"
+              : `当前累计点击 ${clickFormat.format(actualClicks)} 次；补录实际花费后，才能判断 CPC 和点击速度。`
+          );
+          return;
+        }
+
+        if (actualSpend <= 0.004 && (actualClicks === null || actualClicks <= 0)) {
+          setVerdict(
+            "is-neutral",
+            "尚未起量",
+            "当前累计点击和花费都是 0。先确认广告是否已经开始投放；起量后再判断速度。"
+          );
+          return;
+        }
+
+        if (actualSpend <= 0.004) {
+          setVerdict(
+            "is-neutral",
+            "等待花费",
+            `当前累计点击 ${clickFormat.format(actualClicks)} 次，但花费仍是 0；确认广告后台实际花费后再判断 CPC。`
+          );
+          return;
+        }
+
+        if (actualClicks === null) {
+          setVerdict(
+            "is-neutral",
+            "等待点击",
+            `当前实际花费已有 ${moneyFormat.format(actualSpend)}，但还没有累计点击记录。先在“今日盯盘”补录当前累计点击；花费已经发生，不要继续加预算。`
+          );
+          return;
+        }
+
+        if (overCap) {
+          setVerdict(
+            "is-bad",
+            "花费过快",
+            `<strong>花费速度过快。</strong>当前允许花费 ${moneyFormat.format(finalAllowed)}，已经用了 ${moneyFormat.format(actualSpend)}，超出 ${moneyFormat.format(Math.abs(remaining))}。先降预算或竞价，等订单跟上再放量；不要用继续加点击来掩盖超花费。`
+          );
+          return;
+        }
+
+        if (clickRatio !== null && clickRatio < 0.9) {
+          setVerdict(
+            "is-bad",
+            "点击过慢",
+            `<strong>点击速度过慢。</strong>按花费 ${moneyFormat.format(actualSpend)} ÷ 目标 CPC ${moneyFormat.format(targetCpc)}，至少应有 ${clickFormat.format(clickFloor)} 次点击；现在 ${clickFormat.format(actualClicks)} 次，少 ${clickFormat.format(Math.abs(clickGap))} 次。先查广告位、竞争对手坑位、曝光和点击率，并核对预算或竞价是否受限；不要直接加预算。`
+          );
+          return;
+        }
+
+        if (clickRatio !== null && clickRatio < 1) {
+          setVerdict(
+            "is-warn",
+            "接近偏慢",
+            `<strong>点击稍微跟不上花费。</strong>还差 ${clickFormat.format(Math.abs(clickGap))} 次才达到目标 CPC。下一次录入若差距继续扩大，检查广告位、对手坑位和搜索词；现在先观察，不要急着提预算。`
+          );
+          return;
+        }
+
+        if (nearCap) {
+          setVerdict(
+            "is-warn",
+            "额度将满",
+            `<strong>花费已接近允许上限。</strong>只剩 ${moneyFormat.format(Math.max(0, remaining))} 可花。当前点击效率达标，但已没有多少试错空间；继续加投前先确认订单能否继续跟上。`
+          );
+          return;
+        }
+
+        if (staleData) {
+          setVerdict(
+            "is-warn",
+            "数据待更新",
+            `<strong>点击记录已经 ${Math.floor(latestAge / 60)} 小时 ${latestAge % 60} 分钟未更新。</strong>现在看到的达标结论可能已经过时；先在“今日盯盘”补录最新累计点击和花费，再决定是否加投。`
+          );
+          return;
+        }
+
+        setVerdict(
+          "is-good",
+          "达标",
+          `<strong>点击花费速度达标。</strong>实际 CPC ${moneyFormat.format(actualCpc)} 没有超过目标 ${moneyFormat.format(targetCpc)}，当前花费也在允许额度内。${clickGap >= 0 ? `同样花费下点击多 ${clickFormat.format(clickGap)} 次。` : ""}不需要为了凑点击额外加预算。`
+        );
+      }
+
       function renderClickPace(result) {
         const {
           day,
@@ -4247,6 +4639,7 @@
         els.actualSpendEurDisplay.textContent = actualSpend === null
           ? "—"
           : moneyFormat.format(actualSpend);
+        renderLivePaceCard(result);
         renderClickPace(result);
         renderClickMilestones(day, result);
 
@@ -5032,6 +5425,9 @@
       initializeVersions();
       renderAll();
       saveStore(false);
+      window.setInterval(() => {
+        if (!document.hidden) renderLivePaceCard();
+      }, 60000);
     })();
   </script>
 </body>
