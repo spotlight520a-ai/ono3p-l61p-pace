@@ -974,6 +974,21 @@
       line-height: 1.55;
     }
 
+    .live-pace-segment {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
+      margin: 0;
+      color: var(--ink-2);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .live-pace-segment strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
     .live-pace-guidance strong {
       font-weight: 600;
     }
@@ -1200,6 +1215,27 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .click-derived-field {
+      min-height: 68px;
+      padding: 9px 12px;
+      border-radius: var(--r-control);
+      background: var(--surface-2);
+    }
+
+    .click-derived-field strong {
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.25;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .click-derived-field small {
+      color: var(--ink-3);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     .pace-decision {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(360px, .95fr);
@@ -1242,7 +1278,7 @@
     }
 
     .click-check-table {
-      min-width: 860px;
+      min-width: 1060px;
     }
 
     .click-check-table th:nth-child(1) {
@@ -2291,6 +2327,7 @@
               <dd id="livePaceFloor">—</dd>
             </div>
           </dl>
+          <p class="live-pace-segment" id="livePaceSegment">最近一段：录入至少两次累计值后自动计算</p>
           <p class="live-pace-guidance" id="livePaceGuidance">录入 ONO3P 累计点击和花费后，这里会判断点击是否跟得上花费。</p>
         </article>
 
@@ -2401,20 +2438,17 @@
               </div>
               <small class="source-note" id="targetCpcHint">实际 CPC 低于这个数，同样的花费买到的点击才算够。</small>
             </div>
-            <div class="click-ratio-field">
-              <label for="clicksPerOrderInput">历史转化参考</label>
-              <div class="input-with-unit">
-                <input id="clicksPerOrderInput" type="number" min="0.1" step="0.1" inputmode="decimal" value="33.3" aria-describedby="clicksPerOrderHint">
-                <span>次/单</span>
-              </div>
-              <small class="source-note" id="clicksPerOrderHint">按历史 CVR 3% 约需 33.3 次点击/单，只用来对照转化，不再单独判盈利。</small>
+            <div class="click-derived-field">
+              <span class="source-note">按 CPA ÷ 目标 CPC 自动算</span>
+              <strong id="clicksPerOrderDerived">15.6 次/单</strong>
+              <small>每单最多买多少次点击；不需要再手填小时订单均值。</small>
             </div>
           </div>
           <div class="click-summary" id="clickCheckSummary" aria-live="polite">
-            <span>已记录 <strong id="clickFilledCount">0</strong> 个整点</span>
-            <span>高于历史新增 <strong id="clickMetCount">0</strong></span>
-            <span>少于历史新增 <strong id="clickMissedCount">0</strong></span>
-            <span>最大历史差 <strong id="clickLargestGap">—</strong></span>
+            <span>最近记录 <strong id="clickLatestTime">—</strong></span>
+            <span>累计点击 <strong id="clickLatestCumulative">—</strong></span>
+            <span>本段新增 <strong id="clickLatestAdded">—</strong></span>
+            <span>本段花费 <strong id="clickLatestSpendAdded">—</strong></span>
           </div>
         </div>
 
@@ -2427,7 +2461,7 @@
           </div>
           <dl class="answer-breakdown pace-breakdown">
             <div>
-              <dt>当前总单 / 历史同期</dt>
+              <dt>最新累计单 / 本段新增</dt>
               <dd id="paceOrdersHistory">—</dd>
             </div>
             <div>
@@ -2463,22 +2497,25 @@
 
         <div class="table-wrapper" tabindex="0" role="region" aria-labelledby="clickCheckTitle">
           <table class="click-check-table">
-            <caption>中国时间和德国时间对照的每小时订单均值、历史参考新增、累计点击与系统算出的分段新增</caption>
+            <caption>直接读取今日盯盘累计值，对照中国和德国时间显示本段新增点击、花费与单数；所有新增均由系统计算</caption>
             <thead>
               <tr>
                 <th scope="col">中国时间</th>
                 <th scope="col">DE 时间</th>
-                <th scope="col" class="num">小时日均订单</th>
-                <th scope="col" class="num">历史参考新增</th>
+                <th scope="col" class="num">累计总单</th>
                 <th scope="col" class="num">累计点击</th>
-                <th scope="col" class="num">较上次记录新增</th>
-                <th scope="col">与历史新增比较</th>
+                <th scope="col" class="num">累计花费</th>
+                <th scope="col" class="num">本段新增点击</th>
+                <th scope="col" class="num">本段新增花费</th>
+                <th scope="col" class="num">本段新增单数</th>
+                <th scope="col" class="num">实际 CPC</th>
+                <th scope="col">时段状态</th>
               </tr>
             </thead>
             <tbody id="clickCheckBody"></tbody>
           </table>
         </div>
-        <p class="source-note" id="clickCheckSourceNote">累计点击直接取「今日盯盘」的累计录入；较上次记录新增 = 本次累计 − 上次累计。历史参考新增 = 小时日均订单 × 历史转化参考，只用于对照，不是达标硬线。</p>
+        <p class="source-note" id="clickCheckSourceNote">累计总单、点击和花费都直接取「今日盯盘」；本段新增由相邻两次累计值自动相减，不需要重复填写。</p>
 
         <div id="clickMilestoneSection" aria-labelledby="clickMilestoneTitle">
           <div class="section-heading">
@@ -2730,12 +2767,12 @@
         budgetTierBody: document.getElementById("budgetTierBody"),
         budgetTierWrap: document.getElementById("budgetTierWrap"),
         targetCpcInput: document.getElementById("targetCpcInput"),
-        clicksPerOrderInput: document.getElementById("clicksPerOrderInput"),
+        clicksPerOrderDerived: document.getElementById("clicksPerOrderDerived"),
         clickCheckBody: document.getElementById("clickCheckBody"),
-        clickFilledCount: document.getElementById("clickFilledCount"),
-        clickMetCount: document.getElementById("clickMetCount"),
-        clickMissedCount: document.getElementById("clickMissedCount"),
-        clickLargestGap: document.getElementById("clickLargestGap"),
+        clickLatestTime: document.getElementById("clickLatestTime"),
+        clickLatestCumulative: document.getElementById("clickLatestCumulative"),
+        clickLatestAdded: document.getElementById("clickLatestAdded"),
+        clickLatestSpendAdded: document.getElementById("clickLatestSpendAdded"),
         clickReferenceNote: document.getElementById("clickReferenceNote"),
         clickCheckSourceNote: document.getElementById("clickCheckSourceNote"),
         clickCapCurrent: document.getElementById("clickCapCurrent"),
@@ -2747,6 +2784,7 @@
         livePaceSpend: document.getElementById("livePaceSpend"),
         livePaceCpc: document.getElementById("livePaceCpc"),
         livePaceFloor: document.getElementById("livePaceFloor"),
+        livePaceSegment: document.getElementById("livePaceSegment"),
         livePaceGuidance: document.getElementById("livePaceGuidance"),
         paceDecision: document.getElementById("paceDecision"),
         paceDecisionDetail: document.getElementById("paceDecisionDetail"),
@@ -3970,18 +4008,6 @@
         return ONO3P_BUDGET_TIERS.find((tier) => tier.orders === clickCheck.selectedOrderTier) || null;
       }
 
-      function referenceHourOrderAverage(day, hour) {
-        const values = HOURLY_ORDER_REFERENCE.hourlyTotalOrders;
-        if (Array.isArray(values) && values.length === 24 && HOURLY_ORDER_REFERENCE.dayCount > 0) {
-          const total = Number(values[hour]);
-          if (Number.isFinite(total) && total >= 0) {
-            return total / HOURLY_ORDER_REFERENCE.dayCount;
-          }
-        }
-        const manual = Number(day.clickCheck.hourlyOrders[pad(hour)]);
-        return Number.isFinite(manual) && manual >= 0 ? manual : null;
-      }
-
       function renderBudgetTiers() {
         const clickCheck = currentDay().clickCheck;
         const hasFixedTiers = ONO3P_BUDGET_TIERS.length > 0;
@@ -4018,140 +4044,211 @@
         }));
       }
 
-      function hourlyClickSnapshots(day) {
-        const snapshots = new Map();
-        const clickSeries = metricSeries(day, "ono3p", "clicks");
-        let lastActual = null;
-        for (const row of clickSeries) {
-          if (row.kind !== "actual" && row.kind !== "start") continue;
-          const added = lastActual === null ? null : row.value - lastActual.value;
-          snapshots.set(row.minutes, {
-            row,
-            cumulative: row.value,
-            added: added !== null && added >= 0 ? added : null,
-            sinceMinutes: lastActual ? lastActual.minutes : null
+      function jointPaceMovements(day, productKey = "ono3p") {
+        const points = [];
+        for (const minutes of generatedSlots(day)) {
+          const time = timeFromMinutes(minutes);
+          const clicks = entryValue(day, productKey, time, "clicks");
+          const spend = entryValue(day, productKey, time, "spend");
+          if (clicks === null || spend === null) continue;
+          points.push({
+            minutes,
+            time,
+            clicks,
+            spend,
+            orders: entryValue(day, productKey, time, "totalOrders")
           });
-          lastActual = row;
         }
-        return snapshots;
+
+        const movements = [];
+        for (let index = 1; index < points.length; index += 1) {
+          const current = points[index];
+          const previous = points[index - 1];
+          const hours = hoursBetween(previous.minutes, current.minutes);
+          if (!(hours > 0)) continue;
+          const clickDelta = current.clicks - previous.clicks;
+          const spendDelta = current.spend - previous.spend;
+          const orderDelta = current.orders !== null && previous.orders !== null
+            ? current.orders - previous.orders
+            : null;
+          const invalid = clickDelta < 0 || spendDelta < 0 || (orderDelta !== null && orderDelta < 0);
+          movements.push({
+            fromMinutes: previous.minutes,
+            toMinutes: current.minutes,
+            time: current.time,
+            hours,
+            clickDelta,
+            spendDelta,
+            orderDelta,
+            clickSpeed: clickDelta >= 0 ? clickDelta / hours : null,
+            spendSpeed: spendDelta >= 0 ? spendDelta / hours : null,
+            orderSpeed: orderDelta !== null && orderDelta >= 0 ? orderDelta / hours : null,
+            invalid
+          });
+        }
+        return { points, movements };
       }
 
-      function clickStatusFor(orderAverage, targetClicks, actualClicks) {
-        if (orderAverage === null || targetClicks === null) {
-          return { text: "待填基准", className: "" };
-        }
-        if (actualClicks === null) {
-          return { text: "未记录", className: "" };
-        }
-        if (targetClicks <= 0) {
-          return {
-            text: actualClicks > 0 ? "历史参考为 0" : "参考为 0",
-            className: "",
-            tone: actualClicks > 0 ? "above" : null
-          };
-        }
-        const ratio = actualClicks / targetClicks;
-        if (ratio < 0.9) {
-          return {
-            text: `少于历史 ${clickFormat.format(targetClicks - actualClicks)}`,
-            className: "",
-            tone: "below"
-          };
-        }
-        if (ratio > 1.1) {
-          return {
-            text: `多于历史 ${clickFormat.format(actualClicks - targetClicks)}`,
-            className: "",
-            tone: "above"
-          };
-        }
-        return { text: "接近历史", className: "", tone: "near" };
+      function latestJointPace(day, productKey = "ono3p") {
+        const { points, movements } = jointPaceMovements(day, productKey);
+        return {
+          latestPoint: points[points.length - 1] || null,
+          movement: movements[movements.length - 1] || null,
+          previousMovement: movements[movements.length - 2] || null
+        };
       }
 
-      function updateClickCheckComputed(day) {
-        const clickCheck = day.clickCheck;
-        let filled = 0;
-        let met = 0;
-        let missed = 0;
-        let largestGap = null;
-        const bodyRows = Array.from(els.clickCheckBody.children);
-        const snapshots = hourlyClickSnapshots(day);
-
-        for (let hour = 0; hour < 24; hour += 1) {
-          const average = referenceHourOrderAverage(day, hour);
-          const target = average === null ? null : average * clickCheck.clicksPerOrder;
-          const snapshot = snapshots.get(hour * 60) || null;
-          const added = snapshot ? snapshot.added : null;
-          const status = clickStatusFor(average, target, added);
-          if (snapshot) filled += 1;
-          if (status.tone === "above") met += 1;
-          if (status.tone === "below") {
-            missed += 1;
-            const gap = target - added;
-            if (largestGap === null || gap > largestGap.gap) largestGap = { hour, gap };
-          }
-          const badge = bodyRows[hour] && bodyRows[hour].querySelector(".click-status");
-          if (badge) {
-            badge.className = `click-status ${status.className}`;
-            badge.textContent = status.text;
-          }
+      function paceMovementTone(movement, previousMovement) {
+        if (!movement || movement.invalid) return null;
+        if (movement.spendDelta > 0 && movement.orderDelta === 0) {
+          return { text: "花费先行，待出单", className: "is-warn" };
         }
-
-        els.clickFilledCount.textContent = String(filled);
-        els.clickMetCount.textContent = String(met);
-        els.clickMissedCount.textContent = String(missed);
-        els.clickLargestGap.textContent = largestGap === null
-          ? "—"
-          : `${pad(largestGap.hour)}:00 差 ${clickFormat.format(largestGap.gap)}`;
+        if (movement.spendDelta <= 0) return null;
+        if (!previousMovement || previousMovement.invalid) {
+          return movement.orderDelta > 0
+            ? { text: "花费出单同步", className: "is-ok" }
+            : null;
+        }
+        const spendAccelerating = previousMovement.spendSpeed > 0 &&
+          movement.spendSpeed > previousMovement.spendSpeed * 1.15;
+        const ordersAccelerating = previousMovement.orderSpeed > 0 &&
+          movement.orderSpeed > previousMovement.orderSpeed * 1.1;
+        if (spendAccelerating && ordersAccelerating) {
+          return { text: "花费出单双加速", className: "is-ok" };
+        }
+        if (spendAccelerating && movement.orderDelta === 0) {
+          return { text: "花费加快，单未跟上", className: "is-warn" };
+        }
+        return movement.orderDelta > 0
+          ? { text: "花费出单同步", className: "is-ok" }
+          : null;
       }
 
-      function renderClickCheck() {
+      function sameSpendClicksHigher(movement, previousMovement) {
+        if (!movement || !previousMovement || movement.invalid || previousMovement.invalid) {
+          return false;
+        }
+        if (!(previousMovement.spendSpeed > 0) || !(movement.spendSpeed > 0)) {
+          return false;
+        }
+        return movement.clickSpeed / movement.spendSpeed >
+          previousMovement.clickSpeed / previousMovement.spendSpeed * 1.05;
+      }
+
+      function clickEfficiencyVerdict(movement, previousMovement, targetCpc) {
+        if (!movement || movement.invalid) return null;
+        if (!(movement.spendDelta > 0)) return null;
+        if (sameSpendClicksHigher(movement, previousMovement)) return null;
+        if (!movement.clickSpeed || !movement.spendSpeed) return null;
+        const actualCpc = movement.spendSpeed / movement.clickSpeed;
+        if (actualCpc <= targetCpc) return null;
+        return {
+          actualCpc,
+          severe: actualCpc > targetCpc * 1.10
+        };
+      }
+
+      function clickRowStatus(day, minutes, movement, previousMovement, result) {
+        const time = timeFromMinutes(minutes);
+        const clicks = entryValue(day, "ono3p", time, "clicks");
+        const spend = entryValue(day, "ono3p", time, "spend");
+        const orders = entryValue(day, "ono3p", time, "totalOrders");
+        if (clicks === null && spend === null && orders === null) {
+          return { text: "待录入", className: "" };
+        }
+        if (movement && movement.invalid) {
+          return { text: "累计值倒退", className: "is-bad" };
+        }
+        const targetCpc = Number(day.clickCheck.targetCpc) || DEFAULT_TARGET_CPC;
+        const cpa = Number(day.clickCheck.cpa) || DEFAULT_CPA;
+        const efficiency = clickEfficiencyVerdict(movement, previousMovement, targetCpc);
+        if (efficiency && efficiency.severe) {
+          return { text: "点击偏慢，CPC 高", className: "is-bad" };
+        }
+        if (spend !== null && orders !== null && spend > orders * cpa + 0.004) {
+          return { text: "花费超单量帽", className: "is-bad" };
+        }
+        if (efficiency) {
+          return { text: "点击稍慢", className: "is-warn" };
+        }
+        const trend = paceMovementTone(movement, previousMovement);
+        if (trend) return trend;
+        return clicks !== null && spend !== null
+          ? { text: "已记录", className: "" }
+          : { text: "部分记录", className: "" };
+      }
+
+      function renderClickCheck(syncInputs = true) {
         const day = currentDay();
         const clickCheck = day.clickCheck;
         renderBudgetTiers();
 
-        els.cpaInput.value = Number(clickCheck.cpa).toFixed(2);
-        els.actualSpendEurInput.value = clickCheck.actualSpendEur === null
-          ? ""
-          : Number(clickCheck.actualSpendEur).toFixed(2);
-        els.targetCpcInput.value = Number(clickCheck.targetCpc).toFixed(2);
-        els.clicksPerOrderInput.value = Number(clickCheck.clicksPerOrder).toFixed(1);
+        if (syncInputs) {
+          els.cpaInput.value = Number(clickCheck.cpa).toFixed(2);
+          els.actualSpendEurInput.value = clickCheck.actualSpendEur === null
+            ? ""
+            : Number(clickCheck.actualSpendEur).toFixed(2);
+          els.targetCpcInput.value = Number(clickCheck.targetCpc).toFixed(2);
+        }
+        const targetCpc = Number(clickCheck.targetCpc) || DEFAULT_TARGET_CPC;
+        const cpa = Number(clickCheck.cpa) || DEFAULT_CPA;
+        els.clicksPerOrderDerived.textContent = `${clickFormat.format(cpa / targetCpc)} 次/单`;
 
         els.clickReferenceNote.textContent =
-          "当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断。下方历史小时只对照转化，不单独判达标。";
+          "当前盈利按累计总单 × CPA 判断；点击效率按实际花费 ÷ 点击与目标 CPC 判断。下方直接读取累计录入，自动算出每小时新增。";
         els.clickCheckSourceNote.textContent =
-          "累计点击直接取「今日盯盘」的累计录入；较上次记录新增 = 本次累计 − 上次累计。历史参考新增 = 小时日均订单 × 历史转化参考，只用于对照，不是达标硬线。";
+          "累计总单、点击和花费都直接取「今日盯盘」；本段新增由相邻两次累计值自动相减，不需要重复填写。";
 
+        const result = calculateSpendDecision(day);
+        const { movements } = jointPaceMovements(day);
+        const movementByEnd = new Map(movements.map((movement, index) => [
+          movement.toMinutes,
+          { movement, previousMovement: movements[index - 1] || null }
+        ]));
+        const slots = generatedSlots(day);
         const rows = [];
-        const snapshots = hourlyClickSnapshots(day);
-        for (let hour = 0; hour < 24; hour += 1) {
-          const key = pad(hour);
-          const average = referenceHourOrderAverage(day, hour);
-          const target = average === null ? null : average * clickCheck.clicksPerOrder;
-          const snapshot = snapshots.get(hour * 60) || null;
-          const added = snapshot ? snapshot.added : null;
-          const status = clickStatusFor(average, target, added);
-
+        for (const minutes of slots) {
+          const time = timeFromMinutes(minutes);
+          const clicks = entryValue(day, "ono3p", time, "clicks");
+          const spend = entryValue(day, "ono3p", time, "spend");
+          const orders = entryValue(day, "ono3p", time, "totalOrders");
+          const pace = movementByEnd.get(minutes) || { movement: null, previousMovement: null };
+          const movement = pace.movement;
+          const status = clickRowStatus(day, minutes, movement, pace.previousMovement, result);
+          const actualCpc = clicks !== null && spend !== null && clicks > 0 ? spend / clicks : null;
+          const addedText = (value, formatter) => value === null ? "—" : formatter.format(value);
           const tr = document.createElement("tr");
-          const averageCell = average === null
-            ? `<input class="click-actual-input" type="number" min="0" step="0.01" inputmode="decimal"
-                data-click-hour-order="${key}" value="${clickCheck.hourlyOrders[key] ?? ""}"
-                aria-label="中国时间 ${key}:00 小时日均订单">`
-            : orderAverageFormat.format(average);
           tr.innerHTML = `
-            <th scope="row">${key}:00</th>
-            <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, hour * 60)}</td>
-            <td class="num" data-label="小时日均订单">${averageCell}</td>
-            <td class="num" data-label="历史参考新增">${target === null ? "—" : clickFormat.format(target)}</td>
-            <td class="num" data-label="累计点击">${snapshot ? clickFormat.format(snapshot.cumulative) : "—"}</td>
-            <td class="num" data-label="较上次记录新增">${added === null ? "—" : clickFormat.format(added)}</td>
-            <td data-label="与历史新增比较"><span class="click-status ${status.className}">${status.text}</span></td>
+            <th scope="row">${slotLabel(minutes)}</th>
+            <td class="de-time" data-label="DE 时间">${germanyTimeLabel(day.date, minutes)}</td>
+            <td class="num" data-label="累计总单">${addedText(orders, clickFormat)}</td>
+            <td class="num" data-label="累计点击">${addedText(clicks, clickFormat)}</td>
+            <td class="num" data-label="累计花费">${addedText(spend, moneyFormat)}</td>
+            <td class="num" data-label="本段新增点击">${movement ? addedText(movement.clickDelta, clickFormat) : "—"}</td>
+            <td class="num" data-label="本段新增花费">${movement ? addedText(movement.spendDelta, moneyFormat) : "—"}</td>
+            <td class="num" data-label="本段新增单数">${movement ? addedText(movement.orderDelta, clickFormat) : "—"}</td>
+            <td class="num" data-label="实际 CPC">${addedText(actualCpc, moneyFormat)}</td>
+            <td data-label="时段状态"><span class="click-status ${status.className}">${status.text}</span></td>
           `;
           rows.push(tr);
         }
         els.clickCheckBody.replaceChildren(...rows);
-        updateClickCheckComputed(day);
-        renderSpendDecision();
+
+        const latestClicks = latestRecorded(day, "ono3p", "clicks");
+        const latestPace = latestJointPace(day);
+        const latestMovement = latestPace.movement;
+        els.clickLatestTime.textContent = latestClicks.hasValue ? latestClicks.time : "—";
+        els.clickLatestCumulative.textContent = latestClicks.hasValue
+          ? `${clickFormat.format(latestClicks.value)} 次`
+          : "—";
+        els.clickLatestAdded.textContent = latestMovement
+          ? `${clickFormat.format(latestMovement.clickDelta)} 次`
+          : "等待第 2 次累计";
+        els.clickLatestSpendAdded.textContent = latestMovement
+          ? moneyFormat.format(latestMovement.spendDelta)
+          : "—";
+
+        renderSpendDecision(result);
       }
 
       function clickMilestoneModel(day, spendResult = calculateSpendDecision(day)) {
@@ -4259,20 +4356,6 @@
         }));
       }
 
-      function historicalCumulativeOrderAverage(day, minutes) {
-        if (!Number.isFinite(minutes) || minutes < 0) return null;
-        const fullHours = Math.min(24, Math.floor(minutes / 60));
-        const partialHourShare = Math.min(1, Math.max(0, (minutes % 60) / 60));
-        const hourCount = Math.min(24, fullHours + (partialHourShare > 0 ? 1 : 0));
-        let total = 0;
-        for (let hour = 0; hour < hourCount; hour += 1) {
-          const average = referenceHourOrderAverage(day, hour);
-          if (average === null) return null;
-          total += average * (hour < fullHours ? 1 : partialHourShare);
-        }
-        return total;
-      }
-
       function calculateSpendDecision(day) {
         const clickCheck = day.clickCheck;
         const latestOrders = latestRecorded(day, "ono3p", "totalOrders");
@@ -4298,6 +4381,7 @@
             ? "timeline"
             : "none";
         const projection = summaryForProduct(day, "ono3p");
+        const pace = latestJointPace(day);
         const projectedCpaAllowed = projection.projectedTotalOrders * cpa;
         const projectedAllowed = tierBudget === null
           ? projectedCpaAllowed
@@ -4317,6 +4401,7 @@
           actualSpend,
           actualSpendSource,
           projection,
+          pace,
           projectedCpaAllowed,
           projectedAllowed,
           remaining: finalAllowed === null || actualSpend === null ? null : finalAllowed - actualSpend
@@ -4329,7 +4414,8 @@
           clickCheck,
           latestClicks,
           finalAllowed,
-          actualSpend
+          actualSpend,
+          pace
         } = result;
         const now = chinaNowSnapshot();
         const targetCpc = Number(clickCheck.targetCpc) > 0
@@ -4346,6 +4432,12 @@
         const clickRatio = clickFloor !== null && clickFloor > 0 && actualClicks !== null
           ? actualClicks / clickFloor
           : null;
+        const latestMovement = pace.movement;
+        const latestEfficiency = clickEfficiencyVerdict(
+          latestMovement,
+          pace.previousMovement,
+          targetCpc
+        );
         const sameDataDay = day.date === now.date;
         const latestAge = sameDataDay && latestClicks.hasValue && now.minutes >= latestClicks.minutes
           ? now.minutes - latestClicks.minutes
@@ -4382,6 +4474,21 @@
         els.livePaceFloor.textContent = clickFloor === null
           ? "—"
           : `${clickFormat.format(clickFloor)} 次`;
+        const movement = latestMovement;
+        const previousMovement = pace.previousMovement;
+        els.livePaceSegment.innerHTML = movement
+          ? `最近一段 <strong>${timeFromMinutes(movement.fromMinutes)}–${movement.time}</strong>` +
+            ` · 点击 <strong>+${clickFormat.format(movement.clickDelta)} 次</strong>` +
+            `（${clickFormat.format(movement.clickSpeed)} 次/小时）` +
+            ` · 花费 <strong>+${moneyFormat.format(movement.spendDelta)}</strong>` +
+            `（${moneySpeedFormat.format(movement.spendSpeed)}/小时）` +
+            ` · 总单 <strong>${movement.orderDelta === null ? "—" : `+${clickFormat.format(movement.orderDelta)} 单`}</strong>` +
+            `${movement.orderSpeed === null ? "" : `（${speedFormat.format(movement.orderSpeed)} 单/小时）`}`
+          : "最近一段：录入至少两次累计值后自动计算";
+        const paceTrend = paceMovementTone(movement, previousMovement);
+        const spendLeading = paceTrend?.className === "is-warn";
+        const spendAndOrdersAccelerating = paceTrend?.text === "花费出单双加速";
+        const clicksKeepingUpWithSpend = sameSpendClicksHigher(movement, previousMovement);
 
         const setVerdict = (tone, status, guidance) => {
           els.livePaceCard.className = `live-pace-card ${tone}`;
@@ -4436,6 +4543,33 @@
           return;
         }
 
+        if (latestEfficiency?.severe) {
+          setVerdict(
+            "is-bad",
+            "点击过慢",
+            `<strong>最近一段点击效率偏低。</strong>这一小时点击 ${clickFormat.format(movement.clickDelta)} 次、花费增加 ${moneyFormat.format(movement.spendDelta)}，本段 CPC 约 ${moneyFormat.format(latestEfficiency.actualCpc)}，高于目标 ${moneyFormat.format(targetCpc)}。先查广告位、竞争对手坑位、曝光和点击率，并核对预算或竞价是否受限；点击效率没有改善前不要加预算。`
+          );
+          return;
+        }
+
+        if (latestEfficiency) {
+          setVerdict(
+            "is-warn",
+            "点击稍慢",
+            `<strong>最近一段花费在增加，但点击效率略低于目标。</strong>这一小时 CPC 约 ${moneyFormat.format(latestEfficiency.actualCpc)}，目标 ${moneyFormat.format(targetCpc)}。先观察下一段；如果 CPC 继续升高，再查广告位、对手坑位和搜索词。`
+          );
+          return;
+        }
+
+        if (clicksKeepingUpWithSpend && spendAndOrdersAccelerating) {
+          setVerdict(
+            "is-good",
+            "花费出单同升，点击也跟上",
+            `<strong>这一段时间花费、点击和出单同时加快，属于正常放量。</strong>同样是每增加 €1 花费，本段买到的点击不比上一段少，实际 CPC ${moneyFormat.format(actualCpc)} 没有超过目标 ${moneyFormat.format(targetCpc)}。不需要为了追历史日均订单额外加预算。`
+          );
+          return;
+        }
+
         if (clickRatio !== null && clickRatio < 0.9) {
           setVerdict(
             "is-bad",
@@ -4450,6 +4584,15 @@
             "is-warn",
             "接近偏慢",
             `<strong>点击稍微跟不上花费。</strong>还差 ${clickFormat.format(Math.abs(clickGap))} 次才达到目标 CPC。下一次录入若差距继续扩大，检查广告位、对手坑位和搜索词；现在先观察，不要急着提预算。`
+          );
+          return;
+        }
+
+        if (spendLeading) {
+          setVerdict(
+            "is-warn",
+            "花费先行",
+            `<strong>这一段花费在加快，但出单还没有同步加快。</strong>本段新增 ${moneyFormat.format(movement.spendDelta)}、${movement.orderDelta === null ? "单数未录入完整" : `${clickFormat.format(movement.orderDelta)} 单`}。晚间花费加快本身不判异常；下一段仍只花钱不出单，再降预算或竞价。`
           );
           return;
         }
@@ -4474,8 +4617,10 @@
 
         setVerdict(
           "is-good",
-          "达标",
-          `<strong>点击花费速度达标。</strong>实际 CPC ${moneyFormat.format(actualCpc)} 没有超过目标 ${moneyFormat.format(targetCpc)}，当前花费也在允许额度内。${clickGap >= 0 ? `同样花费下点击多 ${clickFormat.format(clickGap)} 次。` : ""}不需要为了凑点击额外加预算。`
+          spendAndOrdersAccelerating ? "花费出单同升" : "达标",
+          spendAndOrdersAccelerating
+            ? `<strong>这一段时间花费快、出单也快，属于正常加速。</strong>实际 CPC ${moneyFormat.format(actualCpc)} 没有超过目标 ${moneyFormat.format(targetCpc)}，累计花费仍在允许额度内。不要按全天匀速误判成花费过快。`
+            : `<strong>点击花费速度达标。</strong>实际 CPC ${moneyFormat.format(actualCpc)} 没有超过目标 ${moneyFormat.format(targetCpc)}，当前花费也在允许额度内。${clickGap >= 0 ? `同样花费下点击多 ${clickFormat.format(clickGap)} 次。` : ""}不需要为了凑点击额外加预算。`
         );
       }
 
@@ -4492,7 +4637,8 @@
           finalAllowed,
           actualSpend,
           projection,
-          projectedAllowed
+          projectedAllowed,
+          pace
         } = result;
         const targetCpc = Number(clickCheck.targetCpc) > 0
           ? Number(clickCheck.targetCpc)
@@ -4506,16 +4652,14 @@
           ? null
           : actualClicks - clickFloor;
         const clickCap = finalAllowed === null ? null : finalAllowed / targetCpc;
-        const historicalOrders = historicalCumulativeOrderAverage(day, latestOrders.minutes);
-        const orderPaceRatio = orderCount !== null && historicalOrders !== null && historicalOrders > 0
-          ? orderCount / historicalOrders
-          : null;
+        const movement = pace.movement;
+        const movementTrend = paceMovementTone(movement, pace.previousMovement);
 
         els.paceOrdersHistory.textContent = orderCount === null
           ? "—"
-          : historicalOrders === null
-            ? `${clickFormat.format(orderCount)} 单 / —`
-            : `${clickFormat.format(orderCount)} 单 / ${clickFormat.format(historicalOrders)} 单（${speedFormat.format(orderPaceRatio)}×）`;
+          : movement && movement.orderDelta !== null
+            ? `${clickFormat.format(orderCount)} 单 / +${clickFormat.format(movement.orderDelta)} 单`
+            : `${clickFormat.format(orderCount)} 单 / —`;
         els.paceClicksSpend.textContent = actualClicks === null && actualSpend === null
           ? "—"
           : `${actualClicks === null ? "—" : `${clickFormat.format(actualClicks)} 次`} / ${actualSpend === null ? "—" : moneyFormat.format(actualSpend)}`;
@@ -4536,11 +4680,8 @@
 
         const impliedClicksPerOrder = cpa / targetCpc;
         const impliedCvr = impliedClicksPerOrder > 0 ? 1 / impliedClicksPerOrder : null;
-        const referenceCostPerOrder = clickCheck.clicksPerOrder * targetCpc;
-        const conflictingAssumptions = referenceCostPerOrder > cpa + 0.004;
-        els.clickAssumptionWarning.textContent = conflictingAssumptions
-          ? `口径冲突：历史 ${clickFormat.format(clickCheck.clicksPerOrder)} 次/单 × 目标 CPC ${moneyFormat.format(targetCpc)} = ${moneyFormat.format(referenceCostPerOrder)}/单，高于 CPA ${moneyFormat.format(cpa)}。按 CPA 与目标 CPC 反推，每单最多 ${clickFormat.format(impliedClicksPerOrder)} 次点击，CVR 至少要 ${percentFormat.format((impliedCvr || 0) * 100)}% 才能同时成立。`
-          : "";
+        els.clickAssumptionWarning.textContent =
+          `按 CPA ${moneyFormat.format(cpa)} ÷ 目标 CPC ${moneyFormat.format(targetCpc)}，每单最多 ${clickFormat.format(impliedClicksPerOrder)} 次点击，对应最低转化率 ${percentFormat.format((impliedCvr || 0) * 100)}%；低于这个点击仍出单，是更好的转化。`;
 
         if (orderCount === null) {
           els.paceDecision.className = "answer-value";
@@ -4584,15 +4725,15 @@
           els.paceDecision.textContent = "当前正常，收盘预计超花费帽";
           els.paceDecisionDetail.textContent =
             `当前花费仍在 ${moneyFormat.format(finalAllowed)} 内，但按当前速度预计收盘 ${moneyFormat.format(projection.projectedSpend)}，高于预计订单支撑的 ${moneyFormat.format(projectedAllowed)}。`;
-        } else if (orderPaceRatio !== null && orderPaceRatio < 0.85) {
+        } else if (movementTrend?.className === "is-warn") {
           els.paceDecision.className = "answer-value is-warn";
-          els.paceDecision.textContent = "点击效率正常，订单偏慢";
+          els.paceDecision.textContent = "花费先行，等订单跟上";
           els.paceDecisionDetail.textContent =
-            `当前 CPC 没有超过目标，花费也在利润帽内；但订单只有历史同期的 ${speedFormat.format(orderPaceRatio)} 倍，先盯转化，不要只因为还能花就继续加速。`;
+            `当前 CPC 没有超过目标，花费也在利润帽内；但本段花费在加快，出单还没有同步加快。下一段继续只花钱不出单，再降低预算或竞价。`;
         } else {
           els.paceDecision.className = "answer-value is-good";
-          els.paceDecision.textContent = orderPaceRatio !== null && orderPaceRatio >= 1.15
-            ? "订单领先，花费仍在利润帽内"
+          els.paceDecision.textContent = movementTrend?.text === "花费出单双加速"
+            ? "花费出单同升，节奏正常"
             : "点击与花费节奏正常";
           els.paceDecisionDetail.textContent =
             `当前 CPC ${moneyFormat.format(actualCpc)} 不高于目标 ${moneyFormat.format(targetCpc)}，花费 ${moneyFormat.format(actualSpend)} 仍在 ${clickFormat.format(orderCount)} 单支撑的 ${moneyFormat.format(finalAllowed)} 内。${clickGap >= 0 ? `同花费下点击多 ${clickFormat.format(clickGap)} 次。` : ""}`;
@@ -4831,19 +4972,9 @@
 
       function versionClickCheckSummary(snapshot) {
         const day = normalizeDay(snapshot, snapshot.date || DEFAULT_DATE);
-        const clickCheck = day.clickCheck;
-        let filled = 0;
-        let met = 0;
-        const snapshots = hourlyClickSnapshots(day);
-        for (let hour = 0; hour < 24; hour += 1) {
-          const average = referenceHourOrderAverage(day, hour);
-          const snapshotAtHour = snapshots.get(hour * 60);
-          if (!snapshotAtHour || average === null || snapshotAtHour.added === null) continue;
-          filled += 1;
-          if (snapshotAtHour.added >= average * clickCheck.clicksPerOrder) met += 1;
-        }
-
         const result = calculateSpendDecision(day);
+        const latestClicks = latestRecorded(day, "ono3p", "clicks");
+        const latestPace = latestJointPace(day);
         let spendText = "投放待填";
         if (result.remaining !== null) {
           const remaining = result.remaining;
@@ -4853,7 +4984,9 @@
               ? "额度用尽"
               : `还能投 ${moneyFormat.format(remaining)}`;
         }
-        return `累计点击 ${filled}/24 个整点，高于历史新增 ${met} · ${spendText}`;
+        return `累计点击 ${latestClicks.hasValue ? clickFormat.format(latestClicks.value) : "—"} 次` +
+          `${latestPace.movement ? `，本段新增 ${clickFormat.format(latestPace.movement.clickDelta)} 次` : ""}` +
+          ` · ${spendText}`;
       }
 
       function renderVersions() {
@@ -5050,22 +5183,31 @@
         rows.push(
           [],
           ["点击与花费节奏（累计录入自动计算新增）"],
-          ["中国时间", "DE时间", "小时日均订单", "历史参考新增", "累计点击", "较上次记录新增", "与历史新增比较"]
+          ["中国时间", "DE时间", "累计总单", "累计点击", "累计花费", "本段新增点击", "本段新增花费", "本段新增单数", "实际CPC", "时段状态"]
         );
-        const clickSnapshots = hourlyClickSnapshots(day);
-        for (let hour = 0; hour < 24; hour += 1) {
-          const average = referenceHourOrderAverage(day, hour);
-          const target = average === null ? null : average * day.clickCheck.clicksPerOrder;
-          const snapshot = clickSnapshots.get(hour * 60) || null;
-          const added = snapshot ? snapshot.added : null;
-          const status = clickStatusFor(average, target, added);
+        const { movements: jointMovements } = jointPaceMovements(day);
+        const movementByEnd = new Map(jointMovements.map((movement, index) => [
+          movement.toMinutes,
+          { movement, previousMovement: jointMovements[index - 1] || null }
+        ]));
+        for (const minutes of generatedSlots(day)) {
+          const time = timeFromMinutes(minutes);
+          const clicks = entryValue(day, "ono3p", time, "clicks");
+          const spend = entryValue(day, "ono3p", time, "spend");
+          const orders = entryValue(day, "ono3p", time, "totalOrders");
+          const pace = movementByEnd.get(minutes) || { movement: null, previousMovement: null };
+          const status = clickRowStatus(day, minutes, pace.movement, pace.previousMovement, spendResult);
+          const actualCpc = clicks !== null && spend !== null && clicks > 0 ? spend / clicks : null;
           rows.push([
-            `${pad(hour)}:00`,
-            germanyTimeLabel(day.date, hour * 60),
-            average === null ? "" : Number(average).toFixed(4),
-            target === null ? "" : Number(target).toFixed(2),
-            snapshot ? Number(snapshot.cumulative).toFixed(1) : "",
-            added === null ? "" : Number(added).toFixed(1),
+            slotLabel(minutes),
+            germanyTimeLabel(day.date, minutes),
+            orders === null ? "" : Number(orders).toFixed(0),
+            clicks === null ? "" : Number(clicks).toFixed(0),
+            spend === null ? "" : Number(spend).toFixed(2),
+            pace.movement ? Number(pace.movement.clickDelta).toFixed(0) : "",
+            pace.movement ? Number(pace.movement.spendDelta).toFixed(2) : "",
+            pace.movement && pace.movement.orderDelta !== null ? Number(pace.movement.orderDelta).toFixed(0) : "",
+            actualCpc === null ? "" : Number(actualCpc).toFixed(2),
             status.text
           ]);
         }
@@ -5281,7 +5423,7 @@
           const value = Number(els.cpaInput.value);
           if (!Number.isFinite(value) || value <= 0) return;
           currentDay().clickCheck.cpa = value;
-          renderSpendDecision();
+          renderClickCheck(false);
           scheduleSave();
         });
         els.cpaInput.addEventListener("change", () => {
@@ -5293,7 +5435,7 @@
           const value = Number(els.targetCpcInput.value);
           if (!Number.isFinite(value) || value <= 0) return;
           currentDay().clickCheck.targetCpc = value;
-          renderSpendDecision();
+          renderClickCheck(false);
           scheduleSave();
         });
         els.targetCpcInput.addEventListener("change", () => {
@@ -5311,44 +5453,6 @@
         els.actualSpendEurInput.addEventListener("change", () => {
           const value = Number(els.actualSpendEurInput.value);
           if (Number.isFinite(value) && value >= 0) els.actualSpendEurInput.value = value.toFixed(2);
-        });
-
-        els.clicksPerOrderInput.addEventListener("input", () => {
-          const value = Number(els.clicksPerOrderInput.value);
-          if (!Number.isFinite(value) || value <= 0) return;
-          currentDay().clickCheck.clicksPerOrder = value;
-          for (const row of els.clickCheckBody.children) {
-            const targetCell = row.querySelector('[data-label="历史参考新增"]');
-            if (!targetCell) continue;
-            const hour = Array.from(els.clickCheckBody.children).indexOf(row);
-            const average = referenceHourOrderAverage(currentDay(), hour);
-            targetCell.textContent = average === null ? "—" : clickFormat.format(average * value);
-          }
-          updateClickCheckComputed(currentDay());
-          scheduleSave();
-        });
-        els.clicksPerOrderInput.addEventListener("change", () => {
-          const value = Number(els.clicksPerOrderInput.value);
-          if (Number.isFinite(value) && value > 0) els.clicksPerOrderInput.value = value.toFixed(1);
-        });
-
-        els.clickCheckBody.addEventListener("input", (event) => {
-          const orderInput = event.target.closest("[data-click-hour-order]");
-          if (!orderInput) return;
-          const value = orderInput.value === "" ? null : Number(orderInput.value);
-          if (value !== null && (!Number.isFinite(value) || value < 0)) return;
-          const day = currentDay();
-          const key = orderInput.dataset.clickHourOrder;
-          day.clickCheck.hourlyOrders[key] = value;
-          const average = referenceHourOrderAverage(day, Number(key));
-          const targetCell = orderInput.closest("tr")?.querySelector('[data-label="历史参考新增"]');
-          if (targetCell) {
-            targetCell.textContent = average === null
-              ? "—"
-              : clickFormat.format(average * day.clickCheck.clicksPerOrder);
-          }
-          updateClickCheckComputed(day);
-          scheduleSave();
         });
 
         document.getElementById("jumpEntryButton").addEventListener("click", () => {
