@@ -2547,7 +2547,7 @@
               <tbody id="clickMilestoneBody"></tbody>
             </table>
           </div>
-          <p class="source-note">实际行取已录入的累计值；预计行按最后一次录入后的速度外推。每天广告最高额度仍单独与单量利润花费取较小值。</p>
+          <p class="source-note">实际行取已录入的累计值；总单和广告单预计按历史小时出单分布还原全天，点击和花费仍按最近速度外推。每天广告最高额度仍单独与单量利润花费取较小值。</p>
         </div>
       </section>
     </section>
@@ -2722,14 +2722,14 @@
         l61p: 0
       };
       const ONO3P_BUDGET_TIERS = Object.freeze([]);
-      const HOURLY_ORDER_REFERENCE = Object.freeze({
-        source: "",
-        startDate: "",
-        endDate: "",
-        dayCount: 0,
-        orderTotal: 0,
-        hourlyTotalOrders: Object.freeze([])
-      });
+      const ORDER_HOUR_WEIGHTS = Object.freeze([
+        0.03333333, 0.03333333, 0.01111111, 0,
+        0, 0.01111111, 0.01111111, 0.02222222,
+        0.01111111, 0.02222222, 0.02222222, 0.02222222,
+        0, 0.05555556, 0.03333333, 0.04444444,
+        0.05555556, 0.07777778, 0.03333333, 0.02222222,
+        0.08888889, 0.15555556, 0.13333333, 0.1
+      ]);
       const DEFAULT_CLICKS_PER_ORDER = 33.3;
       const DEFAULT_TARGET_CPC = 2.5;
       const DEFAULT_CPA = 39;
@@ -2982,6 +2982,45 @@
       function isGermanyDayStart(date, minutes) {
         if (minutes <= 0) return false;
         return germanyDateKey(date, minutes) !== germanyDateKey(date, minutes - 60);
+      }
+
+      function germanyClockMinutes(date, minutes) {
+        if (minutes === END_MINUTES) return DAY_MINUTES;
+        const dayOffset = Math.floor(minutes / DAY_MINUTES);
+        const localMinutes = ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+        const chinaDate = shiftDateString(date, dayOffset);
+        const instant = new Date(
+          `${chinaDate}T${pad(Math.floor(localMinutes / 60))}:${pad(localMinutes % 60)}:00+08:00`
+        );
+        const parts = Object.fromEntries(
+          germanyDateTimeFormat.formatToParts(instant)
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+        return Number(parts.hour) * 60 + Number(parts.minute);
+      }
+
+      function orderCumulativeShare(date, minutes) {
+        const clockMinutes = germanyClockMinutes(date, minutes);
+        if (!Number.isFinite(clockMinutes) || clockMinutes < 0 || clockMinutes > DAY_MINUTES) {
+          return null;
+        }
+        if (clockMinutes === DAY_MINUTES) return 1;
+        const hour = Math.floor(clockMinutes / 60);
+        const withinHour = (clockMinutes % 60) / 60;
+        let share = 0;
+        for (let index = 0; index < hour; index += 1) {
+          share += ORDER_HOUR_WEIGHTS[index];
+        }
+        return share + ORDER_HOUR_WEIGHTS[hour] * withinHour;
+      }
+
+      function orderForecastAt(date, anchorMinutes, anchorValue, targetMinutes) {
+        if (!Number.isFinite(anchorValue) || anchorValue < 0) return null;
+        const anchorShare = orderCumulativeShare(date, anchorMinutes);
+        const targetShare = orderCumulativeShare(date, targetMinutes);
+        if (anchorShare === null || anchorShare <= 0 || targetShare === null) return null;
+        return Math.max(0, anchorValue / anchorShare * targetShare);
       }
 
       function germanyTimeLabel(date, minutes) {
@@ -3310,6 +3349,10 @@
           const entered = entryValue(day, productKey, time, metric);
           const fraction = END_MINUTES > start ? (minutes - start) / (END_MINUTES - start) : 0;
           const germanyDayStart = isGermanyDayStart(day.date, minutes);
+          const endpointOrderAnchor = minutes === END_MINUTES &&
+            (metric === "totalOrders" || metric === "adOrders")
+            ? lastActual
+            : null;
           if (germanyDayStart) lastActual = null;
 
           if (entered !== null && Number.isFinite(entered)) {
@@ -3333,6 +3376,27 @@
             };
             lastActual = { minutes, value: entered, speed };
             return row;
+          }
+
+          const orderAnchor = lastActual || endpointOrderAnchor;
+          if (orderAnchor && (metric === "totalOrders" || metric === "adOrders")) {
+            const projected = orderForecastAt(
+              day.date,
+              orderAnchor.minutes,
+              orderAnchor.value,
+              minutes
+            );
+            if (projected !== null) {
+              return {
+                minutes,
+                time,
+                value: projected,
+                speed: (projected - orderAnchor.value) / hoursBetween(orderAnchor.minutes, minutes),
+                kind: "projected",
+                invalid: false,
+                goalValue: goal * fraction
+              };
+            }
           }
 
           if (lastActual && lastActual.speed !== null && !Number.isNaN(lastActual.speed)) {
@@ -3838,12 +3902,20 @@
         const projectedSpend = spendSpeed !== null
           ? latestSpend.value + spendSpeed * remainingSpendHours
           : spendSeries[spendSeries.length - 1]?.value ?? baselineSpend + spendGoal;
-        const projectedTotalOrders = totalOrderSpeed !== null
-          ? latestTotalOrders.value + totalOrderSpeed * remainingTotalOrderHours
-          : totalOrderSeries[totalOrderSeries.length - 1]?.value ?? latestTotalOrders.value;
-        const projectedAdOrders = adOrderSpeed !== null
-          ? latestAdOrders.value + adOrderSpeed * remainingAdOrderHours
-          : adOrderSeries[adOrderSeries.length - 1]?.value ?? latestAdOrders.value;
+        const orderCurveTotalOrders = latestTotalOrders.hasValue
+          ? orderForecastAt(day.date, latestTotalOrders.minutes, latestTotalOrders.value, END_MINUTES)
+          : null;
+        const orderCurveAdOrders = latestAdOrders.hasValue
+          ? orderForecastAt(day.date, latestAdOrders.minutes, latestAdOrders.value, END_MINUTES)
+          : null;
+        const projectedTotalOrders = orderCurveTotalOrders ??
+          (totalOrderSpeed !== null
+            ? latestTotalOrders.value + totalOrderSpeed * remainingTotalOrderHours
+            : totalOrderSeries[totalOrderSeries.length - 1]?.value ?? latestTotalOrders.value);
+        const projectedAdOrders = orderCurveAdOrders ??
+          (adOrderSpeed !== null
+            ? latestAdOrders.value + adOrderSpeed * remainingAdOrderHours
+            : adOrderSeries[adOrderSeries.length - 1]?.value ?? latestAdOrders.value);
         const projectedNaturalOrders = Math.max(0, projectedTotalOrders - projectedAdOrders);
         const naturalOrders = latestTotalOrders.hasValue && latestAdOrders.hasValue
           ? Math.max(0, latestTotalOrders.value - latestAdOrders.value)
@@ -4938,6 +5010,7 @@
           `德国站 · 中国时间 ${day.start} / DE ${germanyTimeLabel(day.date, startMinutes)} 起记录至德国 24:00`;
         els.timelineTimeNote.textContent =
           `中国时间为录入口径；DE 时间按欧洲柏林时区自动换算，本次两国相差 ${chinaGermanyHourGap(day.date, startMinutes)} 小时。` +
+          "总单和广告单预计按历史小时出单分布还原全天；点击和花费按最近速度外推。" +
           "德国跨日后按新一天累计重新起算；速度只在有两次同一天累计值后成立，空值不当 0。";
         els.windowSummary.innerHTML =
           `${day.date} · 中国 <strong>${day.start} 到 ${chinaTimeLabel(END_MINUTES)}</strong>` +
